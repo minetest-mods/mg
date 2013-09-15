@@ -375,9 +375,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					top_layer = c_dirt
 					second_layer = c_stone
 				else
-					if pr:next(1, 10) == 1 then
+					if pr:next(1, 14) == 1 then
 						above_top = c_sapling
-					elseif pr:next(1, 10) == 1 then
+					elseif pr:next(1, 16) == 1 then
 						above_top = c_junglesapling
 					else
 						above_top = c_air
