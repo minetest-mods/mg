@@ -332,6 +332,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_sandstone  = minetest.get_content_id("default:sandstone")
 	local c_desert_sand  = minetest.get_content_id("default:desert_sand")
 	local c_desert_stone  = minetest.get_content_id("default:desert_stone")
+	local c_snow  = minetest.get_content_id("default:snow")
+	local c_snowblock  = minetest.get_content_id("default:snowblock")
 
 	local ni = 1
 	local above_top
@@ -406,6 +408,12 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				second_layer = c_stone
 			end
 		end
+		if y>=100 then
+			above_top = c_air
+			top = c_snow
+			top_layer = c_snowblock
+		end
+
 		if y<=maxp.y and y>=minp.y then
         		local vi = a:index(x, y, z)
         		data[vi] = top
