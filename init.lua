@@ -88,8 +88,8 @@ local function get_base_surface_at_point(x, z, vn, vh, noise1, noise2, noise3, n
 	end
 	if vn<40 then
 		cache[index] = vh
-	elseif vn<100 then
-		cache[index] = (vh*(100-vn) + cache[index]*(vn-40))/60
+	elseif vn<200 then
+		cache[index] = (vh*(200-vn) + cache[index]*(vn-40))/160
 	end
 	return cache[index]
 end
@@ -141,7 +141,7 @@ local function smooth_surface(x, z, vnoise, vx, vz, vs, vh, ...)
 	if vs ~= 0 then
 		vn = (vnoise:get2d({x=x, y=z})-2)*20+(40/(vs*vs))*((x-vx)*(x-vx)+(z-vz)*(z-vz))
 	else
-		vn = 100
+		vn = 1000
 	end
 	--if vn<40 then return surface_at_point(x, z, vn, unpack({...})) end
 	--[=[if vn<40 then return surface_at_point(x, z, vn, unpack({...})) end
@@ -201,18 +201,29 @@ end
 
 local function village_at_point(minp)
 	local bseed
-	local p1 = PseudoRandom(get_bseed({x=minp.x, z=minp.z-80}))
-	local p2 = PseudoRandom(get_bseed({x=minp.x-80, z=minp.z-80}))
-	local p3 = PseudoRandom(get_bseed({x=minp.x-80, z=minp.z}))
-	local pr = PseudoRandom(get_bseed(minp))
-	if p1:next(1,400)<=100 or p2:next(1,400)<=100 or p3:next(1,400)<=100 or pr:next(1,400)>100 then
-		return 0,0,0,0
+	for xi = -2, 2 do
+	for zi = -2, 0 do
+		if xi~=0 or zi~=0 then
+			local pi = PseudoRandom(get_bseed({x=minp.x+80*xi, z=minp.z+80*zi})) 
+			if pi:next(1,400)<=28 then return 0,0,0,0 end
+		end
 	end
+	end
+	local pr = PseudoRandom(get_bseed(minp))
+	if pr:next(1,400)>28 then return 0,0,0,0 end
 	local x = pr:next(minp.x, minp.x+79)
 	local z = pr:next(minp.z, minp.z+79)
 	local size = pr:next(20, 40)
 	local height = pr:next(5, 20)
 	print("A village spawned at: x="..x..", z="..z)
+	--[[print(dump(minp))
+	for xi = -2, 0 do
+	for zi = -2, 0 do
+		if xi~=0 or zi~=0 then
+			print(dump({x=minp.x+80*xi, z=minp.z+80*zi}))
+		end
+	end
+	end]]
 	return x,z,size,height
 end
 
@@ -334,6 +345,15 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_desert_stone  = minetest.get_content_id("default:desert_stone")
 	local c_snow  = minetest.get_content_id("default:snow")
 	local c_snowblock  = minetest.get_content_id("default:snowblock")
+	local c_cactus  = minetest.get_content_id("default:cactus")
+	local c_grass_1  = minetest.get_content_id("default:grass_1")
+	local c_grass_2  = minetest.get_content_id("default:grass_2")
+	local c_grass_3  = minetest.get_content_id("default:grass_3")
+	local c_grass_4  = minetest.get_content_id("default:grass_4")
+	local c_grass_5  = minetest.get_content_id("default:grass_5")
+	local c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
+	local c_jungle_grass  = minetest.get_content_id("default:junglegrass")
+	local c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
 
 	local ni = 1
 	local above_top
@@ -359,28 +379,40 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			top_layer = c_dirt
 			second_layer = c_stone
 		elseif y < 3 and noise_beach:get2d({x=x, y=z})<0.2 then
+			above_top = c_air
 			top = c_sand
 			top_layer = c_sand
 			second_layer = c_sandstone
 		else
+			above_top = c_air
 			if temperature>0.4 then
 				if humidity<-0.4 then
-					above_top = c_air
 					top = c_desert_sand
 					top_layer = c_desert_sand
 					second_layer = c_desert_stone
+					if pr:next(1, 50) == 1 then
+						above_top = c_cactus
+					elseif pr:next(1, 50) == 1 then
+						above_top = c_dry_shrub
+					end
 				elseif humidity<0.4 then
-					above_top = c_air
 					top = c_grass
 					top_layer = c_dirt
 					second_layer = c_stone
+					if pr:next(1, 50) == 1 then
+						if pr:next(1, 80) > 100*(humidity+0.4) then
+							above_top = c_dry_shrub
+						else
+							above_top = c_grass_2
+						end
+					end
 				else
-					if pr:next(1, 14) == 1 then
+					if pr:next(1, 14) == 1 and y>0 then
 						above_top = c_sapling
-					elseif pr:next(1, 16) == 1 then
+					elseif pr:next(1, 16) == 1 and y>0 then
 						above_top = c_junglesapling
-					else
-						above_top = c_air
+					elseif pr:next(1, 30) == 1 then
+						above_top = c_jungle_grass
 					end
 					top = c_grass
 					top_layer = c_dirt
@@ -393,14 +425,16 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				second_layer = c_stone
 			else
 				if humidity<-0.4 then
-					above_top = c_air
+					if pr:next(1, 60) == 1 then
+						above_top = c_grasses[pr:next(1,4)]
+					end
 				elseif humidity>0.4 then
-					above_top = c_air
-				else
 					if pr:next(1, 20) == 1 then
+						above_top = c_grasses[pr:next(3,5)]
+					end
+				else
+					if pr:next(1, 20) == 1 and y>0 then
 						above_top = c_sapling
-					else
-						above_top = c_air
 					end
 				end
 				top = c_grass
@@ -422,6 +456,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			add_tree(data, a, x, y+1, z, minp, maxp, c_tree, c_leaves, pr)
 		elseif above_top == c_junglesapling then
 			add_jungletree(data, a, x, y+1, z, minp, maxp, c_jungletree, c_jungleleaves, pr)
+		elseif above_top == c_cactus then
+			ch = pr:next(1, 4)
+			for yy = y+1, y+ch do
+				data[a:index(x, yy, z)] = c_cactus
+			end
 		else
 			if y+1<=maxp.y and y+1>=minp.y then
         			local vi = a:index(x, y+1, z)
