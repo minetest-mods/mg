@@ -480,22 +480,22 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		end
 	end
 	end
-        
-        to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
-        
+
+    to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
+
 	vm:set_data(data)
-       
+
 	vm:calc_lighting(
 		{x=minp.x-16, y=minp.y, z=minp.z-16},
 		{x=maxp.x+16, y=maxp.y, z=maxp.z+16}
 	)
-	
+
 	vm:write_to_map(data)
-	
+
 	local meta
 	for pos, n in pairs(to_add) do
 		minetest.set_node(pos, n.node)
 		meta = minetest.get_meta(pos)
-		meta:from_table(to_add.meta)
+		meta:from_table(n.meta)
 	end
 end)
