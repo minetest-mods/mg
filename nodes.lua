@@ -44,6 +44,23 @@ minetest.register_node("mg:savannasapling", {
 	sounds = default.node_sound_leaves_defaults(),
 })
 
+minetest.register_abm({
+	nodenames = {"mg:savannasapling"},
+	interval = 10,
+	chance = 50,
+	action = function(pos, node)
+		local vm = minetest.get_voxel_manip()
+		local minp, maxp = vm:read_from_map({x=pos.x-10, y=pos.y, z=pos.z-10}, {x=pos.x+10, y=pos.y+20, z=pos.z+10})
+		local a = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
+		local data = vm:get_data()
+		local c_tree = minetest.get_content_id("mg:savannatree")
+		local c_leaves = minetest.get_content_id("mg:savannaleaves")
+		add_savannatree(data, a, pos.x, pos.y, pos.z, minp, maxp, c_tree, c_leaves, PseudoRandom(math.random(1,100000)))
+		vm:set_data(data)
+		vm:write_to_map(data)
+	end
+})
+
 minetest.register_node("mg:dirt_with_dry_grass", {
 	description = "Dry Grass",
 	tiles = {"mg_dry_grass.png", "default_dirt.png", "default_dirt.png^mg_dry_grass_side.png"},

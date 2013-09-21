@@ -169,7 +169,9 @@ function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		zi = pr:next(z-3, z+2)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			if minp.y<=yy and maxp.y>=yy then
+				add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			end
 		end
 		end
 	end
@@ -209,8 +211,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
 	local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
 	
-	local noise_temperature = minetest.get_perlin(763, 6, 0.5, 256)
-	local noise_humidity = minetest.get_perlin(834, 6, 0.5, 256)
+	local noise_temperature = minetest.get_perlin(763, 8, 0.5, 1024)
+	local noise_humidity = minetest.get_perlin(834, 8, 0.5, 1024)
 	local noise_beach = minetest.get_perlin(452, 6, 0.5, 256)
 	
 	local data = vm:get_data()
@@ -293,7 +295,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					top = c_dry_grass
 					top_layer = c_dirt
 					second_layer = c_stone
-					if pr:next(1, 60) == 1 and y>0 then
+					if pr:next(1, 300) == 1 and y>0 then
 						above_top = c_savannasapling
 					elseif pr:next(1, 50) == 1 then
 						--if pr:next(1, 80) > 100*(humidity+0.4) then
@@ -303,9 +305,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 						--end
 					end
 				else
-					if pr:next(1, 14) == 1 and y>0 then
+					if pr:next(1, 14) == 1 then
 						above_top = c_sapling
-					elseif pr:next(1, 16) == 1 and y>0 then
+					elseif pr:next(1, 16) == 1 then
 						above_top = c_junglesapling
 					elseif pr:next(1, 30) == 1 then
 						above_top = c_jungle_grass
@@ -342,6 +344,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			above_top = c_air
 			top = c_snow
 			top_layer = c_snowblock
+		end
+		if y<0 then
+			above_top = c_air
 		end
 
 		if y<=maxp.y and y>=minp.y then
