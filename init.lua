@@ -309,6 +309,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	
 	local c_iron  = minetest.get_content_id("default:stone_with_iron")
 	local c_coal  = minetest.get_content_id("default:stone_with_coal")
+	local c_copper  = minetest.get_content_id("default:stone_with_copper")
+	local c_diamond  = minetest.get_content_id("default:stone_with_diamond")
 	local c_stone_with_mese  = minetest.get_content_id("default:stone_with_mese")
 	local c_mese  = minetest.get_content_id("default:mese")
 	local c_lava  = minetest.get_content_id("default:lava_source")
@@ -489,7 +491,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	
 	local va = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
-	generate_vein(c_air,c_ignore,minp,maxp,1234, {maxhdistance=70, maxvdistance = 70, maxheight=0,
+	generate_vein(c_air,c_ignore,minp,maxp,1234, {maxhdistance=70, maxvdistance = 70, maxheight=-100,
 		seglenghtn=15, seglenghtdev=6, segincln=0.2, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=5,
 		numbranchesn = 2, numbranchesdev = 0, mothersizen = -1, mothersizedev = 0, sizen = 100, sizedev = 30,
 		radius = 2.3}, data, a, va)
@@ -506,6 +508,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	generate_vein(c_lava,c_mese,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
 		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
 		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a, va)
+	generate_vein(c_copper,c_stone,minp,maxp,4, {maxvdistance=10.5, maxheight=-16,
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2}, data, a, va)
+	generate_vein(c_diamond,c_stone,minp,maxp,5, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-256,
+		seglenghtn=2, seglenghtdev=1, segincln=0.3, segincldev=0.1, turnangle=57, forkturnangle=57,
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a, va)
 	
         to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
 
