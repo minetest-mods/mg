@@ -40,7 +40,7 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 	return l
 end
 
-local function generate_building(pos, minp, maxp, data, a, pr)
+local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	local binfo = buildings[pos.btype]
 	local scm = binfo.scm
 	local minx = pos.x-pos.bsizex-1
@@ -59,7 +59,9 @@ function generate_village(vx, vz, vs, vh, minp, maxp, data, a)
 	local seed = get_bseed({x=vx, z=vz})
 	local pr = PseudoRandom(seed)
 	local bpos = generate_bpos(vx, vz, vs, vh, pr)
+	local extranodes = {}
 	for _, pos in ipairs(bpos) do
-		generate_building(pos, minp, maxp, data, a, pr)
+		generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	end
+	return extranodes
 end
