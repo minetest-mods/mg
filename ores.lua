@@ -17,8 +17,8 @@ function draw_sphere(name, wherein, center, radius, data, a, insideva)
 	pos0.y=center.y+y
 	for z=-radius, radius do
 		pos0.z=center.z+z
-		if x*x+y*y+z*z<=rad2 and insideva:contains(pos0.x, pos0.y, pos0.z) and (wherein == c_ignore or data[a:index(pos0.x, pos0.y, pos0.z)] == wherein) then
-			data[a:index(pos0.x, pos0.y, pos0.z)] = name
+		if x*x+y*y+z*z<=rad2 and a:containsp(pos0) and (wherein == c_ignore or data[a:indexp(pos0)] == wherein) then
+			data[a:indexp(pos0)] = name
 		end
 	end
 	end
@@ -30,9 +30,7 @@ function place_segment(name, wherein, pos1, pos2, minp, maxp, radius, data, a, i
 	local N=math.max(math.abs(d.x),math.abs(d.y),math.abs(d.z))
 	local s={x=d.x/N,y=d.y/N,z=d.z/N}
 	local p=pos1
-	if insideva:contains(pos1.x, pos1.y, pos1.z) and (wherein == c_ignore or data[a:index(pos1.x, pos1.y, pos1.z)] == wherein) then
-		data[a:index(pos1.x, pos1.y, pos1.z)] = name
-	end
+	draw_sphere(name,wherein,pos1,radius, data, a, insideva)
 	for i=1,N do
 		p={x=p.x+s.x,y=p.y+s.y,z=p.z+s.z}
 		p0=round_pos(p)
@@ -75,7 +73,7 @@ function generate_vein_segment(name, wherein, minp, maxp, pr, pos, angle, rem_si
 end
 
 function generate_vein(name, wherein, minp, maxp, seeddiff, options, data, a, insideva, second_call)
-	local seed = get_bseed2(minp)
+	local seed = get_bseed2(minp)+seeddiff
 	options=get_or_default(options)
 	
 	local numperblock=options.numperblock*1000
@@ -89,7 +87,6 @@ function generate_vein(name, wherein, minp, maxp, seeddiff, options, data, a, in
 	local sizedev=options.sizedev
 	
 	if second_call==nil then
-		insideva = VoxelArea:new{MinEdge = minp, MaxEdge = maxp}
 		local hblocks=math.floor(maxhdistance/80)+1
 		local vblocks=math.floor(maxvdistance/80)+1
 		for xblocksdiff=-hblocks,hblocks do
@@ -120,15 +117,17 @@ function generate_vein(name, wherein, minp, maxp, seeddiff, options, data, a, in
 			local vein_pos={x=pr:next(minp.x,maxp.x),y=pr:next(min_y,max_y),z=pr:next(minp.z,maxp.z)}
 			local numbranches=pr:next(numbranchesn-numbranchesdev,numbranchesn+numbranchesdev)
 			local mothersize=pr:next(mothersizen-mothersizedev,mothersizen+mothersizedev)/10
-	
-			draw_sphere(name, wherein,vein_pos, mothersize, data, a, insideva)
+			
+			if mothersize>=0 then
+				draw_sphere(name, wherein,vein_pos, mothersize, data, a, insideva)
+			end
 		
 			local minpos = {x=vein_pos.x-maxhdistance,y=vein_pos.y-maxvdistance,z=vein_pos.z-maxhdistance}
 			local maxpos = {x=vein_pos.x+maxhdistance,y=vein_pos.y+maxvdistance,z=vein_pos.z+maxhdistance}
 		
 			for i=1,numbranches do
 				local start_angle=math.pi*pr:next(0,359)/180
-					local size=pr:next(sizen-sizedev,sizen+sizedev)
+				local size=pr:next(sizen-sizedev,sizen+sizedev)
 				generate_vein_segment(name, wherein, minpos, maxpos, pr, vein_pos, start_angle, size, options, data, a, insideva)
 			end
 		end

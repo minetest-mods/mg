@@ -69,7 +69,7 @@ function get_bseed(minp)
 end
 
 function get_bseed2(minp)
-	return wseed + math.floor(87*minp.x/47) + math.floor(73*minp.z/91) + math.floor(31*minp.y/45)
+	return wseed + math.floor(87*minp.x/47) + math.floor(73*minp.z/91) + math.floor(31*minp.y/12)
 end
 
 c_air = minetest.get_content_id("air")
@@ -488,22 +488,24 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	end
 	
-	generate_vein(c_air,c_ignore,minp,maxp,0, {maxvdistance=79, maxheight=20,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=8,
-		radius = 4}, data, a)
+	local va = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
+	generate_vein(c_air,c_ignore,minp,maxp,1234, {maxhdistance=70, maxvdistance = 70, maxheight=0,
+		seglenghtn=15, seglenghtdev=6, segincln=0.2, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=5,
+		numbranchesn = 2, numbranchesdev = 0, mothersizen = -1, mothersizedev = 0, sizen = 100, sizedev = 30,
+		radius = 2.3}, data, a, va)
         generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2.5}, data, a)
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2.5}, data, a, va)
 	generate_vein(c_coal,c_stone,minp,maxp,1, {maxvdistance=10, sizen=54, sizedev=27, maxheight=64,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.36, turnangle=57, forkturnangle=57, radius=1,numperblock=6}, data, a)
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.36, turnangle=57, forkturnangle=57, radius=1,numperblock=6}, data, a, va)
 	generate_vein(c_stone_with_mese,c_stone,minp,maxp,2, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-128,
 		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,numperblock=0.8,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a)
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a, va)
 	generate_vein(c_mese,c_stone,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
 		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a)
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a, va)
 	generate_vein(c_lava,c_mese,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
 		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a)
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a, va)
 	
         to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
 
