@@ -81,7 +81,7 @@ local function add_leaves(data, vi, c_leaves)
 	end
 end
 
-local function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	th = pr:next(3, 4)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
@@ -109,7 +109,7 @@ local function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	end
 end
 
-local function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
@@ -137,6 +137,45 @@ local function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr
 	end
 end
 
+function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+	th = pr:next(7, 11)
+	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
+		local vi = a:index(x, yy, z)
+		data[vi] = c_tree
+	end
+	maxy = y+th
+	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
+	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
+	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
+		add_leaves(data, a:index(xx, yy, zz), c_leaves)
+	end
+	end
+	end
+	for i=1,20 do
+		xi = pr:next(x-3, x+2)
+		yi = pr:next(maxy-2, maxy)
+		zi = pr:next(z-3, z+2)
+		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
+		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
+		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+		end
+		end
+	end
+	for i=1,15 do
+		xi = pr:next(x-3, x+2)
+		yy = pr:next(maxy-6, maxy-5)
+		zi = pr:next(z-3, z+2)
+		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
+		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+		end
+	end
+end
+
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
 
@@ -178,6 +217,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 	local c_air  = minetest.get_content_id("air")
 	local c_grass  = minetest.get_content_id("default:dirt_with_grass")
+	local c_dry_grass  = minetest.get_content_id("mg:dirt_with_dry_grass")
 	local c_dirt_snow  = minetest.get_content_id("default:dirt_with_snow")
 	local c_snow  = minetest.get_content_id("default:snow")
 	local c_sapling  = minetest.get_content_id("default:sapling")
@@ -186,6 +226,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_junglesapling  = minetest.get_content_id("default:junglesapling")
 	local c_jungletree  = minetest.get_content_id("default:jungletree")
 	local c_jungleleaves  = minetest.get_content_id("default:jungleleaves")
+	local c_savannasapling  = minetest.get_content_id("mg:savannasapling")
+	local c_savannatree = minetest.get_content_id("mg:savannatree")
+	local c_savannaleaves  = minetest.get_content_id("mg:savannaleaves")
 	local c_dirt  = minetest.get_content_id("default:dirt")
 	local c_stone  = minetest.get_content_id("default:stone")
 	local c_water  = minetest.get_content_id("default:water_source")
@@ -247,15 +290,17 @@ minetest.register_on_generated(function(minp, maxp, seed)
 						above_top = c_dry_shrub
 					end
 				elseif humidity<0.4 then
-					top = c_grass
+					top = c_dry_grass
 					top_layer = c_dirt
 					second_layer = c_stone
-					if pr:next(1, 50) == 1 then
-						if pr:next(1, 80) > 100*(humidity+0.4) then
+					if pr:next(1, 60) == 1 and y>0 then
+						above_top = c_savannasapling
+					elseif pr:next(1, 50) == 1 then
+						--if pr:next(1, 80) > 100*(humidity+0.4) then
 							above_top = c_dry_shrub
-						else
-							above_top = c_grass_2
-						end
+						--else
+						--	above_top = c_grass_2
+						--end
 					end
 				else
 					if pr:next(1, 14) == 1 and y>0 then
@@ -315,6 +360,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		elseif above_top == c_junglesapling then
 			if not in_village then
 				add_jungletree(data, a, x, y+1, z, treemin, treemax, c_jungletree, c_jungleleaves, pr)
+			end
+		elseif above_top == c_savannasapling then
+			if not in_village then
+				add_savannatree(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
 			end
 		elseif above_top == c_cactus then
 			if not in_village then
