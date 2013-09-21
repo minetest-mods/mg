@@ -450,7 +450,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 		if y<=maxp.y and y>=minp.y then
         		local vi = a:index(x, y, z)
-        		data[vi] = top
+        		if y >= 0 then
+        			data[vi] = top
+        		else
+        			data[vi] = top_layer
+        		end
 		end
 		if above_top == c_sapling then
 			add_tree(data, a, x, y+1, z, minp, maxp, c_tree, c_leaves, pr)
