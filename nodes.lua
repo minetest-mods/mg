@@ -71,3 +71,10 @@ minetest.register_node("mg:dirt_with_dry_grass", {
 		footstep = {name="default_grass_footstep", gain=0.25},
 	}),
 })
+
+minetest.register_craft({
+	output = 'default:wood 4',
+	recipe = {
+		{'default:savannatree'},
+	}
+})
