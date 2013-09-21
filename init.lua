@@ -295,9 +295,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					top = c_dry_grass
 					top_layer = c_dirt
 					second_layer = c_stone
-					if pr:next(1, 300) == 1 and y>0 then
+					if pr:next(1, 250) == 1 and y>12 then
 						above_top = c_savannasapling
-					elseif pr:next(1, 50) == 1 then
+					elseif (pr:next(1, 25) == 1 and y>12) or (pr:next(1, 50) == 1 and y<12) then
 						--if pr:next(1, 80) > 100*(humidity+0.4) then
 							above_top = c_dry_shrub
 						--else
