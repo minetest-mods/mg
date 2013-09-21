@@ -120,7 +120,8 @@ local house = {
 		{A, A, A, A, A, A, A},
 	},
 }
-lamp = {
+
+local lamp = {
 	{
 		{A,  A, A},
 		{A, FW, A},
@@ -143,8 +144,78 @@ lamp = {
 	},
 }
 
+local well = {
+	{
+		{C, C, C, C},
+		{C, C, C, C},
+		{C, C, C, C},
+		{C, C, C, C},
+	},
+	{
+		{C,  C,  C, C},
+		{C, WS, WS, C},
+		{C, WS, WS, C},
+		{C,  C,  C, C},
+	},
+	{
+		{C,  C,  C, C},
+		{C, WS, WS, C},
+		{C, WS, WS, C},
+		{C,  C,  C, C},
+	},
+	{
+		{C,  C,  C, C},
+		{C, WS, WS, C},
+		{C, WS, WS, C},
+		{C,  C,  C, C},
+	},
+	{
+		{C,  C,  C, C},
+		{C, WS, WS, C},
+		{C, WS, WS, C},
+		{C,  C,  C, C},
+	},
+	{
+		{C,  C,  C, C},
+		{C, WS, WS, C},
+		{C, WS, WS, C},
+		{C,  C,  C, C},
+	},
+	{
+		{C, C, C, C},
+		{C, A, A, C},
+		{C, A, A, C},
+		{C, C, C, C},
+	},
+	{
+		{FW, A, A, FW},
+		{ A, A, A,  A},
+		{ A, A, A,  A},
+		{FW, A, A, FW},
+	},
+	{
+		{FW, A, A, FW},
+		{ A, A, A,  A},
+		{ A, A, A,  A},
+		{FW, A, A, FW},
+	},
+	{
+		{FW, A, A, FW},
+		{ A, A, A,  A},
+		{ A, A, A,  A},
+		{FW, A, A, FW},
+	},
+	{
+		{C, C, C, C},
+		{C, C, C, C},
+		{C, C, C, C},
+		{C, C, C, C},
+	},
+}
+
 buildings = {
-	{sizex=3, sizez=3, ymin=0, ymax=8, scm=house},
-	{sizex=4, sizez=4, ymin=0, ymax=1, scm=field},
-	{sizex=1, sizez=1, ymin=1, ymax=4, scm=lamp, chance=5},
+	{sizex=7, sizez=7, yoff= 0, ysize= 9, scm=house},
+	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field},
+	{sizex=3, sizez=3, yoff= 1, ysize= 4, scm=lamp, chance=5, no_rotate=true},
+	{sizex=4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1},
 }

@@ -49,7 +49,7 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 		bsizez = buildings[btype].sizez
 		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
 		for _, a in ipairs(l) do
-			if math.abs(bx-a.x)<=bsizex+a.bsizex+2 and math.abs(bz-a.z)<=bsizez+a.bsizez+2 then goto out end
+			if math.abs(bx-a.x)<=(bsizex+a.bsizex)/2 and math.abs(bz-a.z)<=(bsizez+a.bsizez)/2 then goto out end
 		end
 		l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez}
 		::out::
@@ -70,20 +70,20 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 		pfunc = function(x,y,z) return x,y,z end
 	end
 	local scm = binfo.scm
-	local minx = pos.x-pos.bsizex-1
-	local miny = pos.y+binfo.ymin-1
-	local minz = pos.z-pos.bsizez-1
 	local xx, yy, zz
 	local t
-	for x = math.max(pos.x-pos.bsizex, minp.x), math.min(pos.x+pos.bsizex, maxp.x) do
-	for y = math.max(pos.y+binfo.ymin, minp.y), math.min(pos.y+binfo.ymax, maxp.y) do
-	for z = math.max(pos.z-pos.bsizez, minp.z), math.min(pos.z+pos.bsizez, maxp.z) do
-		xx, yy, zz = pfunc(x-minx, y-miny, z-minz)
-		t = scm[yy][xx][zz]
-		if type(t) == "table" then
-			table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=x, y=y, z=z},})
-		else
-			data[a:index(x,y,z)] = t
+	for x = 0, pos.bsizex-1 do
+	for y = 0, binfo.ysize-1 do
+	for z = 0, pos.bsizez-1 do
+		ax, ay, az = pos.x+x, pos.y+y+binfo.yoff, pos.z+z
+		if (ax > minp.x and ax < maxp.x) and (ay > minp.y and ay < maxp.y) and (az > minp.z and az < maxp.z) then
+			xx, yy, zz = pfunc(x+1, y+1, z+1)
+			t = scm[yy][xx][zz]
+			if type(t) == "table" then
+				table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=ax, y=ay, z=az},})
+			else
+				data[a:index(ax, ay, az)] = t
+			end
 		end
 	end
 	end
