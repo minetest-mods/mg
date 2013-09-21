@@ -8,76 +8,8 @@ end)
 local cache = {}
 
 local function cliff(x, n)
-	--return (n+0.05)*0.4*x*x + 2*x + 4 + 4*n
 	return 0.2*x*x - x + n*x - n*n*x*x - 0.01 * math.abs(x*x*x) + math.abs(x)*100*n*n*n*n
 end
-
---[==[local function get_base_surface_at_point(x, z, vnoise, noise1, noise2, noise3, noise4)
-	local index = 65536*x+z
-	if cache[index] ~= nil then return cache[index] end
-	cache[index] = 25*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/3)
-	if noise4:get2d({x=x, y=z}) > 0.8 then
-		cache[index] = cliff(cache[index], noise4:get2d({x=x, y=z})-0.8)
-	end
-	--local dist_from_center = math.sqrt(x*x+z*z)
-	if vnoise:get2d({x=x, y=z})>0.8 and cache[index]>0 then cache[index] = 10 end
-	return cache[index]
-end
-
-local function surface_at_point(x, z, ...)
-	--[[if -AREA_SIZE<x and x<AREA_SIZE and -AREA_SIZE<z and z<AREA_SIZE then
-		if flat_height~=nil then return flat_height end
-		local s=0
-		local n=0
-		for x1=-AREA_SIZE, AREA_SIZE do
-			n=n+2
-			s=s+get_base_surface_at_point(x1, -AREA_SIZE, unpack({...}))+get_base_surface_at_point(x1, AREA_SIZE, unpack({...}))
-		end
-		for y1=-AREA_SIZE+1, AREA_SIZE-1 do
-			n=n+2
-			s=s+get_base_surface_at_point(-AREA_SIZE, y1, unpack({...}))+get_base_surface_at_point(AREA_SIZE, y1, unpack({...}))
-		end
-		flat_height = s/n
-		return s/n
-	end]]
-	return get_base_surface_at_point(x, z, unpack({...}))
-end
-
-local SMOOTHED = AREA_SIZE+2*DMAX
-local HSMOOTHED = AREA_SIZE+DMAX
-local INSIDE = AREA_SIZE-DMAX
-
-local function smooth(x, z, ...)
-	local s=0
-	local w=0
-	for xi=-DMAX, DMAX do
-	for zi=-DMAX, DMAX do
-		local d2=xi*xi+zi*zi
-		if d2<DMAX*DMAX then
-			local w1 = 1-d2/(DMAX*DMAX)
-			local w2 = 15/16*w1*w1
-			w = w+w2
-			s=s+w2*surface_at_point(x+xi, z+zi, unpack({...}))
-		end
-	end
-	end
-	return s/w
-end
-
-local function smooth_surface(x, z, vnoise, ...)
-	--return surface_at_point(x, z, unpack({...}))
-	---[[
-	local vn = vnoise:get2d({x=x, y=z})
-	if vn<0.55 then return surface_at_point(x, z, vnoise, unpack({...})) end
-	if vn>0.9 then return surface_at_point(x, z, vnoise, unpack({...})) end
-	if vn>0.8 then
-		local s = surface_at_point(x, z, vnoise, unpack({...}))
-		local s1 = smooth(x, z, vnoise, unpack({...}))
-		return ((10*vn-8)*s+(9-10*vn)*s1)
-	end
-	return smooth(x, z, vnoise, unpack({...}))--]]
-end
-]==]
 
 local function get_base_surface_at_point(x, z, vn, vh, noise1, noise2, noise3, noise4)
 	local index = 65536*x+z
@@ -95,21 +27,6 @@ local function get_base_surface_at_point(x, z, vn, vh, noise1, noise2, noise3, n
 end
 
 local function surface_at_point(x, z, ...)
-	--[[if -AREA_SIZE<x and x<AREA_SIZE and -AREA_SIZE<z and z<AREA_SIZE then
-		if flat_height~=nil then return flat_height end
-		local s=0
-		local n=0
-		for x1=-AREA_SIZE, AREA_SIZE do
-			n=n+2
-			s=s+get_base_surface_at_point(x1, -AREA_SIZE, unpack({...}))+get_base_surface_at_point(x1, AREA_SIZE, unpack({...}))
-		end
-		for y1=-AREA_SIZE+1, AREA_SIZE-1 do
-			n=n+2
-			s=s+get_base_surface_at_point(-AREA_SIZE, y1, unpack({...}))+get_base_surface_at_point(AREA_SIZE, y1, unpack({...}))
-		end
-		flat_height = s/n
-		return s/n
-	end]]
 	return get_base_surface_at_point(x, z, unpack({...}))
 end
 
@@ -135,96 +52,24 @@ local function smooth(x, z, ...)
 end
 
 local function smooth_surface(x, z, vnoise, vx, vz, vs, vh, ...)
-	--return surface_at_point(x, z, unpack({...}))
-	---[[
 	local vn
 	if vs ~= 0 then
 		vn = (vnoise:get2d({x=x, y=z})-2)*20+(40/(vs*vs))*((x-vx)*(x-vx)+(z-vz)*(z-vz))
 	else
 		vn = 1000
 	end
-	--if vn<40 then return surface_at_point(x, z, vn, unpack({...})) end
-	--[=[if vn<40 then return surface_at_point(x, z, vn, unpack({...})) end
-	if vn>100 then return surface_at_point(x, z, vn, unpack({...})) end
-	--[[if vn<80 then
-		local s = surface_at_point(x, z, vn, unpack({...}))
-		local s1 = smooth(x, z, vn, unpack({...}))
-		return ((80-vn)*s+(vn-40)*s1)/40
-	end]]
-	return smooth(x, z, vn, unpack({...}))--]]]=]
 	return surface_at_point(x, z, vn, vh, unpack({...}))
 end
 
---[=[local tree_model={
-	axiom="FFFFFBFB",
-	rules_a="[&&&GGF[++^Fd][--&Fd]//Fd[+^Fd][--&Fd]]////[&&&GGF[++^Fd][--&Fd]//Fd[+^Fd][--&Fd]]////[&&&GGF[++^Fd][--&Fd]//Fd[+^Fd][--&Fdd]]",
-	rules_b="[&&&F[++^Fd][--&d]//d[+^d][--&d]]////[&&&F[++^Fd][--&d]//d[+^d][--&d]]////[&&&F[++^Fd][--&Fd]//d[+^d][--&d]]",
-	rules_c="/",
-	rules_d="F",
-	trunk="default:tree",
-	leaves="default:leaves",
-	angle=30,
-	iterations=2,
-	random_level=0,
-	trunk_type="single";
-	thin_branches=true;
-}
-
-minetest.register_node(":test_mapgen:sapling", {
-	drawtype = "airlike",
-	is_ground_content = true,
-	buildable_to = true,
-	groups = {not_in_creative_inventory=1},
-})
-
-minetest.register_abm({
-	nodenames = {"test_mapgen:sapling"},
-	interval = 1,
-	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		minetest.set_node(pos, {name="air"})
-		minetest.spawn_tree(pos, tree_model)
-	end,
-})]=]--
-
-local wseed
 minetest.register_on_mapgen_init(function(mgparams)
 	wseed = math.floor(mgparams.seed/10000000000)
 end)
-local function get_bseed(minp)
+function get_bseed(minp)
 	return wseed + math.floor(5*minp.x/47) + math.floor(873*minp.z/91)
 end
 
-local function get_bseed2(minp)
+function get_bseed2(minp)
 	return wseed + math.floor(87*minp.x/47) + math.floor(73*minp.z/91) + math.floor(31*minp.y/45)
-end
-
-local function village_at_point(minp)
-	local bseed
-	for xi = -2, 2 do
-	for zi = -2, 0 do
-		if xi~=0 or zi~=0 then
-			local pi = PseudoRandom(get_bseed({x=minp.x+80*xi, z=minp.z+80*zi})) 
-			if pi:next(1,400)<=28 then return 0,0,0,0 end
-		end
-	end
-	end
-	local pr = PseudoRandom(get_bseed(minp))
-	if pr:next(1,400)>28 then return 0,0,0,0 end
-	local x = pr:next(minp.x, minp.x+79)
-	local z = pr:next(minp.z, minp.z+79)
-	local size = pr:next(20, 40)
-	local height = pr:next(5, 20)
-	print("A village spawned at: x="..x..", z="..z)
-	--[[print(dump(minp))
-	for xi = -2, 0 do
-	for zi = -2, 0 do
-		if xi~=0 or zi~=0 then
-			print(dump({x=minp.x+80*xi, z=minp.z+80*zi}))
-		end
-	end
-	end]]
-	return x,z,size,height
 end
 
 local c_air = minetest.get_content_id("air")
@@ -292,12 +137,18 @@ local function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr
 	end
 end
 
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
+
 minetest.register_on_generated(function(minp, maxp, seed)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local a = VoxelArea:new{
 		MinEdge={x=emin.x, y=emin.y, z=emin.z},
 		MaxEdge={x=emax.x, y=emax.y, z=emax.z},
 	}
+	
+	local treemin = {x=emin.x, y=minp.y, z=emin.z}
+	local treemax = {x=emax.x, y=maxp.y, z=emax.z}
 	
 	local vx,vz,vs,vh
 	for xi = -1, 1 do
@@ -452,14 +303,21 @@ minetest.register_on_generated(function(minp, maxp, seed)
         		local vi = a:index(x, y, z)
         		data[vi] = top
 		end
+		local in_village =  (x-vx)*(x-vx)+(z-vz)*(z-vz) < vs*vs
 		if above_top == c_sapling then
-			add_tree(data, a, x, y+1, z, minp, maxp, c_tree, c_leaves, pr)
+			if not in_village then
+				add_tree(data, a, x, y+1, z, treemin, treemax, c_tree, c_leaves, pr)
+			end
 		elseif above_top == c_junglesapling then
-			add_jungletree(data, a, x, y+1, z, minp, maxp, c_jungletree, c_jungleleaves, pr)
+			if not in_village then
+				add_jungletree(data, a, x, y+1, z, treemin, treemax, c_jungletree, c_jungleleaves, pr)
+			end
 		elseif above_top == c_cactus then
-			ch = pr:next(1, 4)
-			for yy = y+1, y+ch do
-				data[a:index(x, yy, z)] = c_cactus
+			if not in_village then
+				ch = pr:next(1, 4)
+				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
+					data[a:index(x, yy, z)] = c_cactus
+				end
 			end
 		else
 			if y+1<=maxp.y and y+1>=minp.y then
@@ -498,6 +356,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		end
 	end
 	end
+        
+        generate_village(vx, vz, vs, vh, minp, maxp, data, a)
         
 	vm:set_data(data)
        
