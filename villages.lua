@@ -34,6 +34,17 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 				goto choose
 			end
 		end
+		if buildings[btype].pervillage ~= nil then
+			local n = 0
+			for j=1, #l do
+				if l[j].btype == btype then
+					n = n + 1
+				end
+			end
+			if n >= buildings[btype].pervillage then
+				goto choose
+			end
+		end
 		bsizex = buildings[btype].sizex
 		bsizez = buildings[btype].sizez
 		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
