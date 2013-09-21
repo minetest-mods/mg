@@ -177,6 +177,27 @@ function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	end
 end
 
+function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+	bh = pr:next(1, 2)
+	bw = pr:next(2, 4)
+
+	for xx=math.max(minp.x, x-bw), math.min(maxp.x, x+bw) do
+		for zz=math.max(minp.z, z-bw), math.min(maxp.z, z+bw) do
+			for yy=math.max(minp.y, y-bh), math.min(maxp.y, y+bh) do
+				if pr:next(1, 100) < 95 and math.abs(xx-x) < pr:next(bh, bh+2)-math.abs(y-yy) and math.abs(zz-z) < pr:next(bh, bh+2)-math.abs(y-yy) then
+					add_leaves(data, a:index(xx, yy, zz), c_leaves)
+					for yyy=math.max(minp.y, yy-2), yy do
+						add_leaves(data, a:index(xx, yyy, zz), c_leaves)
+					end
+				end
+			end
+		end
+	end
+
+	local vi = a:index(x, y, z)
+	data[vi] = c_tree
+end
+
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
@@ -335,11 +356,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					if pr:next(1, 250) == 1 and y>12 then
 						above_top = c_savannasapling
 					elseif (pr:next(1, 25) == 1 and y>12) or (pr:next(1, 50) == 1 and y<12) then
-						--if pr:next(1, 80) > 100*(humidity+0.4) then
+						if pr:next(1, 80) > 100*(humidity+0.4) then
 							above_top = c_dry_shrub
-						--else
-						--	above_top = c_grass_2
-						--end
+						elseif pr:next(1, 100) == 1 then
+							above_top = "savannabush"
+						end
 					end
 				else
 					if pr:next(1, 14) == 1 then
@@ -410,6 +431,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		elseif above_top == c_savannasapling then
 			if not in_village then
 				add_savannatree(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
+			end
+		elseif above_top == "savannabush" then
+			if not in_village then
+				add_savannabush(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
 			end
 		elseif above_top == c_cactus then
 			if not in_village then
