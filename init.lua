@@ -181,6 +181,37 @@ dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
 
+local function get_biome_table(minp, humidity, temperature)
+	l = {}
+	for xi = -1, 1 do
+	for zi = -1, 1 do
+		mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+80,z=minp.z+zi*80+80}
+		pr = PseudoRandom(get_bseed(mnp))
+		bxp, bzp = pr:next(mnp.x, mxp.x), pr:next(mnp.z, mxp.z)
+		h, t = humidity:get2d({x=bxp, y=bzp}), temperature:get2d({x=bxp, y=bzp})
+		l[#l+1] = {x=bxp, z=bzp, h=h, t=t}
+	end
+	end
+	return l
+end
+
+local function get_distance(x1, x2, z1, z2)
+	return (x1-x2)*(x1-x2)+(z1-z2)*(z1-z2)
+end
+
+local function get_nearest_biome(biome_table, x, z)
+	m = math.huge
+	k = 0
+	for key, bdef in ipairs(biome_table) do
+		local dist = get_distance(bdef.x, x, bdef.z, z)
+		if dist<m then
+			m=dist
+			k=key
+		end
+	end
+	return biome_table[k]
+end
+
 minetest.register_on_generated(function(minp, maxp, seed)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local a = VoxelArea:new{
@@ -200,6 +231,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	::out::
 	
+	
 	local pr = PseudoRandom(get_bseed(minp))
 	
 	local village_noise = minetest.get_perlin(7635, 6, 0.5, 256)
@@ -211,9 +243,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
 	local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
 	
-	local noise_temperature = minetest.get_perlin(763, 8, 0.5, 1024)
-	local noise_humidity = minetest.get_perlin(834, 8, 0.5, 1024)
+	local noise_temperature = minetest.get_perlin(763, 7, 0.5, 512)
+	local noise_humidity = minetest.get_perlin(834, 7, 0.5, 512)
 	local noise_beach = minetest.get_perlin(452, 6, 0.5, 256)
+	
+	local biome_table = get_biome_table(minp, noise_humidity, noise_temperature)
 	
 	local data = vm:get_data()
 
@@ -264,7 +298,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, noise1, noise2, noise3, noise4))
 		humidity = noise_humidity:get2d({x=x,y=z})
 		temperature = noise_temperature:get2d({x=x,y=z}) - math.max(y, 0)/50
-		if temperature<-0.4 then
+		biome = get_nearest_biome(biome_table, x, z)
+		biome_humidity = biome.h
+		biome_temperature = biome.t
+		if biome_temperature<-0.4 then
 			liquid_top = c_ice
 		else
 			liquid_top = c_water
@@ -281,8 +318,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			second_layer = c_sandstone
 		else
 			above_top = c_air
-			if temperature>0.4 then
-				if humidity<-0.4 then
+			if biome_temperature>0.4 then
+				if biome_humidity<-0.4 then
 					top = c_desert_sand
 					top_layer = c_desert_sand
 					second_layer = c_desert_stone
@@ -291,7 +328,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					elseif pr:next(1, 50) == 1 then
 						above_top = c_dry_shrub
 					end
-				elseif humidity<0.4 then
+				elseif biome_humidity<0.4 then
 					top = c_dry_grass
 					top_layer = c_dirt
 					second_layer = c_stone
@@ -316,18 +353,22 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					top_layer = c_dirt
 					second_layer = c_stone
 				end
-			elseif temperature<-0.4 then
+			elseif biome_temperature<-0.4 then
 				above_top = c_snow
 				top = c_dirt_snow
 				top_layer = c_dirt
 				second_layer = c_stone
 			else
-				if humidity<-0.4 then
-					if pr:next(1, 60) == 1 then
+				if biome_humidity<-0.4 then
+					if pr:next(1, 250) == 1 then
+						above_top = c_sapling
+					elseif pr:next(1, 60) == 1 then
 						above_top = c_grasses[pr:next(1,4)]
 					end
-				elseif humidity>0.4 then
-					if pr:next(1, 20) == 1 then
+				elseif biome_humidity>0.4 then
+					if pr:next(1, 250) == 1 then
+						above_top = c_sapling
+					elseif pr:next(1, 20) == 1 then
 						above_top = c_grasses[pr:next(3,5)]
 					end
 				else
