@@ -72,8 +72,8 @@ function get_bseed2(minp)
 	return wseed + math.floor(87*minp.x/47) + math.floor(73*minp.z/91) + math.floor(31*minp.y/45)
 end
 
-local c_air = minetest.get_content_id("air")
-local c_ignore = minetest.get_content_id("ignore")
+c_air = minetest.get_content_id("air")
+c_ignore = minetest.get_content_id("ignore")
 
 local function add_leaves(data, vi, c_leaves)
 	if data[vi]==c_air or data[vi]==c_ignore then
@@ -201,6 +201,7 @@ end
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/ores.lua")
 
 local function get_biome_table(minp, humidity, temperature)
 	l = {}
@@ -305,6 +306,12 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
 	local c_jungle_grass  = minetest.get_content_id("default:junglegrass")
 	local c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
+	
+	local c_iron  = minetest.get_content_id("default:stone_with_iron")
+	local c_coal  = minetest.get_content_id("default:stone_with_coal")
+	local c_stone_with_mese  = minetest.get_content_id("default:stone_with_mese")
+	local c_mese  = minetest.get_content_id("default:mese")
+	local c_lava  = minetest.get_content_id("default:lava_source")
 
 	local ni = 1
 	local above_top
@@ -480,8 +487,25 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		end
 	end
 	end
-
-    to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
+	
+	generate_vein(c_air,c_ignore,minp,maxp,0, {maxvdistance=79, maxheight=20,
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=8,
+		radius = 4}, data, a)
+        generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2.5}, data, a)
+	generate_vein(c_coal,c_stone,minp,maxp,1, {maxvdistance=10, sizen=54, sizedev=27, maxheight=64,
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.36, turnangle=57, forkturnangle=57, radius=1,numperblock=6}, data, a)
+	generate_vein(c_stone_with_mese,c_stone,minp,maxp,2, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-128,
+		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,numperblock=0.8,
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a)
+	generate_vein(c_mese,c_stone,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
+		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a)
+	generate_vein(c_lava,c_mese,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
+		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
+		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a)
+	
+        to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
 
 	vm:set_data(data)
 
