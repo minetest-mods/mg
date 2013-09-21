@@ -301,7 +301,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
 		if y<=maxp.y and y>=minp.y then
         		local vi = a:index(x, y, z)
-        		data[vi] = top
+        		if y >= 0 then
+        			data[vi] = top
+        		else
+        			data[vi] = top_layer
+        		end
 		end
 		local in_village =  (x-vx)*(x-vx)+(z-vz)*(z-vz) < vs*vs
 		if above_top == c_sapling then
