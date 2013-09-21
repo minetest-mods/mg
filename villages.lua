@@ -27,7 +27,13 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 	for i=1, 100 do
 		bx = pr:next(vx-vs, vx+vs)
 		bz = pr:next(vz-vs, vz+vs)
+		::choose::
 		btype = pr:next(1, #buildings)
+		if buildings[btype].chance ~= nil then
+			if pr:next(1, buildings[btype].chance) ~= 1 then
+				goto choose
+			end
+		end
 		bsizex = buildings[btype].sizex
 		bsizez = buildings[btype].sizez
 		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
@@ -49,7 +55,12 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	for x = math.max(pos.x-pos.bsizex, minp.x), math.min(pos.x+pos.bsizex, maxp.x) do
 	for y = math.max(pos.y+binfo.ymin, minp.y), math.min(pos.y+binfo.ymax, maxp.y) do
 	for z = math.max(pos.z-pos.bsizez, minp.z), math.min(pos.z+pos.bsizez, maxp.z) do
-		data[a:index(x,y,z)] = scm[y-miny][x-minx][z-minz]
+	    local t = scm[y-miny][x-minx][z-minz]
+	    if type(t) == "table" then
+			table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=x, y=y, z=z},})
+	    else
+			data[a:index(x,y,z)] = t
+		end
 	end
 	end
 	end

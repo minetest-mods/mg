@@ -8,7 +8,10 @@ local C = minetest.get_content_id("default:cobble")
 local T = minetest.get_content_id("default:tree")
 local WG = minetest.get_content_id("wool:grey")
 local FW = minetest.get_content_id("default:fence_wood")
-local TR = minetest.get_content_id("default:torch")
+local TRXM = {node={name="default:torch", param2=2}}
+local TRXP = {node={name="default:torch", param2=3}}
+local TRZM = {node={name="default:torch", param2=5}}
+local TRZP = {node={name="default:torch", param2=4}}
 local field = {
 	{
 		{S, WS, S, S, WS, S, S, WS, S},
@@ -134,14 +137,14 @@ lamp = {
 		{A,  A, A},
 	},
 	{
-		{ A, TR,  A},
-		{TR, WG, TR},
-		{ A, TR,  A},
+		{   A, TRXM,    A},
+		{TRZP,   WG, TRZM},
+		{   A, TRXP,    A},
 	},
 }
 
 buildings = {
 	{sizex=3, sizez=3, ymin=0, ymax=8, scm=house},
 	{sizex=4, sizez=4, ymin=0, ymax=1, scm=field},
-	--{sizex=1, sizez=1, ymin=1, ymax=4, scm=lamp},
+	{sizex=1, sizez=1, ymin=1, ymax=4, scm=lamp, chance=5},
 }

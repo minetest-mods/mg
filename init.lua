@@ -517,9 +517,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	vm:write_to_map(data)
 
 	local meta
-	for pos, n in pairs(to_add) do
-		minetest.set_node(pos, n.node)
-		meta = minetest.get_meta(pos)
-		meta:from_table(n.meta)
+	for _, n in pairs(to_add) do
+		minetest.set_node(n.pos, n.node)
+		if n.meta ~= nil then
+			meta = minetest.get_meta(pos)
+			meta:from_table(n.meta)
+		end
 	end
 end)
