@@ -48,17 +48,30 @@ end
 
 local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	local binfo = buildings[pos.btype]
+	if binfo.no_rotate == nil then
+		rot = pr:next(1, 2)
+		if rot == 1 then
+			pfunc = function(x,y,z) return x,y,z end
+		elseif rot == 2 then
+			pfunc = function(x,y,z) return z,y,x end
+		end
+	else
+		pfunc = function(x,y,z) return x,y,z end
+	end
 	local scm = binfo.scm
 	local minx = pos.x-pos.bsizex-1
 	local miny = pos.y+binfo.ymin-1
 	local minz = pos.z-pos.bsizez-1
+	local xx, yy, zz
+	local t
 	for x = math.max(pos.x-pos.bsizex, minp.x), math.min(pos.x+pos.bsizex, maxp.x) do
 	for y = math.max(pos.y+binfo.ymin, minp.y), math.min(pos.y+binfo.ymax, maxp.y) do
 	for z = math.max(pos.z-pos.bsizez, minp.z), math.min(pos.z+pos.bsizez, maxp.z) do
-	    local t = scm[y-miny][x-minx][z-minz]
-	    if type(t) == "table" then
+		xx, yy, zz = pfunc(x-minx, y-miny, z-minz)
+		t = scm[yy][xx][zz]
+		if type(t) == "table" then
 			table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=x, y=y, z=z},})
-	    else
+		else
 			data[a:index(x,y,z)] = t
 		end
 	end
