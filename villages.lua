@@ -27,7 +27,7 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 	for i=1, 100 do
 		bx = pr:next(vx-vs, vx+vs)
 		bz = pr:next(vz-vs, vz+vs)
-		btype = pr:next(1, buildings.lenght)
+		btype = pr:next(1, #buildings)
 		bsizex = buildings[btype].sizex
 		bsizez = buildings[btype].sizez
 		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end

@@ -77,7 +77,7 @@ local house = {
 	},
 }
 
-buildings = {lenght = 2,
+buildings = {
 	{sizex=3, sizez=3, ymin=0, ymax=4, scm=house},
 	{sizex=4, sizez=4, ymin=0, ymax=1, scm=field}
 }
