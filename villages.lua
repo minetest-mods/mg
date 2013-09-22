@@ -49,7 +49,7 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 		bsizez = buildings[btype].sizez
 		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
 		for _, a in ipairs(l) do
-			if math.abs(bx-a.x)<=(bsizex+a.bsizex)/2 and math.abs(bz-a.z)<=(bsizez+a.bsizez)/2 then goto out end
+			if math.abs(bx-a.x)<=(bsizex+a.bsizex)/2+2 and math.abs(bz-a.z)<=(bsizez+a.bsizez)/2+2 then goto out end
 		end
 		l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez}
 		::out::
