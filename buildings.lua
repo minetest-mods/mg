@@ -449,3 +449,34 @@ buildings = {
 	{sizex= 5, sizez=5, yoff= 0, ysize= 6, scm=smallhouse},
 	{sizex=13, sizez=6, yoff= 1, ysize= 7, scm=house_w_garden},
 }
+
+local gravel = minetest.get_content_id("default:gravel")
+local rgravel = {}
+for i = 1, 200 do
+	rgravel[i] = gravel
+end
+local rgravel2 = {}
+for i = 1, 200 do
+	rgravel2[i] = rgravel
+end
+local rair = {}
+for i = 1, 200 do
+	rair[i] = A
+end
+local rair2 = {}
+for i = 1, 200 do
+	rair2[i] = rair
+end
+local road_scm = {rgravel2, rair2}
+buildings["road"] = {yoff = 0, ysize = 2, scm = road_scm}
+
+local total_weight = 0
+for _, i in ipairs(buildings) do
+	if i.weight == nil then i.weight = 1 end
+	total_weight = total_weight+i.weight
+	i.max_weight = total_weight
+end
+local multiplier = 3000/total_weight
+for _,i in ipairs(buildings) do
+	i.max_weight = i.max_weight*multiplier
+end
