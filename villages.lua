@@ -92,7 +92,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 	local calls_to_do = {}
 	local rxx = rx
 	local rzz = rz
-	local mx, m2x, mz, m2z
+	local mx, m2x, mz, m2z, mmx, mmz
 	mx, m2x, mz, m2z = rx, rx, rz, rz
 	local orient1, orient2
 	if rdx == 0 then
@@ -130,10 +130,6 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 		--end
 	end
 	::exit1::
-	if road_in_building(rx, rz, rdx, rdz, roadsize, l) then
-		mx = rx - 2*rdx
-		mz = rz - 2*rdz
-	end
 	rx = rxx
 	rz = rzz
 	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
@@ -165,11 +161,11 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 	end
 	::exit2::
 	if road_in_building(rx, rz, rdx, rdz, roadsize, l) then
-		m2x = rx - 2*rdx
-		m2z = rz - 2*rdz
+		mmx = rx - 2*rdx
+		mmz = rz - 2*rdz
 	end
-	mx = rdx*math.max(rdx*mx, rdx*m2x)
-	mz = rdz*math.max(rdz*mz, rdz*m2z)
+	mx = mmx or rdx*math.max(rdx*mx, rdx*m2x)
+	mz = mmz or rdz*math.max(rdz*mz, rdz*m2z)
 	if rdx == 0 then
 		rxmin = rx - roadsize + 1
 		rxmax = rx + roadsize - 1
