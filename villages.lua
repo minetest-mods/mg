@@ -302,7 +302,7 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	local binfo = buildings[pos.btype]
 	local scm
 	if type(binfo.scm) == "string" then
-		scm = import_scm(scm)
+		scm = import_scm(binfo.scm)
 	else
 		scm = binfo.scm
 	end

@@ -1,7 +1,7 @@
 local function import_scm(scm)
 	local f, err = io.open(minetest.get_modpath("mg").."/schems/"..scm..".we", "r")
 	if not f then
-		error("Could not open schematic '" .. binfo.scm .. ".we': " .. err)
+		error("Could not open schematic '" .. scm .. ".we': " .. err)
 	end
 	value = f:read("*a")
 	f:close()
@@ -32,7 +32,7 @@ local function import_scm(scm)
 		if ent.z > maxz then
 			maxz = ent.z
 		end
-			if scm[ent.y] == nil then
+		if scm[ent.y] == nil then
 			scm[ent.y] = {}
 		end
 		if scm[ent.y][ent.x] == nil then
@@ -54,14 +54,14 @@ local function import_scm(scm)
 	for x = 1, maxx do
 		for y = 1, maxy do
 			for z = 1, maxz do
-				if scm[ent.y] == nil then
-					scm[ent.y] = {}
+				if scm[y] == nil then
+					scm[y] = {}
 				end
-				if scm[ent.y][ent.x] == nil then
-					scm[ent.y][ent.x] = {}
+				if scm[y][x] == nil then
+					scm[y][y] = {}
 				end
-				if scm[ent.y][ent.x][ent.z] == nil then
-					scm[ent.y][ent.x][ent.z] = c_ignore
+				if scm[y][x][z] == nil then
+					scm[y][x][z] = c_ignore
 				end
 			end
 		end
