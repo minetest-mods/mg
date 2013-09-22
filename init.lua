@@ -199,6 +199,77 @@ function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	data[vi] = c_tree
 end
 
+function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+	th = pr:next(9, 13)
+	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
+		local vi = a:index(x, yy, z)
+		data[vi] = c_tree
+	end
+	maxy = y+th
+	for xx=math.max(minp.x, x-3), math.min(maxp.x, x+3) do
+	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy-1) do
+	for zz=math.max(minp.z, z-3), math.min(maxp.z, z+3) do
+		if pr:next(1, 100) < 80 then
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+	end
+	end
+	end
+	for xx=math.max(minp.x, x-2), math.min(maxp.x, x+2) do
+	for yy=math.max(minp.y, maxy), math.min(maxp.y, maxy) do
+	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
+		if pr:next(1, 100) < 85 then
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+	end
+	end
+	end
+	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
+	for yy=math.max(minp.y, maxy+1), math.min(maxp.y, maxy+1) do
+	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
+		if pr:next(1, 100) < 90 then
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+	end
+	end
+	end
+	add_leaves(data, a:index(x, maxy+1, z), c_leaves)
+	my = 0
+	for i=1,20 do
+		xi = pr:next(x-3, x+2)
+		yy = pr:next(maxy-6, maxy-5)
+		zi = pr:next(z-3, z+2)
+		if yy > my then
+			my = yy
+		end
+		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
+		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
+			if minp.y<=yy and maxp.y>=yy then
+				add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			end
+		end
+		end
+	end
+	for xx=math.max(minp.x, x-2), math.min(maxp.x, x+2) do
+	for yy=math.max(minp.y, my+1), math.min(maxp.y, my+1) do
+	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
+		if pr:next(1, 100) < 85 then
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+	end
+	end
+	end
+	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
+	for yy=math.max(minp.y, my+2), math.min(maxp.y, my+2) do
+	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
+		if pr:next(1, 100) < 90 then
+			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		end
+	end
+	end
+	end
+end
+
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
@@ -289,6 +360,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_savannasapling  = minetest.get_content_id("mg:savannasapling")
 	local c_savannatree = minetest.get_content_id("mg:savannatree")
 	local c_savannaleaves  = minetest.get_content_id("mg:savannaleaves")
+	local c_pinesapling  = minetest.get_content_id("mg:pinesapling")
+	local c_pinetree = minetest.get_content_id("mg:pinetree")
+	local c_pineleaves  = minetest.get_content_id("mg:pineleaves")
 	local c_dirt  = minetest.get_content_id("default:dirt")
 	local c_stone  = minetest.get_content_id("default:stone")
 	local c_water  = minetest.get_content_id("default:water_source")
@@ -455,6 +529,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		elseif above_top == "savannabush" then
 			if not in_village then
 				add_savannabush(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
+			end
+		elseif above_top == c_pinesapling then
+			if not in_village then
+				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, pr)
 			end
 		elseif above_top == c_cactus then
 			if not in_village then
