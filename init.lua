@@ -308,6 +308,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
 	local c_jungle_grass  = minetest.get_content_id("default:junglegrass")
 	local c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
+	local c_clay  = minetest.get_content_id("default:clay")
 	
 	local c_iron  = minetest.get_content_id("default:stone_with_iron")
 	local c_coal  = minetest.get_content_id("default:stone_with_coal")
@@ -497,6 +498,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		seglenghtn=15, seglenghtdev=6, segincln=0.2, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=5,
 		numbranchesn = 2, numbranchesdev = 0, mothersizen = -1, mothersizedev = 0, sizen = 100, sizedev = 30,
 		radius = 2.3}, data, a, va)
+	generate_vein(c_clay,c_dirt,minp,maxp,6, {maxvdistance=10.5, maxheight=0, minheight=-50,
+		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=1,
+		radius = 1.5}, data, a, va)
         generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
 		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2.5}, data, a, va)
 	generate_vein(c_coal,c_stone,minp,maxp,1, {maxvdistance=10, sizen=54, sizedev=27, maxheight=64,
