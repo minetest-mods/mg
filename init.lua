@@ -236,8 +236,10 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 	end
 	end
 	end
-	add_leaves(data, a:index(x, maxy+1, z), c_leaves, c_snow)
-	add_leaves(data, a:index(x, maxy+2, z), c_snow)
+	if maxy+1<=maxp.y and maxy+1>=minp.y then
+		add_leaves(data, a:index(x, maxy+1, z), c_leaves, c_snow)
+		add_leaves(data, a:index(x, maxy+2, z), c_snow)
+	end
 	my = 0
 	for i=1,20 do
 		xi = pr:next(x-3, x+2)
