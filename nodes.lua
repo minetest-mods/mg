@@ -27,6 +27,20 @@ minetest.register_node("mg:savannaleaves", {
 	sounds = default.node_sound_leaves_defaults(),
 })
 
+minetest.register_node("mg:savannawood", {
+	description = "Savannawood Planks",
+	tiles = {"mg_dry_wood.png"},
+	groups = {choppy=2,oddly_breakable_by_hand=2,flammable=3,wood=1},
+	sounds = default.node_sound_wood_defaults(),
+})
+
+minetest.register_craft({
+	output = 'mg:savannawood 4',
+	recipe = {
+		{'mg:savannatree'},
+	}
+})
+
 minetest.register_node("mg:savannasapling", {
 	description = "Savanna Sapling",
 	drawtype = "plantlike",
@@ -99,6 +113,20 @@ minetest.register_node("mg:pineleaves", {
 		}
 	},
 	sounds = default.node_sound_leaves_defaults(),
+})
+
+minetest.register_node("mg:pinewood", {
+	description = "Pine Planks",
+	tiles = {"mg_pine_wood.png"},
+	groups = {choppy=2,oddly_breakable_by_hand=2,flammable=3,wood=1},
+	sounds = default.node_sound_wood_defaults(),
+})
+
+minetest.register_craft({
+	output = 'mg:pinewood 4',
+	recipe = {
+		{'mg:pinetree'},
+	}
 })
 
 minetest.register_node("mg:pinesapling", {
