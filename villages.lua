@@ -4,12 +4,12 @@ function village_at_point(minp, noise1)
 	for zi = -2, 0 do
 		if xi~=0 or zi~=0 then
 			local pi = PseudoRandom(get_bseed({x=minp.x+80*xi, z=minp.z+80*zi})) 
-			if pi:next(1,400)<=10 then return 0,0,0,0 end
+			if pi:next(1,400)<=28 then return 0,0,0,0 end
 		end
 	end
 	end
 	local pr = PseudoRandom(get_bseed(minp))
-	if pr:next(1,400)>10 then return 0,0,0,0 end
+	if pr:next(1,400)>28 then return 0,0,0,0 end
 	local x = pr:next(minp.x, minp.x+79)
 	local z = pr:next(minp.z, minp.z+79)
 	if noise1:get2d({x=x, y=z})<0 then return 0,0,0,0 end
