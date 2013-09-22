@@ -50,13 +50,16 @@ local function choose_building(l, pr)
 	return btype
 end
 
-local function choose_building_rot(l, pr)
+local function choose_building_rot(l, pr, orient)
 	local btype = choose_building(l, pr)
 	local rotation
 	if buildings[btype].no_rotate then
 		rotation = 0
 	else
-		rotation = pr:next(0, 3)
+		if buildings[btype].orients == nil then
+			buildings[btype].orients = {0,1,2,3}
+		end
+		rotation = (orient+buildings[btype].orients[pr:next(1, #buildings[btype].orients)])%4
 	end
 	bsizex = buildings[btype].sizex
 	bsizez = buildings[btype].sizez
@@ -91,6 +94,14 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 	local rzz = rz
 	local mx, m2x, mz, m2z
 	mx, m2x, mz, m2z = rx, rx, rz, rz
+	local orient1, orient2
+	if rdx == 0 then
+		orient1 = 0
+		orient2 = 2
+	else
+		orient1 = 3
+		orient2 = 1
+	end
 	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
 		if roadsize > 1 and pr:next(1, 4) == 1 then
 			--generate_road(vx, vz, vs, vh, l, pr, roadsize-1, rx, rz, math.abs(rdz), math.abs(rdx))
@@ -103,7 +114,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 		--else
 			::loop::
 			if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then goto exit1 end
-			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr)
+			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient1)
 			local bx = rx + math.abs(rdz)*(roadsize+1) - when(rdx==-1, bsizex-1, 0)
 			local bz = rz + math.abs(rdx)*(roadsize+1) - when(rdz==-1, bsizez-1, 0)
 			if not placeable(bx, bz, bsizex, bsizez, l) or not inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then--dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
@@ -137,7 +148,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 		--else
 			::loop::
 			if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then goto exit2 end
-			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr)
+			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient2)
 			local bx = rx - math.abs(rdz)*(bsizex+roadsize) - when(rdx==-1, bsizex-1, 0)
 			local bz = rz - math.abs(rdx)*(bsizez+roadsize) - when(rdz==-1, bsizez-1, 0)
 			if not placeable(bx, bz, bsizex, bsizez, l) or not inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then--dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
