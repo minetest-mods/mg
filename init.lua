@@ -74,6 +74,7 @@ end
 
 c_air = minetest.get_content_id("air")
 c_ignore = minetest.get_content_id("ignore")
+c_water = minetest.get_content_id("default:water_source")
 
 local function add_leaves(data, vi, c_leaves)
 	if data[vi]==c_air or data[vi]==c_ignore then
@@ -491,7 +492,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	
 	local va = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
-	generate_vein(c_air,c_ignore,minp,maxp,1234, {maxhdistance=70, maxvdistance = 70, maxheight=-100,
+	generate_vein(c_air,c_ignore,minp,maxp,1234, {maxhdistance=70, maxvdistance = 70, maxheight=-3,
 		seglenghtn=15, seglenghtdev=6, segincln=0.2, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=5,
 		numbranchesn = 2, numbranchesdev = 0, mothersizen = -1, mothersizedev = 0, sizen = 100, sizedev = 30,
 		radius = 2.3}, data, a, va)
