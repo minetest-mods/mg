@@ -1,3 +1,11 @@
+local function numk(tbl)
+	local i = 0
+	for a, b in pairs(tbl) do
+		i = i + 1
+	end
+	return o
+end
+
 function import_scm(scm)
 	local f, err = io.open(minetest.get_modpath("mg").."/schems/"..scm..".we", "r")
 	if not f then
@@ -48,7 +56,7 @@ function import_scm(scm)
 			ent.meta = {fields={}, inventory={}}
 		end
 		local paramtype2 = minetest.registered_nodes[ent.name].paramtype2
-		if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" and #ent.meta.fields == 0 and #ent.meta.inventory == 0 then
+		if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" and numk(ent.meta.fields) == 0 and numk(ent.meta.inventory) == 0 then
 			scm[ent.y][ent.x][ent.z] = minetest.get_content_id(ent.name)
 		else
 			if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" then
