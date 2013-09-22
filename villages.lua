@@ -1,4 +1,4 @@
-function village_at_point(minp)
+function village_at_point(minp, noise1)
 	local bseed
 	for xi = -2, 2 do
 	for zi = -2, 0 do
@@ -12,6 +12,7 @@ function village_at_point(minp)
 	if pr:next(1,400)>10 then return 0,0,0,0 end
 	local x = pr:next(minp.x, minp.x+79)
 	local z = pr:next(minp.z, minp.z+79)
+	if noise1:get2d({x=x, y=z})<0 then return 0,0,0,0 end
 	local size = pr:next(20, 40)
 	local height = pr:next(5, 20)
 	print("A village spawned at: x="..x..", z="..z)

@@ -245,10 +245,15 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local treemin = {x=emin.x, y=minp.y, z=emin.z}
 	local treemax = {x=emax.x, y=maxp.y, z=emax.z}
 	
+	local noise1 = minetest.get_perlin(12345, 6, 0.5, 256)
+	local noise2 = minetest.get_perlin(56789, 6, 0.5, 256)
+	local noise3 = minetest.get_perlin(42, 3, 0.5, 32)
+	local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
+	
 	local vx,vz,vs,vh
 	for xi = -1, 1 do
 	for zi = -1, 1 do
-		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80})
+		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80}, noise1)
 		if vs ~= 0 then goto out end
 	end
 	end
@@ -258,10 +263,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local pr = PseudoRandom(get_bseed(minp))
 	
 	local village_noise = minetest.get_perlin(7635, 6, 0.5, 256)
-	local noise1 = minetest.get_perlin(12345, 6, 0.5, 256)
-	local noise2 = minetest.get_perlin(56789, 6, 0.5, 256)
-	local noise3 = minetest.get_perlin(42, 3, 0.5, 32)
-	local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
 	
 	local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
 	local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
