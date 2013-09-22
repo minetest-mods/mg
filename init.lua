@@ -550,6 +550,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		elseif above_top == c_pinesapling then
 			if not in_village then
 				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, c_snow, pr)
+			else
+				if y+1<=maxp.y and y+1>=minp.y then
+        				local vi = a:index(x, y+1, z)
+        				data[vi] = c_snow
+				end
 			end
 		elseif above_top == c_cactus then
 			if not in_village then

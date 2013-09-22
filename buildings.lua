@@ -4,6 +4,7 @@ local S = minetest.get_content_id("farming:soil_wet")
 local WH = minetest.get_content_id("farming:wheat_8")
 local CO = minetest.get_content_id("farming:cotton_8")
 local A = minetest.get_content_id("air")
+local I = minetest.get_content_id("ignore")
 local G = minetest.get_content_id("default:glass")
 local C = minetest.get_content_id("default:cobble")
 local T = minetest.get_content_id("default:tree")
@@ -150,24 +151,24 @@ local house = {
 
 local lamp = {
 	{
-		{A,  A, A},
-		{A, FW, A},
-		{A,  A, A},
+		{I,  I, I},
+		{I, FW, I},
+		{I,  I, I},
 	},
 	{
-		{A,  A, A},
-		{A, FW, A},
-		{A,  A, A},
+		{I,  I, I},
+		{I, FW, I},
+		{I,  I, I},
 	},
 	{
-		{A,  A, A},
-		{A, FW, A},
-		{A,  A, A},
+		{I,  I, I},
+		{I, FW, I},
+		{I,  I, I},
 	},
 	{
-		{   A, TRXM,    A},
+		{   I, TRXM,    I},
 		{TRZP,   WG, TRZM},
-		{   A, TRXP,    A},
+		{   I, TRXP,    I},
 	},
 }
 
@@ -241,9 +242,9 @@ local well = {
 }
 
 buildings = {
-	{sizex=7, sizez=7, yoff= 0, ysize= 9, scm=house},
-	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field},
-	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field_cotton},
-	{sizex=3, sizez=3, yoff= 1, ysize= 4, scm=lamp, chance=5, no_rotate=true},
-	{sizex=4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1},
+	{sizex=7, sizez=7, yoff= 0, ysize= 9, scm=house, weight = 5},
+	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field, weight = 5},
+	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field_cotton, weight = 5},
+	{sizex=3, sizez=3, yoff= 1, ysize= 4, scm=lamp, weight = 1, no_rotate=true},
+	{sizex=4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1, weight = 5},
 }

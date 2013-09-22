@@ -25,14 +25,30 @@ end
 
 local function generate_bpos(vx, vz, vs, vh, pr)
 	local l={}
+	local total_weight = 0
+	for _, i in ipairs(buildings) do
+		total_weight = total_weight+i.weight
+		i.max_weight = total_weight
+	end
+	local multiplier = 3000/total_weight
+	for _,i in ipairs(buildings) do
+		i.max_weight = i.max_weight*multiplier
+	end
 	for i=1, 100 do
 		bx = pr:next(vx-vs, vx+vs)
 		bz = pr:next(vz-vs, vz+vs)
 		::choose::
-		btype = pr:next(1, #buildings)
+		--[[btype = pr:next(1, #buildings)
 		if buildings[btype].chance ~= nil then
 			if pr:next(1, buildings[btype].chance) ~= 1 then
 				goto choose
+			end
+		end]]
+		p = pr:next(1, 3000)
+		for b, i in ipairs(buildings) do
+			if i.max_weight > p then
+				btype = b
+				break
 			end
 		end
 		if buildings[btype].pervillage ~= nil then
@@ -82,7 +98,7 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 			t = scm[yy][xx][zz]
 			if type(t) == "table" then
 				table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=ax, y=ay, z=az},})
-			else
+			elseif t~=c_ignore then
 				data[a:index(ax, ay, az)] = t
 			end
 		end
