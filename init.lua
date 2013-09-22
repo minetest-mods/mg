@@ -474,8 +474,14 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				top = c_dirt_snow
 				top_layer = c_dirt
 				second_layer = c_stone
-				if biome_humidity>-0.4 and pr:next(1, 40) == 1 then
-					above_top = c_pinesapling
+				if biome_humidity>-0.4 then
+					if pr:next(1, 40) == 1 then
+						above_top = c_pinesapling
+					end
+				else
+					if pr:next(1, 500) == 1 then
+						above_top = c_pinesapling
+					end
 				end
 			else
 				if biome_humidity<-0.4 then
