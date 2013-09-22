@@ -668,7 +668,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	for _, n in pairs(to_add) do
 		minetest.set_node(n.pos, n.node)
 		if n.meta ~= nil then
-			meta = minetest.get_meta(pos)
+			meta = minetest.get_meta(n.pos)
 			meta:from_table(n.meta)
 		end
 	end

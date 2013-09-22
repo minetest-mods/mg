@@ -1,4 +1,4 @@
-local function import_scm(scm)
+function import_scm(scm)
 	local f, err = io.open(minetest.get_modpath("mg").."/schems/"..scm..".we", "r")
 	if not f then
 		error("Could not open schematic '" .. scm .. ".we': " .. err)
@@ -23,6 +23,9 @@ local function import_scm(scm)
 	local maxx, maxy, maxz = -1, -1, -1
 	for i = 1, #nodes do
 		local ent = nodes[i]
+	    ent.x = ent.x + 1
+	    ent.y = ent.y + 1
+	    ent.z = ent.z + 1
 		if ent.x > maxx then
 			maxx = ent.x
 		end
@@ -58,7 +61,7 @@ local function import_scm(scm)
 					scm[y] = {}
 				end
 				if scm[y][x] == nil then
-					scm[y][y] = {}
+					scm[y][x] = {}
 				end
 				if scm[y][x][z] == nil then
 					scm[y][x][z] = c_ignore
