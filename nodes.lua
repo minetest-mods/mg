@@ -129,7 +129,7 @@ minetest.register_abm({
 		local data = vm:get_data()
 		local c_tree = minetest.get_content_id("mg:pinetree")
 		local c_leaves = minetest.get_content_id("mg:pineleaves")
-		add_pinetree(data, a, pos.x, pos.y, pos.z, minp, maxp, c_tree, c_leaves, PseudoRandom(math.random(1,100000)))
+		add_pinetree(data, a, pos.x, pos.y, pos.z, minp, maxp, c_tree, c_leaves, c_air, PseudoRandom(math.random(1,100000)))
 		vm:set_data(data)
 		vm:write_to_map(data)
 	end

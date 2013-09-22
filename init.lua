@@ -76,8 +76,8 @@ c_air = minetest.get_content_id("air")
 c_ignore = minetest.get_content_id("ignore")
 c_water = minetest.get_content_id("default:water_source")
 
-local function add_leaves(data, vi, c_leaves)
-	if data[vi]==c_air or data[vi]==c_ignore then
+local function add_leaves(data, vi, c_leaves, c_snow)
+	if data[vi]==c_air or data[vi]==c_ignore or data[vi] == c_snow then
 		data[vi] = c_leaves
 	end
 end
@@ -99,7 +99,7 @@ function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	for i=1,8 do
 		xi = pr:next(x-2, x+1)
 		yi = pr:next(maxy-1, maxy+1)
-		zi = pr:next(z-1, z+1)
+		zi = pr:next(z-2, z+1)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
@@ -199,7 +199,7 @@ function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	data[vi] = c_tree
 end
 
-function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr)
 	th = pr:next(9, 13)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
@@ -210,7 +210,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy-1) do
 	for zz=math.max(minp.z, z-3), math.min(maxp.z, z+3) do
 		if pr:next(1, 100) < 80 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
 	end
@@ -219,7 +220,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	for yy=math.max(minp.y, maxy), math.min(maxp.y, maxy) do
 	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
 		if pr:next(1, 100) < 85 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
 	end
@@ -228,12 +230,14 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	for yy=math.max(minp.y, maxy+1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
 		if pr:next(1, 100) < 90 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
 	end
 	end
-	add_leaves(data, a:index(x, maxy+1, z), c_leaves)
+	add_leaves(data, a:index(x, maxy+1, z), c_leaves, c_snow)
+	add_leaves(data, a:index(x, maxy+2, z), c_snow)
 	my = 0
 	for i=1,20 do
 		xi = pr:next(x-3, x+2)
@@ -245,7 +249,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
 			if minp.y<=yy and maxp.y>=yy then
-				add_leaves(data, a:index(xx, yy, zz), c_leaves)
+				add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+				add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 			end
 		end
 		end
@@ -254,7 +259,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	for yy=math.max(minp.y, my+1), math.min(maxp.y, my+1) do
 	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
 		if pr:next(1, 100) < 85 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
 	end
@@ -263,7 +269,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	for yy=math.max(minp.y, my+2), math.min(maxp.y, my+2) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
 		if pr:next(1, 100) < 90 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
 	end
@@ -371,7 +378,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_sandstone  = minetest.get_content_id("default:sandstone")
 	local c_desert_sand  = minetest.get_content_id("default:desert_sand")
 	local c_desert_stone  = minetest.get_content_id("default:desert_stone")
-	local c_snow  = minetest.get_content_id("default:snow")
 	local c_snowblock  = minetest.get_content_id("default:snowblock")
 	local c_cactus  = minetest.get_content_id("default:cactus")
 	local c_grass_1  = minetest.get_content_id("default:grass_1")
@@ -466,6 +472,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				top = c_dirt_snow
 				top_layer = c_dirt
 				second_layer = c_stone
+				if biome_humidity>-0.4 and pr:next(1, 40) == 1 then
+					above_top = c_pinesapling
+				end
 			else
 				if biome_humidity<-0.4 then
 					if pr:next(1, 250) == 1 then
@@ -532,7 +541,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			end
 		elseif above_top == c_pinesapling then
 			if not in_village then
-				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, pr)
+				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, c_snow, pr)
 			end
 		elseif above_top == c_cactus then
 			if not in_village then
