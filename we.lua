@@ -23,9 +23,9 @@ function import_scm(scm)
 	local maxx, maxy, maxz = -1, -1, -1
 	for i = 1, #nodes do
 		local ent = nodes[i]
-	    ent.x = ent.x + 1
-	    ent.y = ent.y + 1
-	    ent.z = ent.z + 1
+		ent.x = ent.x + 1
+		ent.y = ent.y + 1
+		ent.z = ent.z + 1
 		if ent.x > maxx then
 			maxx = ent.x
 		end
