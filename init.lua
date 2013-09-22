@@ -498,7 +498,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		seglenghtn=15, seglenghtdev=6, segincln=0.2, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=5,
 		numbranchesn = 2, numbranchesdev = 0, mothersizen = -1, mothersizedev = 0, sizen = 100, sizedev = 30,
 		radius = 2.3}, data, a, va)
-	generate_vein(c_clay,c_dirt,minp,maxp,6, {maxvdistance=10.5, maxheight=0, minheight=-50,
+	generate_vein(c_clay,c_dirt,minp,maxp,6, {maxvdistance=10.5, maxheight=0, minheight=-50, sizen=50, sizedev=20,
 		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=1,
 		radius = 1.5}, data, a, va)
         generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
