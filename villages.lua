@@ -27,6 +27,7 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 	local l={}
 	local total_weight = 0
 	for _, i in ipairs(buildings) do
+		if i.weight == nil then i.weight = 1 end
 		total_weight = total_weight+i.weight
 		i.max_weight = total_weight
 	end

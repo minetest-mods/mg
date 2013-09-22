@@ -242,9 +242,9 @@ local well = {
 }
 
 buildings = {
-	{sizex=7, sizez=7, yoff= 0, ysize= 9, scm=house, weight = 5},
-	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field, weight = 5},
-	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field_cotton, weight = 5},
-	{sizex=3, sizez=3, yoff= 1, ysize= 4, scm=lamp, weight = 1, no_rotate=true},
-	{sizex=4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1, weight = 5},
+	{sizex=7, sizez=7, yoff= 0, ysize= 9, scm=house},
+	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field},
+	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field_cotton},
+	{sizex=3, sizez=3, yoff= 1, ysize= 4, scm=lamp, weight = 1/5, no_rotate=true},
+	{sizex=4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1},
 }
