@@ -303,6 +303,19 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 		scm = binfo.scm
 	end
 	scm = rotate(scm, pos.brotate)
+	local c_ignore = minetest.get_content_id("ignore")
+	local c_air = minetest.get_content_id("air")
+	if binfo.force_air ~= nil then
+		for x = 0, pos.bsizex-1 do
+		for y = 0, binfo.ysize-1 do
+		for z = 0, pos.bsizez-1 do
+			if scm[y+1][x+1][z+1] == c_ignore then
+				scm[y+1][x+1][z+1] = c_air
+			end
+		end
+		end
+		end
+	end
 	local t
 	for x = 0, pos.bsizex-1 do
 	for y = 0, binfo.ysize-1 do
@@ -312,7 +325,7 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 			t = scm[y+1][x+1][z+1]
 			if type(t) == "table" then
 				table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=ax, y=ay, z=az},})
-			elseif t~=c_ignore then
+			elseif t ~= c_ignore then
 				data[a:index(ax, ay, az)] = t
 			end
 		end
