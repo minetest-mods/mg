@@ -13,7 +13,8 @@ local TRXM = {node={name="default:torch", param2=2}}
 local TRXP = {node={name="default:torch", param2=3}}
 local TRZM = {node={name="default:torch", param2=5}}
 local TRZP = {node={name="default:torch", param2=4}}
-local field = {
+
+local field_cotton = {
 	{
 		{S, WS, S, S, WS, S, S, WS, S},
 		{S, WS, S, S, WS, S, S, WS, S},
@@ -38,7 +39,7 @@ local field = {
 	},
 }
 
-local field_cotton = {
+local field = {
 	{
 		{S, WS, S, S, WS, S, S, WS, S},
 		{S, WS, S, S, WS, S, S, WS, S},
