@@ -1,5 +1,3 @@
-perlinore2={}
-
 function in_cuboid(pos, minp, maxp)
 	return (pos.x>=minp.x and pos.y>= minp.y and pos.z>=minp.z and pos.x<=maxp.x and pos.y<=maxp.y and pos.z<=maxp.z)
 end
@@ -18,10 +16,7 @@ function draw_sphere(name, wherein, center, radius, data, a, insideva)
 	pos0.y=center.y+y
 	for z=-radius, radius do
 		pos0.z=center.z+z
-		--if center.y == -129 and center.x == -145 and name == c_air then print(dump(pos0)) end
-		--if pos0.y == -130 and name == c_air then print(dump(pos0)) end
 		if x*x+y*y+z*z<=rad2 and insideva:containsp(pos0) and ((wherein == c_ignore and data[a:indexp(pos0)] ~= c_water) or data[a:indexp(pos0)] == wherein) then
-			--if center.y == -129 and center.x == -145 and name == c_air then print(dump(pos0)) end
 			data[a:indexp(pos0)] = name
 		end
 	end
@@ -30,7 +25,6 @@ function draw_sphere(name, wherein, center, radius, data, a, insideva)
 end
 
 function place_segment(name, wherein, pos1, pos2, minp, maxp, radius, data, a, insideva)
-	--if pos1.y == -129 and pos1.x == -145 and name == c_air then print(dump(pos1), dump(pos2), dump(minp), dump(maxp), dump(insideva)) end
 	local d={x=pos2.x-pos1.x, y=pos2.y-pos1.y, z=pos2.z-pos1.z}
 	local N=math.max(math.abs(d.x),math.abs(d.y),math.abs(d.z))
 	local s={x=d.x/N,y=d.y/N,z=d.z/N}
@@ -64,7 +58,6 @@ function generate_vein_segment(name, wherein, minp, maxp, pr, pos, angle, rem_si
 	if not in_cuboid(end_pos, minp, maxp) then return end
 	local new_angle=(math.pi*pr:next(-turnangle,turnangle)/180)+angle
 	generate_vein_segment(name, wherein, minp, maxp, pr, end_pos, new_angle, rem_size-L, options, data, a, insideva)
-	--if pos.y == -129 and name == c_air then print(dump(pos), dump(end_pos), dump(minp), dump(maxp), dump(insideva)) end
 	local numforks=math.floor(fork_chance/100)+1
 	fork_chance=fork_chance/numforks
 	if pr:next(1,100)<=fork_chance then
@@ -129,7 +122,6 @@ function generate_vein(name, wherein, minp, maxp, seeddiff, options, data, a, in
 		
 			local minpos = {x=vein_pos.x-maxhdistance,y=vein_pos.y-maxvdistance,z=vein_pos.z-maxhdistance}
 			local maxpos = {x=vein_pos.x+maxhdistance,y=vein_pos.y+maxvdistance,z=vein_pos.z+maxhdistance}
-			--if name == c_air then print(min_y, vein_pos.y, max_y, minetest.pos_to_string(minpos), minetest.pos_to_string(maxpos)) end
 			for i=1,numbranches do
 				local start_angle=math.pi*pr:next(0,359)/180
 				local size=pr:next(sizen-sizedev,sizen+sizedev)
