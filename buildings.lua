@@ -12,6 +12,7 @@ local WG = minetest.get_content_id("wool:grey")
 local FW = minetest.get_content_id("default:fence_wood")
 local WF = minetest.get_content_id("default:water_flowing")
 local BS = minetest.get_content_id("default:bookshelf")
+local SW = minetest.get_content_id("stairs:slab_wood")
 local TRXM = {node={name="default:torch", param2=2}, rotation = "wallmounted"}
 local TRXP = {node={name="default:torch", param2=3}, rotation = "wallmounted"}
 local TRZM = {node={name="default:torch", param2=5}, rotation = "wallmounted"}
@@ -19,6 +20,7 @@ local TRZP = {node={name="default:torch", param2=4}, rotation = "wallmounted"}
 local TRU = {node={name="default:torch", param2=1}}
 local SWXP = {node={name="stairs:stair_wood", param2=3}, rotation = "facedir"}
 local SWXM = {node={name="stairs:stair_wood", param2=1}, rotation = "facedir"}
+local SWZP = {node={name="stairs:stair_wood", param2=0}, rotation = "facedir"}
 local SWZM = {node={name="stairs:stair_wood", param2=2}, rotation = "facedir"}
 
 
@@ -128,31 +130,31 @@ local house = {
 		{W, W, W, W, W, W, W},
 	},
 	{
-		{I, I, I, I, I, I, I},
-		{I, W, W, W, W, W, I},
-		{I, W, I, I, I, W, I},
-		{I, W, I, I, I, W, I},
-		{I, W, I, I, I, W, I},
-		{I, W, W, W, W, W, I},
-		{I, I, I, I, I, I, I},
+		{  SW, SWXM, SWXM, SWXM, SWXM, SWXM,   SW},
+		{SWZP,    W,    W,    W,    W,    W, SWZM},
+		{SWZP,    W,    I,    I,    I,    W, SWZM},
+		{SWZP,    W,    I,    I,    I,    W, SWZM},
+		{SWZP,    W,    I,    I,    I,    W, SWZM},
+		{SWZP,    W,    W,    W,    W,    W, SWZM},
+		{  SW, SWXP, SWXP, SWXP, SWXP, SWXP,   SW},
 	},
 	{
-		{I, I, I, I, I, I, I},
-		{I, I, I, I, I, I, I},
-		{I, I, W, W, W, I, I},
-		{I, I, W, I, W, I, I},
-		{I, I, W, W, W, I, I},
-		{I, I, I, I, I, I, I},
-		{I, I, I, I, I, I, I},
+		{I,    I,    I,    I,    I,    I, I},
+		{I,   SW, SWXM, SWXM, SWXM,   SW, I},
+		{I, SWZP,    W,    W,    W, SWZM, I},
+		{I, SWZP,    W,    I,    W, SWZM, I},
+		{I, SWZP,    W,    W,    W, SWZM, I},
+		{I,   SW, SWXP, SWXP, SWXP,   SW, I},
+		{I,    I,    I,    I,    I,    I, I},
 	},
 	{
-		{I, I, I, I, I, I, I},
-		{I, I, I, I, I, I, I},
-		{I, I, I, I, I, I, I},
-		{I, I, I, W, I, I, I},
-		{I, I, I, I, I, I, I},
-		{I, I, I, I, I, I, I},
-		{I, I, I, I, I, I, I},
+		{I, I,    I,    I,    I, I, I},
+		{I, I,    I,    I,    I, I, I},
+		{I, I,   SW, SWXM,   SW, I, I},
+		{I, I, SWZP,    W, SWZM, I, I},
+		{I, I,   SW, SWXP,   SW, I, I},
+		{I, I,    I,    I,    I, I, I},
+		{I, I,    I,    I,    I, I, I},
 	},
 }
 
@@ -309,25 +311,25 @@ local smallhouse = {
 		{T, W, A, W, T},
 	},
 	{
-		{T, W, W, W, T},
+		{W, W, W, W, W},
 		{W, A, A, A, W},
 		{W, A, A, A, W},
 		{W, A, A, A, W},
-		{T, W, W, W, T},
+		{W, W, W, W, W},
 	},
 	{
-		{I, I, I, I, I},
-		{I, W, W, W, I},
-		{I, W, A, W, I},
-		{I, W, W, W, I},
-		{I, I, I, I, I},
+		{  SW, SWXM, SWXM, SWXM,   SW},
+		{SWZP,    W,    W,    W, SWZM},
+		{SWZP,    W,    A,    W, SWZM},
+		{SWZP,    W,    W,    W, SWZM},
+		{  SW, SWXP, SWXP, SWXP,   SW},
 	},
 	{
-		{I, I, I, I, I},
-		{I, I, I, I, I},
-		{I, I, W, I, I},
-		{I, I, I, I, I},
-		{I, I, I, I, I},
+		{I,    I,    I,    I, I},
+		{I,   SW, SWXM,   SW, I},
+		{I, SWZP,    W, SWZM, I},
+		{I,   SW, SWXP,   SW, I},
+		{I,    I,    I,    I, I},
 	},
 }
 
@@ -414,12 +416,12 @@ local house_w_garden = {
 		{I, I, I, I, I, I},
 		{I, I, I, I, I, I},
 		{I, I, I, I, I, I},
-		{I, I, I, I, I, I},
-		{I, W, W, W, W, I},
-		{I, W, A, A, W, I},
-		{I, W, A, A, W, I},
-		{I, W, W, W, W, I},
-		{I, I, I, I, I, I},
+		{SW, SWXM, SWXM, SWXM, SWXM, SW},
+		{SWZP, W, W, W, W, SWZM},
+		{SWZP, W, A, A, W, SWZM},
+		{SWZP, W, A, A, W, SWZM},
+		{SWZP, W, W, W, W, SWZM},
+		{SW, SWXP, SWXP, SWXP, SWXP, SW},
 		{I, I, I, I, I, I},
 	},
 	{
@@ -430,10 +432,10 @@ local house_w_garden = {
 		{I, I, I, I, I, I},
 		{I, I, I, I, I, I},
 		{I, I, I, I, I, I},
-		{I, I, I, I, I, I},
-		{I, I, W, W, I, I},
-		{I, I, W, W, I, I},
-		{I, I, I, I, I, I},
+		{I, SW, SWXM, SWXM, SW, I},
+		{I, SWZP, W, W, SWZM, I},
+		{I, SWZP, W, W, SWZM, I},
+		{I, SW, SWXP, SWXP, SW, I},
 		{I, I, I, I, I, I},
 		{I, I, I, I, I, I},
 	},
