@@ -2,6 +2,7 @@ local W = minetest.get_content_id("default:wood")
 local WS = minetest.get_content_id("default:water_source")
 local S = minetest.get_content_id("farming:soil_wet")
 local WH = minetest.get_content_id("farming:wheat_8")
+local CO = minetest.get_content_id("farming:cotton_8")
 local A = minetest.get_content_id("air")
 local G = minetest.get_content_id("default:glass")
 local C = minetest.get_content_id("default:cobble")
@@ -13,6 +14,31 @@ local TRXP = {node={name="default:torch", param2=3}}
 local TRZM = {node={name="default:torch", param2=5}}
 local TRZP = {node={name="default:torch", param2=4}}
 local field = {
+	{
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+		{S, WS, S, S, WS, S, S, WS, S},
+	},
+	{
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+		{CO, A, CO, CO, A, CO, CO, A, CO},
+	},
+}
+
+local field_cotton = {
 	{
 		{S, WS, S, S, WS, S, S, WS, S},
 		{S, WS, S, S, WS, S, S, WS, S},
@@ -216,6 +242,7 @@ local well = {
 buildings = {
 	{sizex=7, sizez=7, yoff= 0, ysize= 9, scm=house},
 	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field},
+	{sizex=9, sizez=9, yoff= 0, ysize= 2, scm=field_cotton},
 	{sizex=3, sizez=3, yoff= 1, ysize= 4, scm=lamp, chance=5, no_rotate=true},
 	{sizex=4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1},
 }
