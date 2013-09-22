@@ -493,7 +493,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				elseif biome_humidity>0.4 then
 					if pr:next(1, 250) == 1 then
 						above_top = c_sapling
-					elseif pr:next(1, 20) == 1 then
+					elseif pr:next(1, 3) == 1 then
 						above_top = c_grasses[pr:next(3,5)]
 					end
 				else
