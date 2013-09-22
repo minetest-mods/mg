@@ -77,25 +77,31 @@ end
 
 local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	local binfo = buildings[pos.btype]
-	if binfo.no_rotate == nil then
-		rot = pr:next(1, 2)
-		if rot == 1 then
-			pfunc = function(x,y,z) return x,y,z end
-		elseif rot == 2 then
-			pfunc = function(x,y,z) return z,y,x end
-		end
-	else
-		pfunc = function(x,y,z) return x,y,z end
-	end
 	local scm = binfo.scm
+	local bsizex, bsizey, bsizez
+	bsizex, bsizey, bsizez = binfo.sizex, binfo.ysize, binfo.sizez
+	if binfo.no_rotate == nil then
+		rot = pr:next(1, 4)
+		if rot == 1 then
+			--do nothing
+		elseif rot == 2 then
+			scm = rotate(scm, 1)
+			bsizex, bsizey, bsizez = binfo.sizez, binfo.ysize, binfo.sizex
+		elseif rot == 3 then
+			scm = rotate(scm, 2)
+		elseif rot == 4 then
+			scm = rotate(scm, 3)
+			bsizex, bsizey, bsizez = binfo.sizez, binfo.ysize, binfo.sizex
+		end
+	end
 	local xx, yy, zz
 	local t
-	for x = 0, pos.bsizex-1 do
-	for y = 0, binfo.ysize-1 do
-	for z = 0, pos.bsizez-1 do
+	for x = 0, bsizex-1 do
+	for y = 0, bsizey-1 do
+	for z = 0, bsizez-1 do
 		ax, ay, az = pos.x+x, pos.y+y+binfo.yoff, pos.z+z
 		if (ax >= minp.x and ax <= maxp.x) and (ay >= minp.y and ay <= maxp.y) and (az >= minp.z and az <= maxp.z) then
-			xx, yy, zz = pfunc(x+1, y+1, z+1)
+			xx, yy, zz = x+1, y+1, z+1
 			t = scm[yy][xx][zz]
 			if type(t) == "table" then
 				table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=ax, y=ay, z=az},})
