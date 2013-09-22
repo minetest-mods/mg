@@ -308,6 +308,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
 	local c_jungle_grass  = minetest.get_content_id("default:junglegrass")
 	local c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
+	local c_papyrus  = minetest.get_content_id("default:papyrus")
 	local c_clay  = minetest.get_content_id("default:clay")
 	
 	local c_iron  = minetest.get_content_id("default:stone_with_iron")
@@ -422,6 +423,13 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		if y<0 then
 			above_top = c_air
 		end
+		if y==0 then
+			if top == c_grass then
+				if pr:next(1, 10) == 1 then
+					above_top = c_papyrus
+				end
+			end
+		end
 
 		if y<=maxp.y and y>=minp.y then
         		local vi = a:index(x, y, z)
@@ -453,6 +461,13 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				ch = pr:next(1, 4)
 				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
 					data[a:index(x, yy, z)] = c_cactus
+				end
+			end
+		elseif above_top == c_papyrus then
+			if not in_village then
+				ch = pr:next(2, 4)
+				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
+					data[a:index(x, yy, z)] = c_papyrus
 				end
 			end
 		else
