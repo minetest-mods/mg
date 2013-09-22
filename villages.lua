@@ -19,8 +19,12 @@ function village_at_point(minp, noise1)
 	return x,z,size,height
 end
 
-local function dist_center2(ax, bsizex, az, bsizez)
-	return math.max((ax+bsizex)*(ax+bsizex),ax*ax)+math.max((az+bsizez)*(az+bsizez),az*az)
+--local function dist_center2(ax, bsizex, az, bsizez)
+--	return math.max((ax+bsizex)*(ax+bsizex),ax*ax)+math.max((az+bsizez)*(az+bsizez),az*az)
+--end
+
+local function inside_village2(bx, sx, bz, sz, vx, vz, vs, vnoise)
+	return inside_village(bx, bz, vx, vz, vs, vnoise) and inside_village(bx+sx, bz, vx, vz, vs, vnoise) and inside_village(bx, bz+sz, vx, vz, vs, vnoise) and inside_village(bx+sx, bz+sz, vx, vz, vs, vnoise)
 end
 
 local function choose_building(l, pr)
@@ -62,32 +66,47 @@ local function choose_building_rot(l, pr)
 	return btype, rotation, bsizex, bsizez
 end
 
-local function placeable(bx, bz, bsizex, bsizez, l)
+local function placeable(bx, bz, bsizex, bsizez, l, exclude_roads)
 	for _, a in ipairs(l) do
-		if math.abs(bx+bsizex/2-a.x-a.bsizex/2)<=(bsizex+a.bsizex)/2 and math.abs(bz+bsizez/2-a.z-a.bsizez/2)<=(bsizez+a.bsizez)/2 then return false end
+		if (a.btype ~= "road" or not exclude_roads) and math.abs(bx+bsizex/2-a.x-a.bsizex/2)<=(bsizex+a.bsizex)/2 and math.abs(bz+bsizez/2-a.z-a.bsizez/2)<=(bsizez+a.bsizez)/2 then return false end
 	end
 	return true
 end
 
-local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz)
+local function road_in_building(rx, rz, rdx, rdz, roadsize, l)
+	if rdx == 0 then
+		return not placeable(rx-roadsize+1, rz, 2*roadsize-2, 0, l, true)
+	else
+		return not placeable(rx, rz-roadsize+1, 0, 2*roadsize-2, l, true)
+	end
+end
+
+local function when(a, b, c)
+	if a then return b else return c end
+end
+
+local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, vnoise)
 	local calls_to_do = {}
 	local rxx = rx
 	local rzz = rz
 	local mx, m2x, mz, m2z
 	mx, m2x, mz, m2z = rx, rx, rz, rz
-	while (rx-vx)*(rx-vx)+(rz-vz)*(rz-vz) < vs*vs do
-		if roadsize > 1 and pr:next(1, 9) == 1 then
+	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
+		if roadsize > 1 and pr:next(1, 4) == 1 then
 			--generate_road(vx, vz, vs, vh, l, pr, roadsize-1, rx, rz, math.abs(rdz), math.abs(rdx))
 			calls_to_do[#calls_to_do+1] = {rx=rx+(roadsize - 1)*rdx, rz=rz+(roadsize - 1)*rdz, rdx=math.abs(rdz), rdz=math.abs(rdx)}
+			m2x = rx + (roadsize - 1)*rdx
+			m2z = rz + (roadsize - 1)*rdz
 			rx = rx + (2*roadsize - 1)*rdx
 			rz = rz + (2*roadsize - 1)*rdz
-		else
+		end
+		--else
 			::loop::
-			if (rx-vx)*(rx-vx)+(rz-vz)*(rz-vz) >= vs*vs then goto exit1 end
+			if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then goto exit1 end
 			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr)
-			local bx = rx + math.abs(rdz)*(roadsize+1)
-			local bz = rz + math.abs(rdx)*(roadsize+1)
-			if not placeable(bx, bz, bsizex, bsizez, l) or dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
+			local bx = rx + math.abs(rdz)*(roadsize+1) - when(rdx==-1, bsizex-1, 0)
+			local bz = rz + math.abs(rdx)*(roadsize+1) - when(rdz==-1, bsizez-1, 0)
+			if not placeable(bx, bz, bsizex, bsizez, l) or not inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then--dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
 				rx = rx + rdx
 				rz = rz + rdz
 				goto loop
@@ -97,24 +116,31 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz)
 			mx = rx - 2*rdx
 			mz = rz - 2*rdz
 			l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
-		end
+		--end
 	end
 	::exit1::
+	if road_in_building(rx, rz, rdx, rdz, roadsize, l) then
+		mx = rx - 2*rdx
+		mz = rz - 2*rdz
+	end
 	rx = rxx
 	rz = rzz
-	while (rx-vx)*(rx-vx)+(rz-vz)*(rz-vz) < vs*vs do
-		if roadsize > 1 and pr:next(1, 9) == 1 then
+	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
+		if roadsize > 1 and pr:next(1, 4) == 1 then
 			--generate_road(vx, vz, vs, vh, l, pr, roadsize-1, rx, rz, -math.abs(rdz), -math.abs(rdx))
 			calls_to_do[#calls_to_do+1] = {rx=rx+(roadsize - 1)*rdx, rz=rz+(roadsize - 1)*rdz, rdx=-math.abs(rdz), rdz=-math.abs(rdx)}
+			m2x = rx + (roadsize - 1)*rdx
+			m2z = rz + (roadsize - 1)*rdz
 			rx = rx + (2*roadsize - 1)*rdx
 			rz = rz + (2*roadsize - 1)*rdz
-		else
+		end
+		--else
 			::loop::
-			if (rx-vx)*(rx-vx)+(rz-vz)*(rz-vz) >= vs*vs then goto exit2 end
+			if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then goto exit2 end
 			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr)
-			local bx = rx - math.abs(rdz)*(bsizex+roadsize)
-			local bz = rz - math.abs(rdx)*(bsizez+roadsize)
-			if not placeable(bx, bz, bsizex, bsizez, l) or dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
+			local bx = rx - math.abs(rdz)*(bsizex+roadsize) - when(rdx==-1, bsizex-1, 0)
+			local bz = rz - math.abs(rdx)*(bsizez+roadsize) - when(rdz==-1, bsizez-1, 0)
+			if not placeable(bx, bz, bsizex, bsizez, l) or not inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then--dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
 				rx = rx + rdx
 				rz = rz + rdz
 				goto loop
@@ -124,16 +150,15 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz)
 			m2x = rx - 2*rdx
 			m2z = rz - 2*rdz
 			l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
-		end
+		--end
 	end
 	::exit2::
-	if rdx > 0 or rdz > 0 then
-		mx = math.max(mx, m2x)
-		mz = math.max(mz, m2z)
-	else
-		mx = math.min(mx, m2x)
-		mz = math.min(mz, m2z)
+	if road_in_building(rx, rz, rdx, rdz, roadsize, l) then
+		m2x = rx - 2*rdx
+		m2z = rz - 2*rdz
 	end
+	mx = rdx*math.max(rdx*mx, rdx*m2x)
+	mz = rdz*math.max(rdz*mz, rdz*m2z)
 	if rdx == 0 then
 		rxmin = rx - roadsize + 1
 		rxmax = rx + roadsize - 1
@@ -147,11 +172,11 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz)
 	end
 	l[#l+1] = {x=rxmin, y=vh, z=rzmin, btype="road", bsizex=rxmax-rxmin+1, bsizez=rzmax-rzmin+1, brotate = 0}
 	for _,i in ipairs(calls_to_do) do
-		generate_road(vx, vz, vs, vh, l, pr, roadsize-1, i.rx, i.rz, i.rdx, i.rdz)
+		generate_road(vx, vz, vs, vh, l, pr, roadsize-1, i.rx, i.rz, i.rdx, i.rdz, vnoise)
 	end
 end
 
-local function generate_bpos(vx, vz, vs, vh, pr)
+local function generate_bpos(vx, vz, vs, vh, pr, vnoise)
 	--[=[local l={}
 	local total_weight = 0
 	for _, i in ipairs(buildings) do
@@ -211,9 +236,13 @@ local function generate_bpos(vx, vz, vs, vh, pr)
 	end
 	return l]=]--
 	local l={}
-	local rx = vx-vs+4
+	local rx = vx-vs
 	local rz = vz
-	generate_road(vx, vz, vs, vh, l, pr, 3, rx, rz, 1, 0)
+	while inside_village(rx, rz, vx, vz, vs, vnoise) do
+		rx = rx - 1
+	end
+	rx = rx + 5
+	generate_road(vx, vz, vs, vh, l, pr, 3, rx, rz, 1, 0, vnoise)
 	return l
 	--[=[while rx1 < vx+vs do
 		local building = choose_building(l, pr)
@@ -279,13 +308,50 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	end
 end
 
-function generate_village(vx, vz, vs, vh, minp, maxp, data, a)
+local MIN_DIST = 5
+
+local function pos_far_buildings(x, z, l)
+	for _,a in ipairs(l) do
+		if a.x-MIN_DIST<=x and x<=a.x+a.bsizex+MIN_DIST and a.z-MIN_DIST<=z and z<=a.z+a.bsizez+MIN_DIST then
+			return false
+		end
+	end
+	return true
+end
+
+function generate_village(vx, vz, vs, vh, minp, maxp, data, a, vnoise, to_grow)
 	local seed = get_bseed({x=vx, z=vz})
 	local pr = PseudoRandom(seed)
-	local bpos = generate_bpos(vx, vz, vs, vh, pr)
+	local bpos = generate_bpos(vx, vz, vs, vh, pr, vnoise)
 	local extranodes = {}
 	for _, pos in ipairs(bpos) do
 		generate_building(pos, minp, maxp, data, a, pr, extranodes)
+	end
+	local pr = PseudoRandom(seed)
+	for _, g in ipairs(to_grow) do
+		if pos_far_buildings(g.x, g.z, bpos) then
+			if g.content == c_sapling then
+				add_tree(data, a, g.x, g.y, g.z, minp, maxp, c_tree, c_leaves, pr)
+			elseif g.content == c_junglesapling then
+				add_jungletree(data, a, g.x, g.y, g.z, minp, maxp, c_jungletree, c_jungleleaves, pr)
+			elseif g.content == c_savannasapling then
+				add_savannatree(data, a, g.x, g.y, g.z, minp, maxp, c_savannatree, c_savannaleaves, pr)
+			elseif g.content == "savannabush" then
+				add_savannabush(data, a, g.x, g.y, g.z, minp, maxp, c_savannatree, c_savannaleaves, pr)
+			elseif g.content == c_pinesapling then
+				add_pinetree(data, a, g.x, g.y, g.z, minp, maxp, c_pinetree, c_pineleaves, c_snow, pr)
+			elseif g.content == c_cactus then
+				ch = pr:next(0, 3)
+				for yy = math.max(g.y, minp.y), math.min(g.y+ch, maxp.y) do
+					data[a:index(x, yy, z)] = c_cactus
+				end
+			elseif g.content == c_papyrus then
+				ch = pr:next(1, 3)
+				for yy = math.max(g.y, minp.y), math.min(g.y+ch, maxp.y) do
+					data[a:index(x, yy, z)] = c_papyrus
+				end
+			end
+		end
 	end
 	return extranodes
 end

@@ -61,6 +61,10 @@ local function smooth_surface(x, z, vnoise, vx, vz, vs, vh, ...)
 	return surface_at_point(x, z, vn, vh, unpack({...}))
 end
 
+function inside_village(x, z, vx, vz, vs, vnoise)
+	return ((vnoise:get2d({x=x, y=z})-2)*20+(40/(vs*vs))*((x-vx)*(x-vx)+(z-vz)*(z-vz)))<=40
+end
+
 minetest.register_on_mapgen_init(function(mgparams)
 	wseed = math.floor(mgparams.seed/10000000000)
 end)
@@ -315,6 +319,51 @@ local function get_nearest_biome(biome_table, x, z)
 	end
 	return biome_table[k]
 end
+c_air  = minetest.get_content_id("air")
+c_grass  = minetest.get_content_id("default:dirt_with_grass")
+c_dry_grass  = minetest.get_content_id("mg:dirt_with_dry_grass")
+c_dirt_snow  = minetest.get_content_id("default:dirt_with_snow")
+c_snow  = minetest.get_content_id("default:snow")
+c_sapling  = minetest.get_content_id("default:sapling")
+c_tree  = minetest.get_content_id("default:tree")
+c_leaves  = minetest.get_content_id("default:leaves")
+c_junglesapling  = minetest.get_content_id("default:junglesapling")
+c_jungletree  = minetest.get_content_id("default:jungletree")
+c_jungleleaves  = minetest.get_content_id("default:jungleleaves")
+c_savannasapling  = minetest.get_content_id("mg:savannasapling")
+c_savannatree = minetest.get_content_id("mg:savannatree")
+c_savannaleaves  = minetest.get_content_id("mg:savannaleaves")
+c_pinesapling  = minetest.get_content_id("mg:pinesapling")
+c_pinetree = minetest.get_content_id("mg:pinetree")
+c_pineleaves  = minetest.get_content_id("mg:pineleaves")
+c_dirt  = minetest.get_content_id("default:dirt")
+c_stone  = minetest.get_content_id("default:stone")
+c_water  = minetest.get_content_id("default:water_source")
+c_ice  = minetest.get_content_id("default:ice")
+c_sand  = minetest.get_content_id("default:sand")
+c_sandstone  = minetest.get_content_id("default:sandstone")
+c_desert_sand  = minetest.get_content_id("default:desert_sand")
+c_desert_stone  = minetest.get_content_id("default:desert_stone")
+c_snowblock  = minetest.get_content_id("default:snowblock")
+c_cactus  = minetest.get_content_id("default:cactus")
+c_grass_1  = minetest.get_content_id("default:grass_1")
+c_grass_2  = minetest.get_content_id("default:grass_2")
+c_grass_3  = minetest.get_content_id("default:grass_3")
+c_grass_4  = minetest.get_content_id("default:grass_4")
+c_grass_5  = minetest.get_content_id("default:grass_5")
+c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
+c_jungle_grass  = minetest.get_content_id("default:junglegrass")
+c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
+c_papyrus  = minetest.get_content_id("default:papyrus")
+c_clay  = minetest.get_content_id("default:clay")
+
+c_iron  = minetest.get_content_id("default:stone_with_iron")
+c_coal  = minetest.get_content_id("default:stone_with_coal")
+c_copper  = minetest.get_content_id("default:stone_with_copper")
+c_diamond  = minetest.get_content_id("default:stone_with_diamond")
+c_stone_with_mese  = minetest.get_content_id("default:stone_with_mese")
+c_mese  = minetest.get_content_id("default:mese")
+c_lava  = minetest.get_content_id("default:lava_source")
 
 minetest.register_on_generated(function(minp, maxp, seed)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
@@ -356,52 +405,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	
 	local data = vm:get_data()
 
-	local c_air  = minetest.get_content_id("air")
-	local c_grass  = minetest.get_content_id("default:dirt_with_grass")
-	local c_dry_grass  = minetest.get_content_id("mg:dirt_with_dry_grass")
-	local c_dirt_snow  = minetest.get_content_id("default:dirt_with_snow")
-	local c_snow  = minetest.get_content_id("default:snow")
-	local c_sapling  = minetest.get_content_id("default:sapling")
-	local c_tree  = minetest.get_content_id("default:tree")
-	local c_leaves  = minetest.get_content_id("default:leaves")
-	local c_junglesapling  = minetest.get_content_id("default:junglesapling")
-	local c_jungletree  = minetest.get_content_id("default:jungletree")
-	local c_jungleleaves  = minetest.get_content_id("default:jungleleaves")
-	local c_savannasapling  = minetest.get_content_id("mg:savannasapling")
-	local c_savannatree = minetest.get_content_id("mg:savannatree")
-	local c_savannaleaves  = minetest.get_content_id("mg:savannaleaves")
-	local c_pinesapling  = minetest.get_content_id("mg:pinesapling")
-	local c_pinetree = minetest.get_content_id("mg:pinetree")
-	local c_pineleaves  = minetest.get_content_id("mg:pineleaves")
-	local c_dirt  = minetest.get_content_id("default:dirt")
-	local c_stone  = minetest.get_content_id("default:stone")
-	local c_water  = minetest.get_content_id("default:water_source")
-	local c_ice  = minetest.get_content_id("default:ice")
-	local c_sand  = minetest.get_content_id("default:sand")
-	local c_sandstone  = minetest.get_content_id("default:sandstone")
-	local c_desert_sand  = minetest.get_content_id("default:desert_sand")
-	local c_desert_stone  = minetest.get_content_id("default:desert_stone")
-	local c_snowblock  = minetest.get_content_id("default:snowblock")
-	local c_cactus  = minetest.get_content_id("default:cactus")
-	local c_grass_1  = minetest.get_content_id("default:grass_1")
-	local c_grass_2  = minetest.get_content_id("default:grass_2")
-	local c_grass_3  = minetest.get_content_id("default:grass_3")
-	local c_grass_4  = minetest.get_content_id("default:grass_4")
-	local c_grass_5  = minetest.get_content_id("default:grass_5")
-	local c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
-	local c_jungle_grass  = minetest.get_content_id("default:junglegrass")
-	local c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
-	local c_papyrus  = minetest.get_content_id("default:papyrus")
-	local c_clay  = minetest.get_content_id("default:clay")
-	
-	local c_iron  = minetest.get_content_id("default:stone_with_iron")
-	local c_coal  = minetest.get_content_id("default:stone_with_coal")
-	local c_copper  = minetest.get_content_id("default:stone_with_copper")
-	local c_diamond  = minetest.get_content_id("default:stone_with_diamond")
-	local c_stone_with_mese  = minetest.get_content_id("default:stone_with_mese")
-	local c_mese  = minetest.get_content_id("default:mese")
-	local c_lava  = minetest.get_content_id("default:lava_source")
-
 	local ni = 1
 	local above_top
 	local liquid_top
@@ -410,6 +413,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local second_layer
 	local humidity
 	local temperature
+	local villages_to_grow = {}
 	for z = minp.z, maxp.z do
 	for x = minp.x, maxp.x do
 		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, noise1, noise2, noise3, noise4))
@@ -531,45 +535,57 @@ minetest.register_on_generated(function(minp, maxp, seed)
         			data[vi] = top_layer
         		end
 		end
-		local in_village =  (x-vx)*(x-vx)+(z-vz)*(z-vz) < vs*vs
 		if above_top == c_sapling then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				add_tree(data, a, x, y+1, z, treemin, treemax, c_tree, c_leaves, pr)
+			else
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_sapling}
 			end
 		elseif above_top == c_junglesapling then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				add_jungletree(data, a, x, y+1, z, treemin, treemax, c_jungletree, c_jungleleaves, pr)
+			else
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_junglesapling}
 			end
 		elseif above_top == c_savannasapling then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				add_savannatree(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
+			else
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_savannasapling}
 			end
 		elseif above_top == "savannabush" then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				add_savannabush(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
+			else
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content="savannabush"}
 			end
 		elseif above_top == c_pinesapling then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, c_snow, pr)
 			else
 				if y+1<=maxp.y and y+1>=minp.y then
         				local vi = a:index(x, y+1, z)
         				data[vi] = c_snow
 				end
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_pinesapling}
 			end
 		elseif above_top == c_cactus then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				ch = pr:next(1, 4)
 				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
 					data[a:index(x, yy, z)] = c_cactus
 				end
+			else
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_cactus}
 			end
 		elseif above_top == c_papyrus then
-			if not in_village then
+			if not inside_village(x, z, vx, vz, vs, village_noise) then
 				ch = pr:next(2, 4)
 				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
 					data[a:index(x, yy, z)] = c_papyrus
 				end
+			else
+				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_papyrus}
 			end
 		else
 			if y+1<=maxp.y and y+1>=minp.y then
@@ -636,7 +652,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		seglenghtn=2, seglenghtdev=1, segincln=0.3, segincldev=0.1, turnangle=57, forkturnangle=57,
 		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a, va)
 	
-        to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a)
+        to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
 
 	vm:set_data(data)
 
