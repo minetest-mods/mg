@@ -76,7 +76,7 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	for y = 0, binfo.ysize-1 do
 	for z = 0, pos.bsizez-1 do
 		ax, ay, az = pos.x+x, pos.y+y+binfo.yoff, pos.z+z
-		if (ax > minp.x and ax < maxp.x) and (ay > minp.y and ay < maxp.y) and (az > minp.z and az < maxp.z) then
+		if (ax >= minp.x and ax <= maxp.x) and (ay >= minp.y and ay <= maxp.y) and (az >= minp.z and az <= maxp.z) then
 			xx, yy, zz = pfunc(x+1, y+1, z+1)
 			t = scm[yy][xx][zz]
 			if type(t) == "table" then
