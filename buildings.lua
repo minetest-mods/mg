@@ -10,10 +10,10 @@ local C = minetest.get_content_id("default:cobble")
 local T = minetest.get_content_id("default:tree")
 local WG = minetest.get_content_id("wool:grey")
 local FW = minetest.get_content_id("default:fence_wood")
-local TRXM = {node={name="default:torch", param2=2}}
-local TRXP = {node={name="default:torch", param2=3}}
-local TRZM = {node={name="default:torch", param2=5}}
-local TRZP = {node={name="default:torch", param2=4}}
+local TRXM = {node={name="default:torch", param2=2}, rotation = "wallmounted"}
+local TRXP = {node={name="default:torch", param2=3}, rotation = "wallmounted"}
+local TRZM = {node={name="default:torch", param2=5}, rotation = "wallmounted"}
+local TRZP = {node={name="default:torch", param2=4}, rotation = "wallmounted"}
 local TRU = {node={name="default:torch", param2=1}}
 local WS_ = {node={name="default:water_source"}}
 

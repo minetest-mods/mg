@@ -280,6 +280,7 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 end
 
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/rotate.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/ores.lua")
