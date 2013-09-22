@@ -250,44 +250,6 @@ local well = {
 	},
 }
 
-local fountain = {
-	{
-		{C, C, C, C, C},
-		{C, C, C, C, C},
-		{C, C, C, C, C},
-		{C, C, C, C, C},
-		{C, C, C, C, C},
-	},
-	{
-		{C,  C,  C,  C, C},
-		{C, WF, WF, WF, C},
-		{C, WF,  W, WF, C},
-		{C, WF, WF, WF, C},
-		{C,  C,  C,  C, C},
-	},
-	{
-		{TRU,  A,  A,  A, TRU},
-		{  A,  A, WF,  A,   A},
-		{  A, WF,  W, WF,   A},
-		{  A,  A, WF,  A,   A},
-		{TRU,  A,  A,  A, TRU},
-	},
-	{
-		{A,  A,  A,  A, A},
-		{A,  A, WF,  A, A},
-		{A, WF,  W, WF, A},
-		{A,  A, WF,  A, A},
-		{A,  A,  A,  A, A},
-	},
-	{
-		{A,  A,  A,  A, A},
-		{A,  A, WF,  A, A},
-		{A, WF, WS, WF, A},
-		{A,  A, WF,  A, A},
-		{A,  A,  A,  A, A},
-	},
-}
-
 local smallhouse = {
 	{
 		{C, C, C, C, C},
@@ -447,7 +409,7 @@ buildings = {
 	{sizex= 9, sizez= 9, yoff= 0, ysize= 2, scm=field_cotton},
 	{sizex= 3, sizez= 3, yoff= 1, ysize= 4, scm=lamp, weight=1/5, no_rotate=true},
 	{sizex= 4, sizez= 4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1},
-	{sizex= 5, sizez= 5, yoff= 0, ysize= 5, scm=fountain, weight=1/4},
+	{sizex= 7, sizez= 7, yoff= 0, ysize=11, scm="fountain", weight=1/4},
 	{sizex= 5, sizez= 5, yoff= 0, ysize= 6, scm=smallhouse, orients={2}},
 	{sizex=13, sizez= 6, yoff= 1, ysize= 7, scm=house_w_garden, orients={2}},
 	{sizex=16, sizez=17, yoff= 1, ysize=12, scm="church", orients={3}, pervillage=1},
