@@ -413,6 +413,7 @@ buildings = {
 	{sizex= 5, sizez= 5, yoff= 0, ysize= 6, scm=smallhouse, orients={2}},
 	{sizex=13, sizez= 6, yoff= 1, ysize= 7, scm=house_w_garden, orients={2}},
 	{sizex=16, sizez=17, yoff= 1, ysize=12, scm="church", orients={3}, pervillage=1},
+	{sizex= 6, sizez= 5, yoff= 1, ysize=15, scm="tower", orients={0}, weight=1/7},
 }
 
 local gravel = minetest.get_content_id("default:gravel")
