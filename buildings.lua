@@ -17,9 +17,9 @@ local TRXP = {node={name="default:torch", param2=3}, rotation = "wallmounted"}
 local TRZM = {node={name="default:torch", param2=5}, rotation = "wallmounted"}
 local TRZP = {node={name="default:torch", param2=4}, rotation = "wallmounted"}
 local TRU = {node={name="default:torch", param2=1}}
-local SWXP = {node={name="stairs:stair_wood", param2=3}}
-local SWXM = {node={name="stairs:stair_wood", param2=1}}
-local SWZM = {node={name="stairs:stair_wood", param2=2}}
+local SWXP = {node={name="stairs:stair_wood", param2=3}, rotation = "facedir"}
+local SWXM = {node={name="stairs:stair_wood", param2=1}, rotation = "facedir"}
+local SWZM = {node={name="stairs:stair_wood", param2=2}, rotation = "facedir"}
 
 
 local field_cotton = {
