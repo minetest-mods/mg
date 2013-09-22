@@ -10,16 +10,17 @@ local C = minetest.get_content_id("default:cobble")
 local T = minetest.get_content_id("default:tree")
 local WG = minetest.get_content_id("wool:grey")
 local FW = minetest.get_content_id("default:fence_wood")
+local WF = minetest.get_content_id("default:water_flowing")
+local BS = minetest.get_content_id("default:bookshelf")
 local TRXM = {node={name="default:torch", param2=2}, rotation = "wallmounted"}
 local TRXP = {node={name="default:torch", param2=3}, rotation = "wallmounted"}
 local TRZM = {node={name="default:torch", param2=5}, rotation = "wallmounted"}
 local TRZP = {node={name="default:torch", param2=4}, rotation = "wallmounted"}
 local TRU = {node={name="default:torch", param2=1}}
-local WS_ = {node={name="default:water_source"}}
 local SWXP = {node={name="stairs:stair_wood", param2=3}}
 local SWXM = {node={name="stairs:stair_wood", param2=1}}
 local SWZM = {node={name="stairs:stair_wood", param2=2}}
-local BS = minetest.get_content_id("default:bookshelf")
+
 
 local field_cotton = {
 	{
@@ -256,32 +257,32 @@ local fountain = {
 		{C, C, C, C, C},
 	},
 	{
-		{C, C, C, C, C},
-		{C, A, A, A, C},
-		{C, A, W, A, C},
-		{C, A, A, A, C},
-		{C, C, C, C, C},
+		{C,  C,  C,  C, C},
+		{C, WF, WF, WF, C},
+		{C, WF,  W, WF, C},
+		{C, WF, WF, WF, C},
+		{C,  C,  C,  C, C},
 	},
 	{
-		{TRU, A, A, A, TRU},
-		{  A, A, A, A,   A},
-		{  A, A, W, A,   A},
-		{  A, A, A, A,   A},
-		{TRU, A, A, A, TRU},
+		{TRU,  A,  A,  A, TRU},
+		{  A,  A, WF,  A,   A},
+		{  A, WF,  W, WF,   A},
+		{  A,  A, WF,  A,   A},
+		{TRU,  A,  A,  A, TRU},
 	},
 	{
-		{A, A, A, A, A},
-		{A, A, A, A, A},
-		{A, A, W, A, A},
-		{A, A, A, A, A},
-		{A, A, A, A, A},
+		{A,  A,  A,  A, A},
+		{A,  A, WF,  A, A},
+		{A, WF,  W, WF, A},
+		{A,  A, WF,  A, A},
+		{A,  A,  A,  A, A},
 	},
 	{
-		{A, A,   A, A, A},
-		{A, A,   A, A, A},
-		{A, A, WS_, A, A},
-		{A, A,   A, A, A},
-		{A, A,   A, A, A},
+		{A,  A,  A,  A, A},
+		{A,  A, WF,  A, A},
+		{A, WF, WS, WF, A},
+		{A,  A, WF,  A, A},
+		{A,  A,  A,  A, A},
 	},
 }
 
@@ -444,7 +445,7 @@ buildings = {
 	{sizex= 9, sizez=9, yoff= 0, ysize= 2, scm=field_cotton},
 	{sizex= 3, sizez=3, yoff= 1, ysize= 4, scm=lamp, weight=1/5, no_rotate=true},
 	{sizex= 4, sizez=4, yoff=-5, ysize=11, scm=well, no_rotate=true, pervillage=1},
-	{sizex= 5, sizez=5, yoff= 0, ysize= 5, scm=fountain, weight=1/2, pervillage=2},
+	{sizex= 5, sizez=5, yoff= 0, ysize= 5, scm=fountain, weight=1/4, pervillage=2},
 	{sizex= 5, sizez=5, yoff= 0, ysize= 6, scm=smallhouse},
 	{sizex=13, sizez=6, yoff= 1, ysize= 7, scm=house_w_garden},
 }
