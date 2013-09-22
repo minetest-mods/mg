@@ -321,7 +321,7 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	end
 end
 
-local MIN_DIST = 5
+local MIN_DIST = 2
 
 local function pos_far_buildings(x, z, l)
 	for _,a in ipairs(l) do
