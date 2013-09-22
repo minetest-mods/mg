@@ -1,12 +1,12 @@
 minetest.register_node("mg:savannatree", {
-	description = "Savanna Tree",
+	description = "Savannawood Tree",
 	tiles = {"mg_dry_tree_top.png", "mg_dry_tree_top.png", "mg_dry_tree.png"},
 	groups = {tree=1,choppy=2,oddly_breakable_by_hand=1,flammable=2},
 	sounds = default.node_sound_wood_defaults(),
 })
 
 minetest.register_node("mg:savannaleaves", {
-	description = "Savanna Leaves",
+	description = "Savannawood Leaves",
 	drawtype = "allfaces_optional",
 	visual_scale = 1.3,
 	tiles = {"mg_dry_leaves.png"},
@@ -42,7 +42,7 @@ minetest.register_craft({
 })
 
 minetest.register_node("mg:savannasapling", {
-	description = "Savanna Sapling",
+	description = "Savannawood Sapling",
 	drawtype = "plantlike",
 	visual_scale = 1.0,
 	tiles = {"mg_dry_sapling.png"},
