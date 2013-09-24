@@ -382,13 +382,19 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
 	
 	local vx,vz,vs,vh
+	local exitloop = false
 	for xi = -1, 1 do
 	for zi = -1, 1 do
 		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80}, noise1)
-		if vs ~= 0 then goto out end
+		if vs ~= 0 then
+			--goto out
+			exitloop = true
+			break
+		end
 	end
+	if exitloop then break end
 	end
-	::out::
+	--::out::
 	
 	
 	local pr = PseudoRandom(get_bseed(minp))

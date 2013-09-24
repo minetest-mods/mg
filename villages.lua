@@ -5,7 +5,7 @@ function village_at_point(minp, noise1)
 		if xi~=0 or zi~=0 then
 			local mp = {x=minp.x+80*xi, z=minp.z+80*zi}
 			local pi = PseudoRandom(get_bseed(mp))
-			if pi:next(1,400)<=28 and noise1:get2d({x=pr:next(mp.x, mp.x+79), z=pr:next(mp.z, mp.z+79)})>-0.3 then return 0,0,0,0 end
+			if pi:next(1,400)<=28 and noise1:get2d({x=pi:next(mp.x, mp.x+79), z=pi:next(mp.z, mp.z+79)})>-0.3 then return 0,0,0,0 end
 		end
 	end
 	end
@@ -29,26 +29,33 @@ local function inside_village2(bx, sx, bz, sz, vx, vz, vs, vnoise)
 end
 
 local function choose_building(l, pr)
-	::choose::
-	p = pr:next(1, 3000)
-	for b, i in ipairs(buildings) do
-		if i.max_weight > p then
-			btype = b
-			break
-		end
-	end
-	if buildings[btype].pervillage ~= nil then
-		local n = 0
-		for j=1, #l do
-			if l[j].btype == btype then
-				n = n + 1
+	--::choose::
+	while true do
+		p = pr:next(1, 3000)
+		for b, i in ipairs(buildings) do
+			if i.max_weight > p then
+				btype = b
+				break
 			end
 		end
-		if n >= buildings[btype].pervillage then
-			goto choose
+		if buildings[btype].pervillage ~= nil then
+			local n = 0
+			for j=1, #l do
+				if l[j].btype == btype then
+					n = n + 1
+				end
+			end
+			--if n >= buildings[btype].pervillage then
+			--	goto choose
+			--end
+			if n < buildings[btype].pervillage then
+				return btype
+			end
+		else
+			return btype
 		end
 	end
-	return btype
+	--return btype
 end
 
 local function choose_building_rot(l, pr, orient)
@@ -113,16 +120,26 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			rz = rz + (2*roadsize - 1)*rdz
 		end
 		--else
-			::loop::
-			if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then goto exit1 end
-			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient1)
-			local bx = rx + math.abs(rdz)*(roadsize+1) - when(rdx==-1, bsizex-1, 0)
-			local bz = rz + math.abs(rdx)*(roadsize+1) - when(rdz==-1, bsizez-1, 0)
-			if not placeable(bx, bz, bsizex, bsizez, l) or not inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then--dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
+			--::loop::
+			local exitloop = false
+			local bx
+			local bz
+			while true do
+				if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
+					exitloop = true
+					break
+				end
+				btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient1)
+				bx = rx + math.abs(rdz)*(roadsize+1) - when(rdx==-1, bsizex-1, 0)
+				bz = rz + math.abs(rdx)*(roadsize+1) - when(rdz==-1, bsizez-1, 0)
+				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then
+					break
+				end
 				rx = rx + rdx
 				rz = rz + rdz
-				goto loop
+				--goto loop
 			end
+			if exitloop then break end
 			rx = rx + (bsizex+1)*rdx
 			rz = rz + (bsizez+1)*rdz
 			mx = rx - 2*rdx
@@ -130,7 +147,6 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
 		--end
 	end
-	::exit1::
 	rx = rxx
 	rz = rzz
 	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
@@ -143,16 +159,26 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			rz = rz + (2*roadsize - 1)*rdz
 		end
 		--else
-			::loop::
-			if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then goto exit2 end
-			btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient2)
-			local bx = rx - math.abs(rdz)*(bsizex+roadsize) - when(rdx==-1, bsizex-1, 0)
-			local bz = rz - math.abs(rdx)*(bsizez+roadsize) - when(rdz==-1, bsizez-1, 0)
-			if not placeable(bx, bz, bsizex, bsizez, l) or not inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then--dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then
+			--::loop::
+			local exitloop = false
+			local bx
+			local bz
+			while true do
+				if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
+					exitloop = true
+					break
+				end
+				btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient2)
+				bx = rx - math.abs(rdz)*(bsizex+roadsize) - when(rdx==-1, bsizex-1, 0)
+				bz = rz - math.abs(rdx)*(bsizez+roadsize) - when(rdz==-1, bsizez-1, 0)
+				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then
+					break
+				end
 				rx = rx + rdx
 				rz = rz + rdz
-				goto loop
+				--goto loop
 			end
+			if exitloop then break end
 			rx = rx + (bsizex+1)*rdx
 			rz = rz + (bsizez+1)*rdz
 			m2x = rx - 2*rdx
@@ -160,7 +186,6 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
 		--end
 	end
-	::exit2::
 	if road_in_building(rx, rz, rdx, rdz, roadsize, l) then
 		mmx = rx - 2*rdx
 		mmz = rz - 2*rdz
