@@ -331,17 +331,6 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	scm = rotate(scm, pos.brotate)
 	local c_ignore = minetest.get_content_id("ignore")
 	local c_air = minetest.get_content_id("air")
-	if binfo.force_air_level ~= nil then
-		for x = 0, pos.bsizex-1 do
-		for y = binfo.force_air_level, binfo.force_air_level do
-		for z = 0, pos.bsizez-1 do
-			if scm[y+1][x+1][z+1] == c_ignore then
-				scm[y+1][x+1][z+1] = c_air
-			end
-		end
-		end
-		end
-	end
 	local t
 	for x = 0, pos.bsizex-1 do
 	for y = 0, binfo.ysize-1 do

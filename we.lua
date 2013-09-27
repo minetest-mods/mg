@@ -7,6 +7,7 @@ local function numk(tbl)
 end
 
 function import_scm(scm)
+	local c_ignore = minetest.get_content_id("ignore")
 	local f, err = io.open(minetest.get_modpath("mg").."/schems/"..scm..".we", "r")
 	if not f then
 		error("Could not open schematic '" .. scm .. ".we': " .. err)
@@ -56,7 +57,9 @@ function import_scm(scm)
 			ent.meta = {fields={}, inventory={}}
 		end
 		local paramtype2 = minetest.registered_nodes[ent.name].paramtype2
-		if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" and numk(ent.meta.fields) == 0 and numk(ent.meta.inventory) == 0 then
+		if ent.name == "mg:ignore" then
+				scm[ent.y][ent.x][ent.z] = c_ignore
+		elseif paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" and numk(ent.meta.fields) == 0 and numk(ent.meta.inventory) == 0 then
 			scm[ent.y][ent.x][ent.z] = minetest.get_content_id(ent.name)
 		else
 			if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" then
@@ -66,7 +69,7 @@ function import_scm(scm)
 			end
 		end
 	end
-	local c_ignore = minetest.get_content_id("ignore")
+	local c_air = minetest.get_content_id("air")
 	for x = 1, maxx do
 		for y = 1, maxy do
 			for z = 1, maxz do
@@ -77,7 +80,7 @@ function import_scm(scm)
 					scm[y][x] = {}
 				end
 				if scm[y][x][z] == nil then
-					scm[y][x][z] = c_ignore
+					scm[y][x][z] = c_air
 				end
 			end
 		end

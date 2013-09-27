@@ -162,3 +162,9 @@ minetest.register_abm({
 		vm:write_to_map(data)
 	end
 })
+
+minetest.register_node("mg:ignore", {
+	description = "MG Ignore",
+	drawtype = "airlike",
+	sunlight_propagates = true,
+})
