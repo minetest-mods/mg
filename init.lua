@@ -1,5 +1,6 @@
 local DMAX = 20
 local AREA_SIZE = 80
+local BIOME_MAX = 20
 
 minetest.register_on_mapgen_init(function(mgparams)
         minetest.set_mapgen_params({mgname="singlenode", flags="nolight", flagmask="nolight"})
@@ -11,13 +12,80 @@ local function cliff(x, n)
 	return 0.2*x*x - x + n*x - n*n*x*x - 0.01 * math.abs(x*x*x) + math.abs(x)*100*n*n*n*n
 end
 
-local function get_base_surface_at_point(x, z, vn, vh, noise1, noise2, noise3, noise4)
+local function get_base_biome_height(x, z, noise1, noise2, noise3, noise4)
+	local s = 25*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/3)+20
+	if noise4:get2d({x=x, y=z}) > 0.8 then
+		s = cliff(s, noise4:get2d({x=x, y=z})-0.8)
+	end
+	return s
+end
+
+local function get_ocean_height(x, z, noise1, noise2, noise3, noise4)
+	local s = 25*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/3)-30
+	return s
+end
+
+local function get_desert_biome_height(x, z, noise1, noise2, noise3, noise4)
+	local s = 15*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/7)+30
+	return s
+end
+
+local function get_mountain_biome_height(x, z, noise1, noise2, noise3, noise4)
+	local s = 45*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z}))
+	if noise4:get2d({x=x, y=z}) > 0.6 then
+		s = cliff(s, noise4:get2d({x=x, y=z})-0.6)
+	end
+	return s
+end
+
+local function get_biome_height_func(h, t, pr, n1)
+	if (t<0.2 or h>0.4) and pr:next(1, 10)<=4 then
+		return get_ocean_height
+	end
+	if t>0.4 and h<0.4 then
+		return get_desert_biome_height
+	end
+	if t<-0.4 and h>0.4 then
+		return get_mountain_biome_height
+	end
+	return get_base_biome_height
+end
+
+local function get_distance(x1, x2, z1, z2)
+	return (x1-x2)*(x1-x2)+(z1-z2)*(z1-z2)
+end
+
+local function get_height(x, z, biome_table, ...)
+	local m = math.huge
+	for key, bdef in ipairs(biome_table) do
+		local dist = get_distance(bdef.x, x, bdef.z, z)
+		if dist<m then
+			m=dist
+		end
+	end
+	local mm = math.sqrt(m)+BIOME_MAX
+	m = math.pow(mm, 2)
+	local stotal = 0
+	local htotal = 0
+	for key, bdef in ipairs(biome_table) do
+		local dist2 = get_distance(bdef.x, x, bdef.z, z)
+		if dist2 < m then
+			local d = mm - math.sqrt(dist2)
+			stotal = stotal + d
+			htotal = htotal + bdef.get_height(x, z, unpack({...}))*d
+		end
+	end
+	return htotal/stotal
+end
+
+local function get_base_surface_at_point(x, z, vn, vh, noise1, noise2, noise3, noise4, biome_table)
 	local index = 65536*x+z
 	if cache[index] ~= nil then return cache[index] end
-	cache[index] = 25*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/3)
+	--[[cache[index] = 25*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/3)
 	if noise4:get2d({x=x, y=z}) > 0.8 then
 		cache[index] = cliff(cache[index], noise4:get2d({x=x, y=z})-0.8)
-	end
+	end]]
+	cache[index] = get_height(x, z, biome_table, noise1, noise2, noise3, noise4)
 	if vn<40 then
 		cache[index] = vh
 	elseif vn<200 then
@@ -87,12 +155,12 @@ local function add_leaves(data, vi, c_leaves, c_snow)
 end
 
 function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
-	th = pr:next(3, 4)
+	local th = pr:next(3, 4)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_tree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
@@ -115,12 +183,12 @@ function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 end
 
 function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
-	th = pr:next(7, 11)
+	local th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_tree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
@@ -143,12 +211,12 @@ function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 end
 
 function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
-	th = pr:next(7, 11)
+	local th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_tree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
@@ -157,9 +225,9 @@ function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	end
 	end
 	for i=1,20 do
-		xi = pr:next(x-3, x+2)
-		yi = pr:next(maxy-2, maxy)
-		zi = pr:next(z-3, z+2)
+		local xi = pr:next(x-3, x+2)
+		local yi = pr:next(maxy-2, maxy)
+		local zi = pr:next(z-3, z+2)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
@@ -169,9 +237,9 @@ function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		end
 	end
 	for i=1,15 do
-		xi = pr:next(x-3, x+2)
-		yy = pr:next(maxy-6, maxy-5)
-		zi = pr:next(z-3, z+2)
+		local xi = pr:next(x-3, x+2)
+		local yy = pr:next(maxy-6, maxy-5)
+		local zi = pr:next(z-3, z+2)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
 			if minp.y<=yy and maxp.y>=yy then
@@ -290,22 +358,19 @@ dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/ores.lua")
 
-local function get_biome_table(minp, humidity, temperature)
+local function get_biome_table(minp, humidity, temperature, noise1)
 	l = {}
 	for xi = -1, 1 do
 	for zi = -1, 1 do
-		mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+80,z=minp.z+zi*80+80}
-		pr = PseudoRandom(get_bseed(mnp))
+		mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+79,z=minp.z+zi*80+79}
+		local pr = PseudoRandom(get_bseed(mnp))
 		bxp, bzp = pr:next(mnp.x, mxp.x), pr:next(mnp.z, mxp.z)
 		h, t = humidity:get2d({x=bxp, y=bzp}), temperature:get2d({x=bxp, y=bzp})
-		l[#l+1] = {x=bxp, z=bzp, h=h, t=t}
+		local gh = get_biome_height_func(h, t, pr, noise1:get2d({x=bxp, y=bzp}))
+		l[#l+1] = {x=bxp, z=bzp, h=h, t=t, get_height = gh}
 	end
 	end
 	return l
-end
-
-local function get_distance(x1, x2, z1, z2)
-	return (x1-x2)*(x1-x2)+(z1-z2)*(z1-z2)
 end
 
 local function get_nearest_biome(biome_table, x, z)
@@ -404,11 +469,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
 	local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
 	
-	local noise_temperature = minetest.get_perlin(763, 7, 0.5, 512)
-	local noise_humidity = minetest.get_perlin(834, 7, 0.5, 512)
+	local noise_temperature = minetest.get_perlin(763, 7, 0.5, 1024)
+	local noise_humidity = minetest.get_perlin(834, 7, 0.5, 1024)
 	local noise_beach = minetest.get_perlin(452, 6, 0.5, 256)
 	
-	local biome_table = get_biome_table(minp, noise_humidity, noise_temperature)
+	local biome_table = get_biome_table(minp, noise_humidity, noise_temperature, noise1)
 	
 	local data = vm:get_data()
 
@@ -423,7 +488,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local villages_to_grow = {}
 	for z = minp.z, maxp.z do
 	for x = minp.x, maxp.x do
-		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, noise1, noise2, noise3, noise4))
+		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, noise1, noise2, noise3, noise4, biome_table))
 		humidity = noise_humidity:get2d({x=x,y=z})
 		temperature = noise_temperature:get2d({x=x,y=z}) - math.max(y, 0)/50
 		biome = get_nearest_biome(biome_table, x, z)
