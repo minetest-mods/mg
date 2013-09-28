@@ -124,6 +124,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			local exitloop = false
 			local bx
 			local bz
+			local tries = 0
 			while true do
 				if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
 					exitloop = true
@@ -135,8 +136,13 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then
 					break
 				end
-				rx = rx + rdx
-				rz = rz + rdz
+				if tries > 5 then
+					rx = rx + rdx
+					rz = rz + rdz
+					tries = 0
+				else
+					tries = tries + 1
+				end
 				--goto loop
 			end
 			if exitloop then break end
@@ -163,6 +169,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			local exitloop = false
 			local bx
 			local bz
+			local tries = 0
 			while true do
 				if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
 					exitloop = true
@@ -174,8 +181,13 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then
 					break
 				end
-				rx = rx + rdx
-				rz = rz + rdz
+				if tries > 5 then
+					rx = rx + rdx
+					rz = rz + rdz
+					tries = 0
+				else
+					tries = tries + 1
+				end
 				--goto loop
 			end
 			if exitloop then break end
