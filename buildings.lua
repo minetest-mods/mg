@@ -35,6 +35,14 @@ end
 local road_scm = {rgravel2, rair2}
 buildings["road"] = {yoff = 0, ysize = 2, scm = road_scm}
 
+local rwall = {{minetest.get_content_id("default:stonebrick")}}
+local wall = {}
+for i = 1, 6 do
+	wall[i] = rwall
+end
+buildings["wall"] = {yoff = 1, ysize = 6, scm = wall}
+
+
 local total_weight = 0
 for _, i in ipairs(buildings) do
 	if i.weight == nil then i.weight = 1 end

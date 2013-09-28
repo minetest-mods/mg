@@ -399,7 +399,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	
 	local pr = PseudoRandom(get_bseed(minp))
 	
-	local village_noise = minetest.get_perlin(7635, 6, 0.5, 256)
+	local village_noise = minetest.get_perlin(7635, 3, 0.5, 16)
 	
 	local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
 	local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
