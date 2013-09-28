@@ -679,7 +679,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			if n.node.name == "default:chest" then
 				inv = meta:get_inventory()
 				items = inv:get_list("main")
-				inv:set_size("main", 0)
+				for i=1, inv:get_size("main") do
+					inv:set_stack("main", i, ItemStack(""))
+				end
 				numitems = pr:next(3, 7)
 				for i=1,numitems do
 					ii = pr:next(1, #items)
