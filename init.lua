@@ -199,8 +199,10 @@ function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		end
 	end
 
-	local vi = a:index(x, y, z)
-	data[vi] = c_tree
+	if x<=maxp.x and x>=minp.x and y<=maxp.y and y>=minp.y and z<=maxp.z and z>=minp.z then
+		local vi = a:index(x, y, z)
+		data[vi] = c_tree
+	end
 end
 
 function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr)
