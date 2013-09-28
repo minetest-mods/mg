@@ -361,7 +361,7 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	end
 end
 
-local MIN_DIST = 2
+local MIN_DIST = 1
 
 local function pos_far_buildings(x, z, l)
 	for _,a in ipairs(l) do
@@ -374,12 +374,8 @@ end
 
 function generate_village(vx, vz, vs, vh, minp, maxp, data, a, vnoise, to_grow)
 	local seed = get_bseed({x=vx, z=vz})
-	local pr = PseudoRandom(seed)
-	local bpos = generate_bpos(vx, vz, vs, vh, pr, vnoise)
-	local extranodes = {}
-	for _, pos in ipairs(bpos) do
-		generate_building(pos, minp, maxp, data, a, pr, extranodes)
-	end
+	local pr_village = PseudoRandom(seed)
+	local bpos = generate_bpos(vx, vz, vs, vh, pr_village, vnoise)
 	local pr = PseudoRandom(seed)
 	for _, g in ipairs(to_grow) do
 		if pos_far_buildings(g.x, g.z, bpos) then
@@ -405,6 +401,10 @@ function generate_village(vx, vz, vs, vh, minp, maxp, data, a, vnoise, to_grow)
 				end
 			end
 		end
+	end
+	local extranodes = {}
+	for _, pos in ipairs(bpos) do
+		generate_building(pos, minp, maxp, data, a, pr_village, extranodes)
 	end
 	return extranodes
 end
