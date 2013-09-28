@@ -2,7 +2,7 @@ local DMAX = 20
 local AREA_SIZE = 80
 
 minetest.register_on_mapgen_init(function(mgparams)
-        minetest.set_mapgen_params({mgname="singlenode", flags="nolight", flagmask="nolight"})
+		minetest.set_mapgen_params({mgname="singlenode", flags="nolight", flagmask="nolight"})
 end)
 
 local cache = {}
@@ -535,12 +535,12 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		end
 
 		if y<=maxp.y and y>=minp.y then
-        		local vi = a:index(x, y, z)
-        		if y >= 0 then
-        			data[vi] = top
-        		else
-        			data[vi] = top_layer
-        		end
+				local vi = a:index(x, y, z)
+				if y >= 0 then
+					data[vi] = top
+				else
+					data[vi] = top_layer
+				end
 		end
 		if above_top == c_sapling then
 			if not inside_village(x, z, vx, vz, vs, village_noise) then
@@ -571,8 +571,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, c_snow, pr)
 			else
 				if y+1<=maxp.y and y+1>=minp.y then
-        				local vi = a:index(x, y+1, z)
-        				data[vi] = c_snow
+						local vi = a:index(x, y+1, z)
+						data[vi] = c_snow
 				end
 				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_pinesapling}
 			end
@@ -596,8 +596,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			end
 		else
 			if y+1<=maxp.y and y+1>=minp.y then
-        			local vi = a:index(x, y+1, z)
-        			data[vi] = above_top
+					local vi = a:index(x, y+1, z)
+					data[vi] = above_top
 			end
 		end
 		if y<0 and minp.y<=0 and maxp.y>y then
@@ -640,7 +640,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	generate_vein(c_clay,c_dirt,minp,maxp,6, {maxvdistance=10.5, maxheight=0, minheight=-50, sizen=50, sizedev=20,
 		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=1,
 		radius = 1.5}, data, a, va)
-        generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
+		generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
 		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2.5}, data, a, va)
 	generate_vein(c_coal,c_stone,minp,maxp,1, {maxvdistance=10, sizen=54, sizedev=27, maxheight=64,
 		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.36, turnangle=57, forkturnangle=57, radius=1,numperblock=6}, data, a, va)
@@ -659,7 +659,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		seglenghtn=2, seglenghtdev=1, segincln=0.3, segincldev=0.1, turnangle=57, forkturnangle=57,
 		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a, va)
 	
-        to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
+		to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
 
 	vm:set_data(data)
 
@@ -676,6 +676,21 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		if n.meta ~= nil then
 			meta = minetest.get_meta(n.pos)
 			meta:from_table(n.meta)
+			if n.node.name == "default:chest" then
+				inv = meta:get_inventory()
+				items = inv:get_list("main")
+				inv:set_size("main", 0)
+				numitems = pr:next(3, 7)
+				for i=1,numitems do
+					ii = pr:next(1, #items)
+					prob = items[ii]:get_count() % 2 ^ 8
+					stacksz = math.floor(items[ii]:get_count() / 2 ^ 8)
+					if pr:next(0, prob) == 0 then
+						stk = ItemStack({name=items[ii]:get_name(), count=stacksz, wear=items[ii]:get_count(), metadata=items[ii]:get_metadata()})
+						inv:add_item("main", stk)
+					end
+				end
+			end
 		end
 	end
 end)
