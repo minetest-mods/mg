@@ -11,8 +11,8 @@ buildings = {
 	{sizex= 5,	sizez= 5,	yoff= 0,	ysize=16,	scm="tower", orients={0}, weight=1/7},
 	{sizex= 8,	sizez= 9,	yoff= 0,	ysize= 6,	scm="forge", orients={0}, pervillage=2},
 	{sizex=11,	sizez=12,	yoff= 0,	ysize= 6,	scm="library", orients={1}, pervillage=2},
-	{sizex=15,	sizez= 7,	yoff= 0,	ysize=12,	scm="inn", orients={1}, pervillage=4},
-	{sizex=22,	sizez=17,	yoff= 0,	ysize= 7,	scm="pub", orients={3}, pervillage=2},
+	{sizex=15,	sizez= 7,	yoff= 0,	ysize=12,	scm="inn", orients={1}, pervillage=4, weight=1/2},
+	{sizex=22,	sizez=17,	yoff= 0,	ysize= 7,	scm="pub", orients={3}, pervillage=2, weight=1/3},
 }
 
 local gravel = minetest.get_content_id("default:gravel")
