@@ -684,13 +684,13 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				for i=1, inv:get_size("main") do
 					inv:set_stack("main", i, ItemStack(""))
 				end
-				numitems = pr:next(3, 7)
+				numitems = pr:next(3, 20)
 				for i=1,numitems do
 					ii = pr:next(1, #items)
 					prob = items[ii]:get_count() % 2 ^ 8
 					stacksz = math.floor(items[ii]:get_count() / 2 ^ 8)
-					if pr:next(0, prob) == 0 then
-						stk = ItemStack({name=items[ii]:get_name(), count=stacksz, wear=items[ii]:get_count(), metadata=items[ii]:get_metadata()})
+					if pr:next(0, prob) == 0 and stacksz>0 then
+						stk = ItemStack({name=items[ii]:get_name(), count=pr:next(1, stacksz), wear=items[ii]:get_count(), metadata=items[ii]:get_metadata()})
 						local ind = pr:next(1, inv:get_size("main"))
 						while not inv:get_stack("main",ind):is_empty() do
 							ind = pr:next(1, inv:get_size("main"))

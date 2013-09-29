@@ -404,12 +404,12 @@ function generate_village(vx, vz, vs, vh, minp, maxp, data, a, vnoise, to_grow)
 			elseif g.content == c_cactus then
 				ch = pr:next(0, 3)
 				for yy = math.max(g.y, minp.y), math.min(g.y+ch, maxp.y) do
-					data[a:index(x, yy, z)] = c_cactus
+					data[a:index(g.x, yy, g.z)] = c_cactus
 				end
 			elseif g.content == c_papyrus then
 				ch = pr:next(1, 3)
 				for yy = math.max(g.y, minp.y), math.min(g.y+ch, maxp.y) do
-					data[a:index(x, yy, z)] = c_papyrus
+					data[a:index(g.x, yy, g.z)] = c_papyrus
 				end
 			end
 		end
