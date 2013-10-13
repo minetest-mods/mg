@@ -13,9 +13,11 @@ function village_at_point(minp, noise1)
 	if pr:next(1,400)>28 then return 0,0,0,0 end
 	local x = pr:next(minp.x, minp.x+79)
 	local z = pr:next(minp.z, minp.z+79)
+	x = minp.x + 40
+	z = minp.z + 40
 	if noise1:get2d({x=x, y=z})<-0.3 then return 0,0,0,0 end
-	local size = pr:next(20, 40)
-	local height = pr:next(5, 20)
+	local size = pr:next(50, 70)
+	local height = pr:next(0, 20)
 	print("A village spawned at: x="..x..", z="..z)
 	return x,z,size,height
 end
@@ -286,8 +288,8 @@ local function generate_bpos(vx, vz, vs, vh, pr, vnoise)
 	while inside_village(rx, rz, vx, vz, vs, vnoise) do
 		rx = rx - 1
 	end
-	rx = rx + 5
-	generate_road(vx, vz, vs, vh, l, pr, 3, rx, rz, 1, 0, vnoise)
+	rx = rx + 7
+	generate_road(vx, vz, vs, vh, l, pr, 6, rx, rz, 1, 0, vnoise)
 	return l
 	--[=[while rx1 < vx+vs do
 		local building = choose_building(l, pr)
