@@ -629,8 +629,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	
 	local va = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
 	
-	for _, ore in iapairs(mg.registered_ores) do
-		generate_vein(ore.c_ore, ore.c_wherein, minp, maxp, ore.seed, ore, data, a, va)
+	for _, ore in ipairs(mg.registered_ores) do
+		generate_vein(ore.c_ore, ore.c_wherein, minp, maxp, ore.seeddiff, ore, data, a, va)
 	end
 	
 	to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
@@ -687,7 +687,7 @@ end
 
 mg.register_ore({
 	name = "air",
-	seed = 1234,
+	seeddiff = 1234,
 	maxhdistance = 70,
 	maxvdistance = 70,
 	maxheight = -3,
@@ -710,7 +710,7 @@ mg.register_ore({
 mg.register_ore({
 	name = "default:clay",
 	wherein = "default:dirt",
-	seed = 6,
+	seeddiff = 6,
 	maxvdistance = 10.5,
 	maxheight = 0,
 	minheight = -50,
