@@ -56,8 +56,8 @@ function import_scm(scm)
 		if ent.meta == nil then
 			ent.meta = {fields={}, inventory={}}
 		end
-		local paramtype2 = minetest.registered_nodes[ent.name].paramtype2
-		if ent.name == "mg:ignore" then
+		local paramtype2 = minetest.registered_nodes[ent.name] and minetest.registered_nodes[ent.name].paramtype2
+		if ent.name == "mg:ignore" or not paramtype2 then
 				scm[ent.y][ent.x][ent.z] = c_ignore
 		elseif paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" and numk(ent.meta.fields) == 0 and numk(ent.meta.inventory) == 0 then
 			scm[ent.y][ent.x][ent.z] = minetest.get_content_id(ent.name)

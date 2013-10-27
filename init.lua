@@ -370,6 +370,14 @@ local function get_perlin_map(seed, octaves, persistance, scale, minp, maxp)
         return pm:get2dMap_flat({x = minp.x, y = minp.z, z = 0})
 end
 
+local function copytable(t)
+	local t2 = {}
+	for key, val in pairs(t) do
+		t2[key] = val
+	end
+	return t2
+end
+
 minetest.register_on_generated(function(minp, maxp, seed)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local a = VoxelArea:new{
@@ -652,6 +660,37 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	
 	local va = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
 	
+	for _, ore_sheet in ipairs(mg.registered_ore_sheets) do
+		local sidelen = maxp.x - minp.x + 1
+		local np = copytable(ore_sheet.noise_params)
+		np.seed = np.seed + minp.y
+		local pm = minetest.get_perlin_map(np, {x=sidelen, y=sidelen, z=1})
+		local map = pm:get2dMap_flat({x = minp.x, y = minp.z})
+		local ni = 0
+		local trh = ore_sheet.threshhold
+		local wherein = ore_sheet.c_wherein
+		local ore = ore_sheet.c_ore
+		local hmin = ore_sheet.height_min
+		local hmax = ore_sheet.height_max
+		local tmin = ore_sheet.tmin
+		local tmax = ore_sheet.tmax
+		for z = minp.z, maxp.z do
+		for x = minp.x, maxp.x do
+			ni = ni+1
+			local noise = map[ni]
+			if noise > trh then
+				local thickness = pr:next(tmin, tmax)
+				local y0 = math.floor(minp.y + (noise-trh)*10)
+				for y = math.max(y0, hmin), math.min(y0+thickness-1, hmax) do
+					local vi = a:index(x, y, z)
+					if data[vi] == wherein then
+						data[vi] = ore
+					end
+				end
+			end
+		end
+		end
+	end
 	for _, ore in ipairs(mg.registered_ores) do
 		generate_vein(ore.c_ore, ore.c_wherein, minp, maxp, ore.seeddiff, ore, data, a, va)
 	end
@@ -703,9 +742,23 @@ function mg.register_ore(oredef)
 	if oredef.wherein == nil then
 		oredef.wherein = "ignore"
 	end
+	if DEBUG then
+		oredef.wherein = "ignore"
+		oredef.maxheight = 31000
+	end
 	oredef.c_wherein = minetest.get_content_id(oredef.wherein)
 	oredef.c_ore = minetest.get_content_id(oredef.name)
 	mg.registered_ores[#mg.registered_ores+1] = oredef
+end
+
+mg.registered_ore_sheets = {}
+function mg.register_ore_sheet(oredef)
+	if oredef.wherein == nil then
+		oredef.wherein = "ignore"
+	end
+	oredef.c_wherein = minetest.get_content_id(oredef.wherein)
+	oredef.c_ore = minetest.get_content_id(oredef.name)
+	mg.registered_ore_sheets[#mg.registered_ore_sheets+1] = oredef
 end
 
 mg.register_ore({
@@ -862,6 +915,27 @@ mg.register_ore({
 })
 
 mg.register_ore({
+	name = "default:stone_with_gold",
+	wherein = "default:stone",
+	seeddiff = 17,
+	maxvdistance = 10,
+	sizen = 30,
+	sizedev = 8,
+	maxheight = -256,
+	seglenghtn = 8,
+	seglenghtdev = 4,
+	segincln = 0.6,
+	segincldev = 0.4,
+	turnangle = 57,
+	forkturnangle = 57,
+	numbranchesn = 2,
+	numbranchesdev = 1,
+	fork_chance = 0.1,
+	radius = 1
+})
+
+
+mg.register_ore({
 	name = "default:clay",
 	wherein = "default:dirt",
 	seeddiff = 6,
@@ -901,3 +975,130 @@ mg.register_ore({
 	sizedev = 2,
 	radius = 2.3
 })
+
+if minetest.get_modpath("moreores") ~= nil then
+	mg.register_ore({
+		name = "moreores:mineral_tin",
+		wherein = "default:stone",
+		seeddiff = 8,
+		maxvdistance = 10.5,
+		maxheight = 8,
+		seglenghtn = 15,
+		seglenghtdev = 6,
+		segincln = 0,
+		segincldev = 0.6,
+		turnangle = 57,
+		forkturnangle = 57,
+		numperblock = 2
+	})
+	
+	mg.register_ore({
+		name = "moreores:mineral_silver",
+		wherein = "default:stone",
+		seeddiff = 9,
+		maxvdistance = 10.5,
+		maxheight = -2,
+		seglenghtn = 15,
+		seglenghtdev = 6,
+		sizen = 60,
+		sizedev = 30,
+		segincln = 0,
+		segincldev = 0.6,
+		turnangle = 57,
+		forkturnangle = 57,
+		numperblock = 2
+	})
+	
+	mg.register_ore({
+		name = "moreores:mineral_mithril",
+		wherein = "default:stone",
+		seeddiff = 9,
+		maxvdistance = 10.5,
+		maxheight = -512,
+		seglenghtn = 1,
+		seglenghtdev = 2,
+		sizen = 5,
+		sizedev = 3,
+		segincln = 0,
+		segincldev = 0.6,
+		turnangle = 57,
+	})
+end
+
+if minetest.get_modpath("technic") ~= nil then
+	mg.register_ore({
+		name = "technic:mineral_uranium",
+		wherein = "default:stone",
+		seeddiff = 11,
+		maxvdistance = 10.5,
+		maxheight = -80,
+		minheight = -300,
+		sizen = 20,
+		sizedev = 10,
+		seglenghtn = 3,
+		seglenghtdev = 1,
+		segincln = 0.4,
+		segincldev = 0.6,
+		turnangle = 57,
+		numperblock = 1,
+		fork_chance = 0
+	})
+	
+	mg.register_ore({
+		name = "technic:mineral_chromium",
+		wherein = "default:stone",
+		seeddiff = 12,
+		maxvdistance = 10.5,
+		maxheight = -100,
+		sizen = 50,
+		sizedev = 20,
+		seglenghtn = 8,
+		seglenghtdev = 3,
+		segincln = 0,
+		segincldev = 0.6,
+		turnangle = 57,
+		forkturnangle = 57,
+		numperblock = 2
+	})
+	
+	mg.register_ore({
+		name = "technic:mineral_zinc",
+		wherein = "default:stone",
+		seeddiff = 13,
+		maxvdistance = 10.5,
+		maxheight = 2,
+		seglenghtn = 15,
+		seglenghtdev = 6,
+		segincln = 0,
+		segincldev = 0.6,
+		turnangle = 57,
+		forkturnangle = 57,
+		numperblock = 2
+	})
+	
+	if technic.config:getBool("enable_granite_generation") then
+		mg.register_ore_sheet({
+			name = "technic:granite",
+			wherein = "default:stone",
+			height_min = -31000,
+			height_max = -150,
+			tmin = 3,
+			tmax = 6,
+			threshhold = 0.4,
+			noise_params = {offset=0, scale=15, spread={x=130, y=130, z=130}, seed=24, octaves=3, persist=0.70}
+		})
+	end
+	
+	if technic.config:getBool("enable_marble_generation") then
+		mg.register_ore_sheet({
+			name = "technic:marble",
+			wherein = "default:stone",
+			height_min = -31000,
+			height_max = -50,
+			tmin = 3,
+			tmax = 6,
+			threshhold = 0.4,
+			noise_params = {offset=0, scale=15, spread={x=130, y=130, z=130}, seed=23, octaves=3, persist=0.70}
+		})
+	end
+end
