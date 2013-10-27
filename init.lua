@@ -13,12 +13,12 @@ local function cliff(x, n)
 	return 0.2*x*x - x + n*x - n*n*x*x - 0.01 * math.abs(x*x*x) + math.abs(x)*100*n*n*n*n
 end
 
-local function get_base_surface_at_point(x, z, vn, vh, noise1, noise2, noise3, noise4)
+local function get_base_surface_at_point(x, z, vn, vh, ni, noise1, noise2, noise3, noise4)
 	local index = 65536*x+z
 	if cache[index] ~= nil then return cache[index] end
-	cache[index] = 25*(noise1:get2d({x=x, y=z})+noise2:get2d({x=x, y=z})*noise3:get2d({x=x, y=z})/3)
-	if noise4:get2d({x=x, y=z}) > 0.8 then
-		cache[index] = cliff(cache[index], noise4:get2d({x=x, y=z})-0.8)
+	cache[index] = 25*noise1[ni]+noise2[ni]*noise3[ni]/3
+	if noise4[ni] > 0.8 then
+		cache[index] = cliff(cache[index], noise4[ni]-0.8)
 	end
 	if vn<40 then
 		cache[index] = vh
@@ -361,6 +361,15 @@ c_jungle_grass  = minetest.get_content_id("default:junglegrass")
 c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
 c_papyrus  = minetest.get_content_id("default:papyrus")
 
+local function get_perlin_map(seed, octaves, persistance, scale, minp, maxp)
+	local sidelen = maxp.x - minp.x +1
+	local pm = minetest.get_perlin_map(
+                {offset=0, scale=1, spread={x=scale, y=scale, z=scale}, seed=seed, octaves=octaves, persist=persistance},
+                {x=sidelen, y=sidelen, z=sidelen}
+        )
+        return pm:get2dMap_flat({x = minp.x, y = minp.z, z = 0})
+end
+
 minetest.register_on_generated(function(minp, maxp, seed)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local a = VoxelArea:new{
@@ -371,16 +380,23 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local treemin = {x=emin.x, y=minp.y, z=emin.z}
 	local treemax = {x=emax.x, y=maxp.y, z=emax.z}
 	
-	local noise1 = minetest.get_perlin(12345, 6, 0.5, 256)
-	local noise2 = minetest.get_perlin(56789, 6, 0.5, 256)
-	local noise3 = minetest.get_perlin(42, 3, 0.5, 32)
-	local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
+	local sidelen = maxp.x-minp.x+1
+	
+	local noise1 = get_perlin_map(12345, 6, 0.5, 256, minp, maxp)
+	local noise2 = get_perlin_map(56789, 6, 0.5, 256, minp, maxp)
+	local noise3 = get_perlin_map(42, 3, 0.5, 32, minp, maxp)
+	local noise4 = get_perlin_map(8954, 8, 0.5, 1024, minp, maxp)
+	
+	local noise1raw = minetest.get_perlin(12345, 6, 0.5, 256)
+	--local noise2 = minetest.get_perlin(56789, 6, 0.5, 256)
+	--local noise3 = minetest.get_perlin(42, 3, 0.5, 32)
+	--local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
 	
 	local vx,vz,vs,vh
 	local exitloop = false
 	for xi = -1, 1 do
 	for zi = -1, 1 do
-		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80}, noise1)
+		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80}, noise1raw)
 		if vs ~= 0 then
 			--goto out
 			exitloop = true
@@ -396,14 +412,19 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	
 	local village_noise = minetest.get_perlin(7635, 3, 0.5, 16)
 	
-	local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
-	local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
+	--local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
+	--local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
+	local noise_top_layer = get_perlin_map(654, 6, 0.5, 256, minp, maxp)
+	local noise_second_layer = get_perlin_map(123, 6, 0.5, 256, minp, maxp)
 	
-	local noise_temperature = minetest.get_perlin(763, 7, 0.5, 512)
-	local noise_humidity = minetest.get_perlin(834, 7, 0.5, 512)
-	local noise_beach = minetest.get_perlin(452, 6, 0.5, 256)
+	local noise_temperature_raw = minetest.get_perlin(763, 7, 0.5, 512)
+	local noise_humidity_raw = minetest.get_perlin(834, 7, 0.5, 512)
+	--local noise_beach = minetest.get_perlin(452, 6, 0.5, 256)
+	local noise_temperature = get_perlin_map(763, 7, 0.5, 512, minp, maxp)
+	local noise_humidity = get_perlin_map(834, 7, 0.5, 512, minp, maxp)
+	local noise_beach = get_perlin_map(452, 6, 0.5, 256, minp, maxp)
 	
-	local biome_table = get_biome_table(minp, noise_humidity, noise_temperature)
+	local biome_table = get_biome_table(minp, noise_humidity_raw, noise_temperature_raw)
 	
 	local data = vm:get_data()
 
@@ -416,11 +437,13 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local humidity
 	local temperature
 	local villages_to_grow = {}
+	local ni = 0
 	for z = minp.z, maxp.z do
 	for x = minp.x, maxp.x do
-		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, noise1, noise2, noise3, noise4))
-		humidity = noise_humidity:get2d({x=x,y=z})
-		temperature = noise_temperature:get2d({x=x,y=z}) - math.max(y, 0)/50
+		ni = ni + 1
+		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, ni, noise1, noise2, noise3, noise4))
+		humidity = noise_humidity[ni]
+		temperature = noise_temperature[ni] - math.max(y, 0)/50
 		biome = get_nearest_biome(biome_table, x, z)
 		biome_humidity = biome.h
 		biome_temperature = biome.t
@@ -434,7 +457,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			top = c_dirt
 			top_layer = c_dirt
 			second_layer = c_stone
-		elseif y < 3 and noise_beach:get2d({x=x, y=z})<0.2 then
+		elseif y < 3 and noise_beach[ni]<0.2 then
 			above_top = c_air
 			top = c_sand
 			top_layer = c_sand
@@ -604,14 +627,14 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				data[a:index(x, 0, z)] = liquid_top
 			end
 		end
-		local tl = math.floor((noise_top_layer:get2d({x=x,y=z})+2.5)*2)
+		local tl = math.floor((noise_top_layer[ni]+2.5)*2)
 		if y-tl-1<=maxp.y and y-1>=minp.y then
 			for yy = math.max(y-tl-1, minp.y), math.min(y-1, maxp.y) do
 				local vi = a:index(x, yy, z)
 				data[vi] = top_layer
 			end
 		end
-		local sl = math.floor((noise_second_layer:get2d({x=x,y=z})+5)*3)
+		local sl = math.floor((noise_second_layer[ni]+5)*3)
 		if y-sl-1<=maxp.y and y-tl-2>=minp.y then
 			for yy = math.max(y-sl-1, minp.y), math.min(y-tl-2, maxp.y) do
 				local vi = a:index(x, yy, z)
