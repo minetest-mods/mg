@@ -1,3 +1,5 @@
+mg = {}
+
 local DMAX = 20
 local AREA_SIZE = 80
 
@@ -358,15 +360,6 @@ c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
 c_jungle_grass  = minetest.get_content_id("default:junglegrass")
 c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
 c_papyrus  = minetest.get_content_id("default:papyrus")
-c_clay  = minetest.get_content_id("default:clay")
-
-c_iron  = minetest.get_content_id("default:stone_with_iron")
-c_coal  = minetest.get_content_id("default:stone_with_coal")
-c_copper  = minetest.get_content_id("default:stone_with_copper")
-c_diamond  = minetest.get_content_id("default:stone_with_diamond")
-c_stone_with_mese  = minetest.get_content_id("default:stone_with_mese")
-c_mese  = minetest.get_content_id("default:mese")
-c_lava  = minetest.get_content_id("default:lava_source")
 
 minetest.register_on_generated(function(minp, maxp, seed)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
@@ -635,33 +628,12 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	
 	local va = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
-	generate_vein(c_air,c_ignore,minp,maxp,1234, {maxhdistance=70, maxvdistance = 70, maxheight=-3,
-		seglenghtn=15, seglenghtdev=6, segincln=0.2, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=5,
-		numbranchesn = 2, numbranchesdev = 0, mothersizen = -1, mothersizedev = 0, sizen = 100, sizedev = 30,
-		radius = 2.3}, data, a, va)
-	generate_vein(c_clay,c_dirt,minp,maxp,6, {maxvdistance=10.5, maxheight=0, minheight=-50, sizen=50, sizedev=20,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=1,
-		radius = 1.5}, data, a, va)
-		generate_vein(c_iron,c_stone,minp,maxp,0, {maxvdistance=10.5, maxheight=-16,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2.5}, data, a, va)
-	generate_vein(c_coal,c_stone,minp,maxp,1, {maxvdistance=10, sizen=54, sizedev=27, maxheight=64,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.36, turnangle=57, forkturnangle=57, radius=1,numperblock=6}, data, a, va)
-	generate_vein(c_stone_with_mese,c_stone,minp,maxp,2, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-128,
-		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,numperblock=0.8,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a, va)
-	generate_vein(c_mese,c_stone,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
-		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a, va)
-	generate_vein(c_lava,c_mese,minp,maxp,3, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-1024,
-		seglenghtn=2, seglenghtdev=1, segincln=4, segincldev=1, turnangle=57, forkturnangle=57,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, mothersizen=0, mothersizedev=0}, data, a, va)
-	generate_vein(c_copper,c_stone,minp,maxp,4, {maxvdistance=10.5, maxheight=-16,
-		seglenghtn=15, seglenghtdev=6, segincln=0, segincldev=0.6, turnangle=57, forkturnangle=57, numperblock=2}, data, a, va)
-	generate_vein(c_diamond,c_stone,minp,maxp,5, {maxvdistance=50, sizen=7, sizedev=3, maxheight=-256,
-		seglenghtn=2, seglenghtdev=1, segincln=0.3, segincldev=0.1, turnangle=57, forkturnangle=57,
-		numbranchesn=2, numbranchesdev=1, fork_chance=0.1, radius=1}, data, a, va)
 	
-		to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
+	for _, ore in iapairs(mg.registered_ores) do
+		generate_vein(ore.c_ore, ore.c_wherein, minp, maxp, ore.seed, ore, data, a, va)
+	end
+	
+	to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
 
 	vm:set_data(data)
 
@@ -702,3 +674,185 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		end
 	end
 end)
+
+mg.registered_ores = {}
+function mg.register_ore(oredef)
+	if oredef.wherein == nil then
+		oredef.wherein = "ignore"
+	end
+	oredef.c_wherein = minetest.get_content_id(oredef.wherein)
+	oredef.c_ore = minetest.get_content_id(oredef.name)
+	mg.registered_ores[#mg.registered_ores+1] = oredef
+end
+
+mg.register_ore({
+	name = "air",
+	seed = 1234,
+	maxhdistance = 70,
+	maxvdistance = 70,
+	maxheight = -3,
+	seglenghtn = 15,
+	seglenghtdev = 6,
+	segincln = 0.2,
+	segincldev = 0.6,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 5,
+	numbranchesn = 2,
+	numbranchesdev = 0,
+	mothersizen = -1,
+	mothersizedev = 0,
+	sizen = 100,
+	sizedev = 30,
+	radius = 2.3
+})
+
+mg.register_ore({
+	name = "default:clay",
+	wherein = "default:dirt",
+	seed = 6,
+	maxvdistance = 10.5,
+	maxheight = 0,
+	minheight = -50,
+	sizen = 50,
+	sizedev = 20,
+	seglenghtn = 15,
+	seglenghtdev = 6,
+	segincln = 0,
+	segincldev = 0.6,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 1,
+	radius = 1.5
+})
+
+mg.register_ore({
+	name = "default:stone_with_iron",
+	wherein = "default:stone",
+	seeddiff = 0,
+	maxvdistance = 10.5,
+	maxheight = -16,
+	seglenghtn = 15,
+	seglenghtdev = 6,
+	segincln = 0,
+	segincldev = 0.6,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 2.5
+})
+
+mg.register_ore({
+	name = "default:stone_with_coal",
+	wherein = "default:stone",
+	seeddiff = 1,
+	maxvdistance = 10,
+	sizen = 54,
+	sizedev = 27,
+	maxheight = 64,
+	seglenghtn = 15,
+	seglenghtdev = 6,
+	segincln = 0,
+	segincldev = 0.36,
+	turnangle = 57,
+	forkturnangle = 57,
+	radius = 1,
+	numperblock = 6
+})
+
+mg.register_ore({
+	name = "default:stone_with_mese",
+	wherein = "default:stone",
+	seeddiff = 2,
+	maxvdistance = 50,
+	sizen = 7,
+	sizedev = 3,
+	maxheight = -128,
+	seglenghtn = 2,
+	seglenghtdev = 1,
+	segincln = 4,
+	segincldev = 1,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 0.8,
+	numbranchesn = 2,
+	numbranchesdev = 1,
+	fork_chance = 0.1,
+	mothersizen = 0,
+	mothersizedev = 0
+})
+
+mg.register_ore({
+	name = "default:mese",
+	wherein = "default:stone",
+	seeddiff = 3,
+	maxvdistance = 50,
+	sizen = 3,
+	sizedev = 1,
+	maxheight = -1024,
+	seglenghtn = 2,
+	seglenghtdev = 1,
+	segincln = 4,
+	segincldev = 1,
+	turnangle = 57,
+	forkturnangle = 57,
+	numbranchesn = 2,
+	numbranchesdev = 1,
+	fork_chance = 0.1,
+	radius = 1
+})
+
+mg.register_ore({ -- Same parameters exactly as the previous one so it spawns inside
+	name = "default:lava_source",
+	wherein = "default:mese",
+	seeddiff = 3,
+	maxvdistance = 50,
+	sizen = 3,
+	sizedev = 1,
+	maxheight = -1024,
+	seglenghtn = 2,
+	seglenghtdev = 1,
+	segincln = 4,
+	segincldev = 1,
+	turnangle = 57,
+	forkturnangle = 57,
+	numbranchesn = 2,
+	numbranchesdev = 1,
+	fork_chance = 0.1,
+	mothersizen = 0,
+	mothersizedev = 0
+})
+
+mg.register_ore({
+	name = "default:stone_with_copper",
+	wherein = "default:stone",
+	seeddiff = 4,
+	maxvdistance = 10.5,
+	maxheight = -16,
+	seglenghtn = 15,
+	seglenghtdev = 6,
+	segincln = 0,
+	segincldev = 0.6,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 2
+})
+
+mg.register_ore({
+	name = "default:stone_with_diamond",
+	wherein = "default:stone",
+	seeddiff = 5,
+	maxvdistance = 50,
+	sizen = 7,
+	sizedev = 3,
+	maxheight = -256,
+	seglenghtn = 2,
+	seglenghtdev = 1,
+	segincln = 0.3,
+	segincldev = 0.1,
+	turnangle = 57,
+	forkturnangle = 57,
+	numbranchesn = 2,
+	numbranchesdev = 1,
+	fork_chance = 0.1,
+	radius = 1
+})
