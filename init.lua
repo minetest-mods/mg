@@ -708,25 +708,6 @@ mg.register_ore({
 })
 
 mg.register_ore({
-	name = "default:clay",
-	wherein = "default:dirt",
-	seeddiff = 6,
-	maxvdistance = 10.5,
-	maxheight = 0,
-	minheight = -50,
-	sizen = 50,
-	sizedev = 20,
-	seglenghtn = 15,
-	seglenghtdev = 6,
-	segincln = 0,
-	segincldev = 0.6,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 1,
-	radius = 1.5
-})
-
-mg.register_ore({
 	name = "default:stone_with_iron",
 	wherein = "default:stone",
 	seeddiff = 0,
@@ -855,4 +836,45 @@ mg.register_ore({
 	numbranchesdev = 1,
 	fork_chance = 0.1,
 	radius = 1
+})
+
+mg.register_ore({
+	name = "default:clay",
+	wherein = "default:dirt",
+	seeddiff = 6,
+	maxvdistance = 10.5,
+	maxheight = 0,
+	minheight = -50,
+	sizen = 50,
+	sizedev = 20,
+	seglenghtn = 15,
+	seglenghtdev = 6,
+	segincln = 0,
+	segincldev = 0.6,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 1,
+	radius = 1.5
+})
+
+mg.register_ore({
+	name = "default:lava_source",
+	seeddiff = 7,
+	maxhdistance = 20,
+	maxvdistance = 70,
+	maxheight = -100,
+	seglenghtn = 2,
+	seglenghtdev = 1,
+	segincln = -5,
+	segincldev = 2,
+	turnangle = 57,
+	forkturnangle = 57,
+	numperblock = 1,
+	numbranchesn = 2,
+	numbranchesdev = 1,
+	mothersizen = 5,
+	mothersizedev = 3,
+	sizen = 8,
+	sizedev = 2,
+	radius = 2.3
 })
