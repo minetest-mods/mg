@@ -680,10 +680,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			local noise = map[ni]
 			if noise > trh then
 				local thickness = pr:next(tmin, tmax)
-				local y0 = math.floor(minp.y + (noise-trh)*10)
+				local y0 = math.floor(minp.y + (noise-trh)*4)
 				for y = math.max(y0, hmin), math.min(y0+thickness-1, hmax) do
 					local vi = a:index(x, y, z)
-					if data[vi] == wherein then
+					if data[vi] == wherein or wherein == c_ignore then
 						data[vi] = ore
 					end
 				end
@@ -755,6 +755,10 @@ mg.registered_ore_sheets = {}
 function mg.register_ore_sheet(oredef)
 	if oredef.wherein == nil then
 		oredef.wherein = "ignore"
+	end
+	if DEBUG then
+		oredef.wherein = "ignore"
+		oredef.height_max = 31000
 	end
 	oredef.c_wherein = minetest.get_content_id(oredef.wherein)
 	oredef.c_ore = minetest.get_content_id(oredef.name)
