@@ -668,8 +668,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		local map = pm:get2dMap_flat({x = minp.x, y = minp.z})
 		local ni = 0
 		local trh = ore_sheet.threshhold
-		local wherein = ore_sheet.c_wherein
-		local ore = ore_sheet.c_ore
+		local wherein = minetest.get_content_id(ore_sheet.wherein)
+		local ore = minetest.get_content_id(ore_sheet.name)
 		local hmin = ore_sheet.height_min
 		local hmax = ore_sheet.height_max
 		local tmin = ore_sheet.tmin
@@ -692,7 +692,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		end
 	end
 	for _, ore in ipairs(mg.registered_ores) do
-		generate_vein(ore.c_ore, ore.c_wherein, minp, maxp, ore.seeddiff, ore, data, a, va)
+		generate_vein(minetest.get_content_id(ore.name), minetest.get_content_id(ore.wherein), minp, maxp, ore.seeddiff, ore, data, a, va)
 	end
 	
 	to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
@@ -746,8 +746,6 @@ function mg.register_ore(oredef)
 		oredef.wherein = "ignore"
 		oredef.maxheight = 31000
 	end
-	oredef.c_wherein = minetest.get_content_id(oredef.wherein)
-	oredef.c_ore = minetest.get_content_id(oredef.name)
 	mg.registered_ores[#mg.registered_ores+1] = oredef
 end
 
@@ -760,8 +758,6 @@ function mg.register_ore_sheet(oredef)
 		oredef.wherein = "ignore"
 		oredef.height_max = 31000
 	end
-	oredef.c_wherein = minetest.get_content_id(oredef.wherein)
-	oredef.c_ore = minetest.get_content_id(oredef.name)
 	mg.registered_ore_sheets[#mg.registered_ore_sheets+1] = oredef
 end
 
