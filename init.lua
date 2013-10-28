@@ -1080,7 +1080,7 @@ if minetest.get_modpath("technic") ~= nil then
 		numperblock = 2
 	})
 	
-	if technic.config:getBool("enable_granite_generation") then
+	if technic.config:get_bool("enable_granite_generation") then
 		mg.register_ore_sheet({
 			name = "technic:granite",
 			wherein = "default:stone",
@@ -1093,7 +1093,7 @@ if minetest.get_modpath("technic") ~= nil then
 		})
 	end
 	
-	if technic.config:getBool("enable_marble_generation") then
+	if technic.config:get_bool("enable_marble_generation") then
 		mg.register_ore_sheet({
 			name = "technic:marble",
 			wherein = "default:stone",
