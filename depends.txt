@@ -2,5 +2,4 @@ default
 farming
 wool
 stairs
-technic?
 moreores?
