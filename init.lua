@@ -3,6 +3,44 @@ mg = {}
 local DMAX = 20
 local AREA_SIZE = 80
 
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
+c_air  = minetest.get_content_id("air")
+c_grass  = minetest.get_content_id("default:dirt_with_grass")
+c_dry_grass  = minetest.get_content_id("mg:dirt_with_dry_grass")
+c_dirt_snow  = minetest.get_content_id("default:dirt_with_snow")
+c_snow  = minetest.get_content_id("default:snow")
+c_sapling  = minetest.get_content_id("default:sapling")
+c_tree  = minetest.get_content_id("default:tree")
+c_leaves  = minetest.get_content_id("default:leaves")
+c_junglesapling  = minetest.get_content_id("default:junglesapling")
+c_jungletree  = minetest.get_content_id("default:jungletree")
+c_jungleleaves  = minetest.get_content_id("default:jungleleaves")
+c_savannasapling  = minetest.get_content_id("mg:savannasapling")
+c_savannatree = minetest.get_content_id("mg:savannatree")
+c_savannaleaves  = minetest.get_content_id("mg:savannaleaves")
+c_pinesapling  = minetest.get_content_id("mg:pinesapling")
+c_pinetree = minetest.get_content_id("mg:pinetree")
+c_pineleaves  = minetest.get_content_id("mg:pineleaves")
+c_dirt  = minetest.get_content_id("default:dirt")
+c_stone  = minetest.get_content_id("default:stone")
+c_water  = minetest.get_content_id("default:water_source")
+c_ice  = minetest.get_content_id("default:ice")
+c_sand  = minetest.get_content_id("default:sand")
+c_sandstone  = minetest.get_content_id("default:sandstone")
+c_desert_sand  = minetest.get_content_id("default:desert_sand")
+c_desert_stone  = minetest.get_content_id("default:desert_stone")
+c_snowblock  = minetest.get_content_id("default:snowblock")
+c_cactus  = minetest.get_content_id("default:cactus")
+c_grass_1  = minetest.get_content_id("default:grass_1")
+c_grass_2  = minetest.get_content_id("default:grass_2")
+c_grass_3  = minetest.get_content_id("default:grass_3")
+c_grass_4  = minetest.get_content_id("default:grass_4")
+c_grass_5  = minetest.get_content_id("default:grass_5")
+c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
+c_jungle_grass  = minetest.get_content_id("default:junglegrass")
+c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
+c_papyrus  = minetest.get_content_id("default:papyrus")
+
 minetest.register_on_mapgen_init(function(mgparams)
 		minetest.set_mapgen_params({mgname="singlenode", flags="nolight", flagmask="nolight"})
 end)
@@ -88,7 +126,7 @@ local function add_leaves(data, vi, c_leaves, c_snow)
 	end
 end
 
-function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_tree(data, a, x, y, z, minp, maxp, pr)
 	th = pr:next(3, 4)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
@@ -116,17 +154,17 @@ function add_tree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 	end
 end
 
-function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_jungletree(data, a, x, y, z, minp, maxp, pr)
 	th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
-		data[vi] = c_tree
+		data[vi] = c_jungletree
 	end
 	maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
-		add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		add_leaves(data, a:index(xx, yy, zz), c_jungleleaves)
 	end
 	end
 	end
@@ -137,24 +175,24 @@ function add_jungletree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_jungleleaves)
 		end
 		end
 		end
 	end
 end
 
-function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_savannatree(data, a, x, y, z, minp, maxp, pr)
 	th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
-		data[vi] = c_tree
+		data[vi] = c_savannatree
 	end
 	maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
-		add_leaves(data, a:index(xx, yy, zz), c_leaves)
+		add_leaves(data, a:index(xx, yy, zz), c_savannaleaves)
 	end
 	end
 	end
@@ -165,7 +203,7 @@ function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
-			add_leaves(data, a:index(xx, yy, zz), c_leaves)
+			add_leaves(data, a:index(xx, yy, zz), c_savannaleaves)
 		end
 		end
 		end
@@ -177,14 +215,14 @@ function add_savannatree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
 			if minp.y<=yy and maxp.y>=yy then
-				add_leaves(data, a:index(xx, yy, zz), c_leaves)
+				add_leaves(data, a:index(xx, yy, zz), c_savannaleaves)
 			end
 		end
 		end
 	end
 end
 
-function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
+function add_savannabush(data, a, x, y, z, minp, maxp, pr)
 	bh = pr:next(1, 2)
 	bw = pr:next(2, 4)
 
@@ -192,9 +230,9 @@ function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 		for zz=math.max(minp.z, z-bw), math.min(maxp.z, z+bw) do
 			for yy=math.max(minp.y, y-bh), math.min(maxp.y, y+bh) do
 				if pr:next(1, 100) < 95 and math.abs(xx-x) < pr:next(bh, bh+2)-math.abs(y-yy) and math.abs(zz-z) < pr:next(bh, bh+2)-math.abs(y-yy) then
-					add_leaves(data, a:index(xx, yy, zz), c_leaves)
+					add_leaves(data, a:index(xx, yy, zz), c_savannaleaves)
 					for yyy=math.max(minp.y, yy-2), yy do
-						add_leaves(data, a:index(xx, yyy, zz), c_leaves)
+						add_leaves(data, a:index(xx, yyy, zz), c_savannaleaves)
 					end
 				end
 			end
@@ -203,22 +241,22 @@ function add_savannabush(data, a, x, y, z, minp, maxp, c_tree, c_leaves, pr)
 
 	if x<=maxp.x and x>=minp.x and y<=maxp.y and y>=minp.y and z<=maxp.z and z>=minp.z then
 		local vi = a:index(x, y, z)
-		data[vi] = c_tree
+		data[vi] = c_savannatree
 	end
 end
 
-function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr)
+function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 	th = pr:next(9, 13)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
-		data[vi] = c_tree
+		data[vi] = c_pinetree
 	end
 	maxy = y+th
 	for xx=math.max(minp.x, x-3), math.min(maxp.x, x+3) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy-1) do
 	for zz=math.max(minp.z, z-3), math.min(maxp.z, z+3) do
 		if pr:next(1, 100) < 80 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
 			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
@@ -228,7 +266,7 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 	for yy=math.max(minp.y, maxy), math.min(maxp.y, maxy) do
 	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
 		if pr:next(1, 100) < 85 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
 			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
@@ -238,14 +276,14 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 	for yy=math.max(minp.y, maxy+1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
 		if pr:next(1, 100) < 90 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
 			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
 	end
 	end
 	if maxy+1<=maxp.y and maxy+1>=minp.y then
-		add_leaves(data, a:index(x, maxy+1, z), c_leaves, c_snow)
+		add_leaves(data, a:index(x, maxy+1, z), c_pineleaves, c_snow)
 		add_leaves(data, a:index(x, maxy+2, z), c_snow)
 	end
 	my = 0
@@ -259,7 +297,7 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
 			if minp.y<=yy and maxp.y>=yy then
-				add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+				add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
 				add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 			end
 		end
@@ -269,7 +307,7 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 	for yy=math.max(minp.y, my+1), math.min(maxp.y, my+1) do
 	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
 		if pr:next(1, 100) < 85 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
 			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
@@ -279,7 +317,7 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 	for yy=math.max(minp.y, my+2), math.min(maxp.y, my+2) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
 		if pr:next(1, 100) < 90 then
-			add_leaves(data, a:index(xx, yy, zz), c_leaves, c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
 			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
 		end
 	end
@@ -288,7 +326,6 @@ function add_pinetree(data, a, x, y, z, minp, maxp, c_tree, c_leaves, c_snow, pr
 end
 
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/we.lua")
-dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/rotate.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
@@ -324,42 +361,6 @@ local function get_nearest_biome(biome_table, x, z)
 	end
 	return biome_table[k]
 end
-c_air  = minetest.get_content_id("air")
-c_grass  = minetest.get_content_id("default:dirt_with_grass")
-c_dry_grass  = minetest.get_content_id("mg:dirt_with_dry_grass")
-c_dirt_snow  = minetest.get_content_id("default:dirt_with_snow")
-c_snow  = minetest.get_content_id("default:snow")
-c_sapling  = minetest.get_content_id("default:sapling")
-c_tree  = minetest.get_content_id("default:tree")
-c_leaves  = minetest.get_content_id("default:leaves")
-c_junglesapling  = minetest.get_content_id("default:junglesapling")
-c_jungletree  = minetest.get_content_id("default:jungletree")
-c_jungleleaves  = minetest.get_content_id("default:jungleleaves")
-c_savannasapling  = minetest.get_content_id("mg:savannasapling")
-c_savannatree = minetest.get_content_id("mg:savannatree")
-c_savannaleaves  = minetest.get_content_id("mg:savannaleaves")
-c_pinesapling  = minetest.get_content_id("mg:pinesapling")
-c_pinetree = minetest.get_content_id("mg:pinetree")
-c_pineleaves  = minetest.get_content_id("mg:pineleaves")
-c_dirt  = minetest.get_content_id("default:dirt")
-c_stone  = minetest.get_content_id("default:stone")
-c_water  = minetest.get_content_id("default:water_source")
-c_ice  = minetest.get_content_id("default:ice")
-c_sand  = minetest.get_content_id("default:sand")
-c_sandstone  = minetest.get_content_id("default:sandstone")
-c_desert_sand  = minetest.get_content_id("default:desert_sand")
-c_desert_stone  = minetest.get_content_id("default:desert_stone")
-c_snowblock  = minetest.get_content_id("default:snowblock")
-c_cactus  = minetest.get_content_id("default:cactus")
-c_grass_1  = minetest.get_content_id("default:grass_1")
-c_grass_2  = minetest.get_content_id("default:grass_2")
-c_grass_3  = minetest.get_content_id("default:grass_3")
-c_grass_4  = minetest.get_content_id("default:grass_4")
-c_grass_5  = minetest.get_content_id("default:grass_5")
-c_grasses = {c_grass_1, c_grass_2, c_grass_3, c_grass_4, c_grass_5}
-c_jungle_grass  = minetest.get_content_id("default:junglegrass")
-c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
-c_papyrus  = minetest.get_content_id("default:papyrus")
 
 local function get_perlin_map(seed, octaves, persistance, scale, minp, maxp)
 	local sidelen = maxp.x - minp.x +1
@@ -477,32 +478,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					top = c_desert_sand
 					top_layer = c_desert_sand
 					second_layer = c_desert_stone
-					if pr:next(1, 50) == 1 then
-						above_top = c_cactus
-					elseif pr:next(1, 50) == 1 then
-						above_top = c_dry_shrub
-					end
 				elseif biome_humidity<0.4 then
 					top = c_dry_grass
 					top_layer = c_dirt
 					second_layer = c_stone
-					if (pr:next(1, 250) == 1 and y>12) or (pr:next(1, 1000) == 1 and y<=12) then
-						above_top = c_savannasapling
-					elseif (pr:next(1, 25) == 1 and y>12) or (pr:next(1, 50) == 1 and y<=12) then
-						if pr:next(1, 80) > 100*(humidity+0.4) then
-							above_top = c_dry_shrub
-						elseif pr:next(1, 100) == 1 then
-							above_top = "savannabush"
-						end
-					end
 				else
-					if pr:next(1, 14) == 1 then
-						above_top = c_sapling
-					elseif pr:next(1, 16) == 1 then
-						above_top = c_junglesapling
-					elseif pr:next(1, 30) == 1 then
-						above_top = c_jungle_grass
-					end
 					top = c_grass
 					top_layer = c_dirt
 					second_layer = c_stone
@@ -512,33 +492,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 				top = c_dirt_snow
 				top_layer = c_dirt
 				second_layer = c_stone
-				if biome_humidity>-0.4 then
-					if pr:next(1, 40) == 1 then
-						above_top = c_pinesapling
-					end
-				else
-					if pr:next(1, 500) == 1 then
-						above_top = c_pinesapling
-					end
-				end
 			else
-				if biome_humidity<-0.4 then
-					if pr:next(1, 250) == 1 then
-						above_top = c_sapling
-					elseif pr:next(1, 60) == 1 then
-						above_top = c_grasses[pr:next(1,4)]
-					end
-				elseif biome_humidity>0.4 then
-					if pr:next(1, 250) == 1 then
-						above_top = c_sapling
-					elseif pr:next(1, 3) == 1 then
-						above_top = c_grasses[pr:next(3,5)]
-					end
-				else
-					if pr:next(1, 20) == 1 and y>0 then
-						above_top = c_sapling
-					end
-				end
 				top = c_grass
 				top_layer = c_dirt
 				second_layer = c_stone
@@ -552,14 +506,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		if y<0 then
 			above_top = c_air
 		end
-		if y==0 then
-			if top == c_grass then
-				if pr:next(1, 10) == 1 then
-					above_top = c_papyrus
-				end
-			end
-		end
-
 		if y<=maxp.y and y>=minp.y then
 				local vi = a:index(x, y, z)
 				if y >= 0 then
@@ -568,63 +514,27 @@ minetest.register_on_generated(function(minp, maxp, seed)
 					data[vi] = top_layer
 				end
 		end
-		if above_top == c_sapling then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				add_tree(data, a, x, y+1, z, treemin, treemax, c_tree, c_leaves, pr)
-			else
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_sapling}
+		local add_above_top = true
+		for id, tree in ipairs(mg.registered_trees) do
+			if tree.min_humidity <= humidity and humidity <= tree.max_humidity
+				and tree.min_temperature <= temperature and temperature <= tree.max_temperature
+				and tree.min_biome_humidity <= biome_humidity and biome_humidity <= tree.max_biome_humidity
+				and tree.min_biome_temperature <= biome_temperature and biome_temperature <= tree.max_biome_temperature
+				and tree.min_height <= y+1 and y+1 <= tree.max_height
+				and ((not tree.grows_on) or tree.grows_on == top)
+				and pr:next(1, tree.chance) == 1 then
+					if inside_village(x, z, vx, vz, vs, village_noise) and not tree.can_be_in_village then
+						villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, id=id}
+					else
+						tree.grow(data, a, x, y+1, z, minp, maxp, pr)
+					end
+					add_above_top = false
+					break
 			end
-		elseif above_top == c_junglesapling then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				add_jungletree(data, a, x, y+1, z, treemin, treemax, c_jungletree, c_jungleleaves, pr)
-			else
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_junglesapling}
-			end
-		elseif above_top == c_savannasapling then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				add_savannatree(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
-			else
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_savannasapling}
-			end
-		elseif above_top == "savannabush" then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				add_savannabush(data, a, x, y+1, z, treemin, treemax, c_savannatree, c_savannaleaves, pr)
-			else
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content="savannabush"}
-			end
-		elseif above_top == c_pinesapling then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				add_pinetree(data, a, x, y+1, z, treemin, treemax, c_pinetree, c_pineleaves, c_snow, pr)
-			else
-				if y+1<=maxp.y and y+1>=minp.y then
-						local vi = a:index(x, y+1, z)
-						data[vi] = c_snow
-				end
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_pinesapling}
-			end
-		elseif above_top == c_cactus then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				ch = pr:next(1, 4)
-				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
-					data[a:index(x, yy, z)] = c_cactus
-				end
-			else
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_cactus}
-			end
-		elseif above_top == c_papyrus then
-			if not inside_village(x, z, vx, vz, vs, village_noise) then
-				ch = pr:next(2, 4)
-				for yy = math.max(y+1, minp.y), math.min(y+ch, maxp.y) do
-					data[a:index(x, yy, z)] = c_papyrus
-				end
-			else
-				villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, content=c_papyrus}
-			end
-		else
-			if y+1<=maxp.y and y+1>=minp.y then
-					local vi = a:index(x, y+1, z)
-					data[vi] = above_top
-			end
+		end
+		if add_above_top and y+1<=maxp.y and y+1>=minp.y then
+			local vi = a:index(x, y+1, z)
+			data[vi] = above_top
 		end
 		if y<0 and minp.y<=0 and maxp.y>y then
 			for yy = math.max(y+1, minp.y), math.min(0, maxp.y) do
@@ -761,344 +671,34 @@ function mg.register_ore_sheet(oredef)
 	mg.registered_ore_sheets[#mg.registered_ore_sheets+1] = oredef
 end
 
-mg.register_ore({
-	name = "air",
-	seeddiff = 1234,
-	maxhdistance = 70,
-	maxvdistance = 70,
-	maxheight = -3,
-	seglenghtn = 15,
-	seglenghtdev = 6,
-	segincln = 0.2,
-	segincldev = 0.6,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 5,
-	numbranchesn = 2,
-	numbranchesdev = 0,
-	mothersizen = -1,
-	mothersizedev = 0,
-	sizen = 100,
-	sizedev = 30,
-	radius = 2.3
-})
-
-mg.register_ore({
-	name = "default:stone_with_iron",
-	wherein = "default:stone",
-	seeddiff = 0,
-	maxvdistance = 10.5,
-	maxheight = -16,
-	seglenghtn = 15,
-	seglenghtdev = 6,
-	segincln = 0,
-	segincldev = 0.6,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 2.5
-})
-
-mg.register_ore({
-	name = "default:stone_with_coal",
-	wherein = "default:stone",
-	seeddiff = 1,
-	maxvdistance = 10,
-	sizen = 54,
-	sizedev = 27,
-	maxheight = 64,
-	seglenghtn = 15,
-	seglenghtdev = 6,
-	segincln = 0,
-	segincldev = 0.36,
-	turnangle = 57,
-	forkturnangle = 57,
-	radius = 1,
-	numperblock = 6
-})
-
-mg.register_ore({
-	name = "default:stone_with_mese",
-	wherein = "default:stone",
-	seeddiff = 2,
-	maxvdistance = 50,
-	sizen = 7,
-	sizedev = 3,
-	maxheight = -128,
-	seglenghtn = 2,
-	seglenghtdev = 1,
-	segincln = 4,
-	segincldev = 1,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 0.8,
-	numbranchesn = 2,
-	numbranchesdev = 1,
-	fork_chance = 0.1,
-	mothersizen = 0,
-	mothersizedev = 0
-})
-
-mg.register_ore({
-	name = "default:mese",
-	wherein = "default:stone",
-	seeddiff = 3,
-	maxvdistance = 50,
-	sizen = 3,
-	sizedev = 1,
-	maxheight = -1024,
-	seglenghtn = 2,
-	seglenghtdev = 1,
-	segincln = 4,
-	segincldev = 1,
-	turnangle = 57,
-	forkturnangle = 57,
-	numbranchesn = 2,
-	numbranchesdev = 1,
-	fork_chance = 0.1,
-	radius = 1
-})
-
-mg.register_ore({ -- Same parameters exactly as the previous one so it spawns inside
-	name = "default:lava_source",
-	wherein = "default:mese",
-	seeddiff = 3,
-	maxvdistance = 50,
-	sizen = 3,
-	sizedev = 1,
-	maxheight = -1024,
-	seglenghtn = 2,
-	seglenghtdev = 1,
-	segincln = 4,
-	segincldev = 1,
-	turnangle = 57,
-	forkturnangle = 57,
-	numbranchesn = 2,
-	numbranchesdev = 1,
-	fork_chance = 0.1,
-	mothersizen = 0,
-	mothersizedev = 0
-})
-
-mg.register_ore({
-	name = "default:stone_with_copper",
-	wherein = "default:stone",
-	seeddiff = 4,
-	maxvdistance = 10.5,
-	maxheight = -16,
-	seglenghtn = 15,
-	seglenghtdev = 6,
-	segincln = 0,
-	segincldev = 0.6,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 2
-})
-
-mg.register_ore({
-	name = "default:stone_with_diamond",
-	wherein = "default:stone",
-	seeddiff = 5,
-	maxvdistance = 50,
-	sizen = 20,
-	sizedev = 5,
-	maxheight = -256,
-	seglenghtn = 4,
-	seglenghtdev = 2,
-	segincln = 0.3,
-	segincldev = 0.1,
-	turnangle = 57,
-	forkturnangle = 57,
-	numbranchesn = 2,
-	numbranchesdev = 1,
-	fork_chance = 0.1,
-	radius = 1
-})
-
-mg.register_ore({
-	name = "default:stone_with_gold",
-	wherein = "default:stone",
-	seeddiff = 17,
-	maxvdistance = 10,
-	sizen = 30,
-	sizedev = 8,
-	maxheight = -256,
-	seglenghtn = 8,
-	seglenghtdev = 4,
-	segincln = 0.6,
-	segincldev = 0.4,
-	turnangle = 57,
-	forkturnangle = 57,
-	numbranchesn = 2,
-	numbranchesdev = 1,
-	fork_chance = 0.1,
-	radius = 1
-})
-
-
-mg.register_ore({
-	name = "default:clay",
-	wherein = "default:dirt",
-	seeddiff = 6,
-	maxvdistance = 10.5,
-	maxheight = 0,
-	minheight = -50,
-	sizen = 50,
-	sizedev = 20,
-	seglenghtn = 15,
-	seglenghtdev = 6,
-	segincln = 0,
-	segincldev = 0.6,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 1,
-	radius = 1.5
-})
-
-mg.register_ore({
-	name = "default:lava_source",
-	seeddiff = 7,
-	maxhdistance = 20,
-	maxvdistance = 70,
-	maxheight = -100,
-	seglenghtn = 2,
-	seglenghtdev = 1,
-	segincln = -5,
-	segincldev = 2,
-	turnangle = 57,
-	forkturnangle = 57,
-	numperblock = 1,
-	numbranchesn = 2,
-	numbranchesdev = 1,
-	mothersizen = 5,
-	mothersizedev = 3,
-	sizen = 8,
-	sizedev = 2,
-	radius = 2.3
-})
-
-if minetest.get_modpath("moreores") ~= nil then
-	mg.register_ore({
-		name = "moreores:mineral_tin",
-		wherein = "default:stone",
-		seeddiff = 8,
-		maxvdistance = 10.5,
-		maxheight = 8,
-		seglenghtn = 15,
-		seglenghtdev = 6,
-		segincln = 0,
-		segincldev = 0.6,
-		turnangle = 57,
-		forkturnangle = 57,
-		numperblock = 2
-	})
-	
-	mg.register_ore({
-		name = "moreores:mineral_silver",
-		wherein = "default:stone",
-		seeddiff = 9,
-		maxvdistance = 10.5,
-		maxheight = -2,
-		seglenghtn = 15,
-		seglenghtdev = 6,
-		sizen = 60,
-		sizedev = 30,
-		segincln = 0,
-		segincldev = 0.6,
-		turnangle = 57,
-		forkturnangle = 57,
-		numperblock = 2
-	})
-	
-	mg.register_ore({
-		name = "moreores:mineral_mithril",
-		wherein = "default:stone",
-		seeddiff = 9,
-		maxvdistance = 10.5,
-		maxheight = -512,
-		seglenghtn = 1,
-		seglenghtdev = 2,
-		sizen = 5,
-		sizedev = 3,
-		segincln = 0,
-		segincldev = 0.6,
-		turnangle = 57,
-	})
+mg.registered_trees = {}
+function mg.register_tree(treedef)
+	if treedef.min_humidity == nil then
+		treedef.min_humidity = -2
+	end
+	if treedef.max_humidity == nil then
+		treedef.max_humidity = 2
+	end
+	if treedef.min_biome_humidity == nil then
+		treedef.min_biome_humidity = -2
+	end
+	if treedef.max_biome_humidity == nil then
+		treedef.max_biome_humidity = 2
+	end
+	if treedef.min_temperature == nil then
+		treedef.min_temperature = -2
+	end
+	if treedef.max_temperature == nil then
+		treedef.max_temperature = 2
+	end
+	if treedef.min_biome_temperature == nil then
+		treedef.min_biome_temperature = -2
+	end
+	if treedef.max_biome_temperature == nil then
+		treedef.max_biome_temperature = 2
+	end
+	mg.registered_trees[#mg.registered_trees+1] = treedef
 end
 
-if minetest.get_modpath("technic") ~= nil then
-	mg.register_ore({
-		name = "technic:mineral_uranium",
-		wherein = "default:stone",
-		seeddiff = 11,
-		maxvdistance = 10.5,
-		maxheight = -80,
-		minheight = -300,
-		sizen = 20,
-		sizedev = 10,
-		seglenghtn = 3,
-		seglenghtdev = 1,
-		segincln = 0.4,
-		segincldev = 0.6,
-		turnangle = 57,
-		numperblock = 1,
-		fork_chance = 0
-	})
-	
-	mg.register_ore({
-		name = "technic:mineral_chromium",
-		wherein = "default:stone",
-		seeddiff = 12,
-		maxvdistance = 10.5,
-		maxheight = -100,
-		sizen = 50,
-		sizedev = 20,
-		seglenghtn = 8,
-		seglenghtdev = 3,
-		segincln = 0,
-		segincldev = 0.6,
-		turnangle = 57,
-		forkturnangle = 57,
-		numperblock = 2
-	})
-	
-	mg.register_ore({
-		name = "technic:mineral_zinc",
-		wherein = "default:stone",
-		seeddiff = 13,
-		maxvdistance = 10.5,
-		maxheight = 2,
-		seglenghtn = 15,
-		seglenghtdev = 6,
-		segincln = 0,
-		segincldev = 0.6,
-		turnangle = 57,
-		forkturnangle = 57,
-		numperblock = 2
-	})
-	
-	if technic.config:get_bool("enable_granite_generation") then
-		mg.register_ore_sheet({
-			name = "technic:granite",
-			wherein = "default:stone",
-			height_min = -31000,
-			height_max = -150,
-			tmin = 3,
-			tmax = 6,
-			threshhold = 0.4,
-			noise_params = {offset=0, scale=15, spread={x=130, y=130, z=130}, seed=24, octaves=3, persist=0.70}
-		})
-	end
-	
-	if technic.config:get_bool("enable_marble_generation") then
-		mg.register_ore_sheet({
-			name = "technic:marble",
-			wherein = "default:stone",
-			height_min = -31000,
-			height_max = -50,
-			tmin = 3,
-			tmax = 6,
-			threshhold = 0.4,
-			noise_params = {offset=0, scale=15, spread={x=130, y=130, z=130}, seed=23, octaves=3, persist=0.70}
-		})
-	end
-end
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/oredesc.lua")
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/trees.lua")

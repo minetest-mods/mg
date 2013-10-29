@@ -391,27 +391,7 @@ function generate_village(vx, vz, vs, vh, minp, maxp, data, a, vnoise, to_grow)
 	local pr = PseudoRandom(seed)
 	for _, g in ipairs(to_grow) do
 		if pos_far_buildings(g.x, g.z, bpos) then
-			if g.content == c_sapling then
-				add_tree(data, a, g.x, g.y, g.z, minp, maxp, c_tree, c_leaves, pr)
-			elseif g.content == c_junglesapling then
-				add_jungletree(data, a, g.x, g.y, g.z, minp, maxp, c_jungletree, c_jungleleaves, pr)
-			elseif g.content == c_savannasapling then
-				add_savannatree(data, a, g.x, g.y, g.z, minp, maxp, c_savannatree, c_savannaleaves, pr)
-			elseif g.content == "savannabush" then
-				add_savannabush(data, a, g.x, g.y, g.z, minp, maxp, c_savannatree, c_savannaleaves, pr)
-			elseif g.content == c_pinesapling then
-				add_pinetree(data, a, g.x, g.y, g.z, minp, maxp, c_pinetree, c_pineleaves, c_snow, pr)
-			elseif g.content == c_cactus then
-				ch = pr:next(0, 3)
-				for yy = math.max(g.y, minp.y), math.min(g.y+ch, maxp.y) do
-					data[a:index(g.x, yy, g.z)] = c_cactus
-				end
-			elseif g.content == c_papyrus then
-				ch = pr:next(1, 3)
-				for yy = math.max(g.y, minp.y), math.min(g.y+ch, maxp.y) do
-					data[a:index(g.x, yy, g.z)] = c_papyrus
-				end
-			end
+			mg.registered_trees[g.id].grow(data, a, g.x, g.y, g.z, minp, maxp, pr)
 		end
 	end
 	local extranodes = {}
