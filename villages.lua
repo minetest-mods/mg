@@ -34,7 +34,7 @@ local function choose_building(l, pr)
 	while true do
 		local p = pr:next(1, 3000)
 		for b, i in ipairs(buildings) do
-			if i.max_weight > p then
+			if i.max_weight >= p then
 				btype = b
 				break
 			end
