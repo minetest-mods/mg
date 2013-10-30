@@ -153,7 +153,7 @@ minetest.register_abm({
 		local minp, maxp = vm:read_from_map({x=pos.x-10, y=pos.y, z=pos.z-10}, {x=pos.x+10, y=pos.y+20, z=pos.z+10})
 		local a = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
 		local data = vm:get_data()
-		add_pinetree(data, a, pos.x, pos.y, pos.z, minp, maxp, PseudoRandom(math.random(1,100000)))
+		add_pinetree(data, a, pos.x, pos.y, pos.z, minp, maxp, PseudoRandom(math.random(1,100000)), c_air)
 		vm:set_data(data)
 		vm:write_to_map(data)
 	end

@@ -245,7 +245,8 @@ function add_savannabush(data, a, x, y, z, minp, maxp, pr)
 	end
 end
 
-function add_pinetree(data, a, x, y, z, minp, maxp, pr)
+function add_pinetree(data, a, x, y, z, minp, maxp, pr, snow)
+	if snow == nil then snow = c_snow end
 	local th = pr:next(9, 13)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
@@ -256,8 +257,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy-1) do
 	for zz=math.max(minp.z, z-3), math.min(maxp.z, z+3) do
 		if pr:next(1, 100) < 80 then
-			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
-			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, snow)
+			add_leaves(data, a:index(xx, yy+1, zz), snow)
 		end
 	end
 	end
@@ -266,8 +267,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 	for yy=math.max(minp.y, maxy), math.min(maxp.y, maxy) do
 	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
 		if pr:next(1, 100) < 85 then
-			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
-			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, snow)
+			add_leaves(data, a:index(xx, yy+1, zz), snow)
 		end
 	end
 	end
@@ -276,15 +277,15 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 	for yy=math.max(minp.y, maxy+1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
 		if pr:next(1, 100) < 90 then
-			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
-			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, snow)
+			add_leaves(data, a:index(xx, yy+1, zz), snow)
 		end
 	end
 	end
 	end
 	if maxy+1<=maxp.y and maxy+1>=minp.y then
-		add_leaves(data, a:index(x, maxy+1, z), c_pineleaves, c_snow)
-		add_leaves(data, a:index(x, maxy+2, z), c_snow)
+		add_leaves(data, a:index(x, maxy+1, z), c_pineleaves, snow)
+		add_leaves(data, a:index(x, maxy+2, z), snow)
 	end
 	local my = 0
 	for i=1,20 do
@@ -297,8 +298,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
 			if minp.y<=yy and maxp.y>=yy then
-				add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
-				add_leaves(data, a:index(xx, yy+1, zz), c_snow)
+				add_leaves(data, a:index(xx, yy, zz), c_pineleaves, snow)
+				add_leaves(data, a:index(xx, yy+1, zz), snow)
 			end
 		end
 		end
@@ -307,8 +308,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 	for yy=math.max(minp.y, my+1), math.min(maxp.y, my+1) do
 	for zz=math.max(minp.z, z-2), math.min(maxp.z, z+2) do
 		if pr:next(1, 100) < 85 then
-			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
-			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, snow)
+			add_leaves(data, a:index(xx, yy+1, zz), snow)
 		end
 	end
 	end
@@ -317,8 +318,8 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 	for yy=math.max(minp.y, my+2), math.min(maxp.y, my+2) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
 		if pr:next(1, 100) < 90 then
-			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, c_snow)
-			add_leaves(data, a:index(xx, yy+1, zz), c_snow)
+			add_leaves(data, a:index(xx, yy, zz), c_pineleaves, snow)
+			add_leaves(data, a:index(xx, yy+1, zz), snow)
 		end
 	end
 	end
