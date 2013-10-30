@@ -127,12 +127,12 @@ local function add_leaves(data, vi, c_leaves, c_snow)
 end
 
 function add_tree(data, a, x, y, z, minp, maxp, pr)
-	th = pr:next(3, 4)
+	local th = pr:next(3, 4)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_tree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
@@ -141,9 +141,9 @@ function add_tree(data, a, x, y, z, minp, maxp, pr)
 	end
 	end
 	for i=1,8 do
-		xi = pr:next(x-2, x+1)
-		yi = pr:next(maxy-1, maxy+1)
-		zi = pr:next(z-2, z+1)
+		local xi = pr:next(x-2, x+1)
+		local yi = pr:next(maxy-1, maxy+1)
+		local zi = pr:next(z-2, z+1)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
@@ -155,12 +155,12 @@ function add_tree(data, a, x, y, z, minp, maxp, pr)
 end
 
 function add_jungletree(data, a, x, y, z, minp, maxp, pr)
-	th = pr:next(7, 11)
+	local th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_jungletree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
@@ -169,9 +169,9 @@ function add_jungletree(data, a, x, y, z, minp, maxp, pr)
 	end
 	end
 	for i=1,30 do
-		xi = pr:next(x-3, x+2)
-		yi = pr:next(maxy-2, maxy+1)
-		zi = pr:next(z-3, z+2)
+		local xi = pr:next(x-3, x+2)
+		local yi = pr:next(maxy-2, maxy+1)
+		local zi = pr:next(z-3, z+2)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
@@ -183,12 +183,12 @@ function add_jungletree(data, a, x, y, z, minp, maxp, pr)
 end
 
 function add_savannatree(data, a, x, y, z, minp, maxp, pr)
-	th = pr:next(7, 11)
+	local th = pr:next(7, 11)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_savannatree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-1), math.min(maxp.x, x+1) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy+1) do
 	for zz=math.max(minp.z, z-1), math.min(maxp.z, z+1) do
@@ -197,9 +197,9 @@ function add_savannatree(data, a, x, y, z, minp, maxp, pr)
 	end
 	end
 	for i=1,20 do
-		xi = pr:next(x-3, x+2)
-		yi = pr:next(maxy-2, maxy)
-		zi = pr:next(z-3, z+2)
+		local xi = pr:next(x-3, x+2)
+		local yi = pr:next(maxy-2, maxy)
+		local zi = pr:next(z-3, z+2)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for yy=math.max(minp.y, yi), math.min(maxp.y, yi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
@@ -209,9 +209,9 @@ function add_savannatree(data, a, x, y, z, minp, maxp, pr)
 		end
 	end
 	for i=1,15 do
-		xi = pr:next(x-3, x+2)
-		yy = pr:next(maxy-6, maxy-5)
-		zi = pr:next(z-3, z+2)
+		local xi = pr:next(x-3, x+2)
+		local yy = pr:next(maxy-6, maxy-5)
+		local zi = pr:next(z-3, z+2)
 		for xx=math.max(minp.x, xi), math.min(maxp.x, xi+1) do
 		for zz=math.max(minp.z, zi), math.min(maxp.z, zi+1) do
 			if minp.y<=yy and maxp.y>=yy then
@@ -223,8 +223,8 @@ function add_savannatree(data, a, x, y, z, minp, maxp, pr)
 end
 
 function add_savannabush(data, a, x, y, z, minp, maxp, pr)
-	bh = pr:next(1, 2)
-	bw = pr:next(2, 4)
+	local bh = pr:next(1, 2)
+	local bw = pr:next(2, 4)
 
 	for xx=math.max(minp.x, x-bw), math.min(maxp.x, x+bw) do
 		for zz=math.max(minp.z, z-bw), math.min(maxp.z, z+bw) do
@@ -246,12 +246,12 @@ function add_savannabush(data, a, x, y, z, minp, maxp, pr)
 end
 
 function add_pinetree(data, a, x, y, z, minp, maxp, pr)
-	th = pr:next(9, 13)
+	local th = pr:next(9, 13)
 	for yy=math.max(minp.y, y), math.min(maxp.y, y+th) do
 		local vi = a:index(x, yy, z)
 		data[vi] = c_pinetree
 	end
-	maxy = y+th
+	local maxy = y+th
 	for xx=math.max(minp.x, x-3), math.min(maxp.x, x+3) do
 	for yy=math.max(minp.y, maxy-1), math.min(maxp.y, maxy-1) do
 	for zz=math.max(minp.z, z-3), math.min(maxp.z, z+3) do
@@ -286,11 +286,11 @@ function add_pinetree(data, a, x, y, z, minp, maxp, pr)
 		add_leaves(data, a:index(x, maxy+1, z), c_pineleaves, c_snow)
 		add_leaves(data, a:index(x, maxy+2, z), c_snow)
 	end
-	my = 0
+	local my = 0
 	for i=1,20 do
-		xi = pr:next(x-3, x+2)
-		yy = pr:next(maxy-6, maxy-5)
-		zi = pr:next(z-3, z+2)
+		local xi = pr:next(x-3, x+2)
+		local yy = pr:next(maxy-6, maxy-5)
+		local zi = pr:next(z-3, z+2)
 		if yy > my then
 			my = yy
 		end
@@ -332,13 +332,13 @@ dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/ores.lua")
 
 local function get_biome_table(minp, humidity, temperature)
-	l = {}
+	local l = {}
 	for xi = -1, 1 do
 	for zi = -1, 1 do
-		mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+80,z=minp.z+zi*80+80}
-		pr = PseudoRandom(get_bseed(mnp))
-		bxp, bzp = pr:next(mnp.x, mxp.x), pr:next(mnp.z, mxp.z)
-		h, t = humidity:get2d({x=bxp, y=bzp}), temperature:get2d({x=bxp, y=bzp})
+		local mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+80,z=minp.z+zi*80+80}
+		local pr = PseudoRandom(get_bseed(mnp))
+		local bxp, bzp = pr:next(mnp.x, mxp.x), pr:next(mnp.z, mxp.z)
+		local h, t = humidity:get2d({x=bxp, y=bzp}), temperature:get2d({x=bxp, y=bzp})
 		l[#l+1] = {x=bxp, z=bzp, h=h, t=t}
 	end
 	end
@@ -350,8 +350,8 @@ local function get_distance(x1, x2, z1, z2)
 end
 
 local function get_nearest_biome(biome_table, x, z)
-	m = math.huge
-	k = 0
+	local m = math.huge
+	local k = 0
 	for key, bdef in ipairs(biome_table) do
 		local dist = get_distance(bdef.x, x, bdef.z, z)
 		if dist<m then
@@ -605,7 +605,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		generate_vein(minetest.get_content_id(ore.name), minetest.get_content_id(ore.wherein), minp, maxp, ore.seeddiff, ore, data, a, va)
 	end
 	
-	to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
+	local to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
 
 	vm:set_data(data)
 
@@ -623,16 +623,16 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			meta = minetest.get_meta(n.pos)
 			meta:from_table(n.meta)
 			if n.node.name == "default:chest" then
-				inv = meta:get_inventory()
-				items = inv:get_list("main")
+				local inv = meta:get_inventory()
+				local items = inv:get_list("main")
 				for i=1, inv:get_size("main") do
 					inv:set_stack("main", i, ItemStack(""))
 				end
-				numitems = pr:next(3, 20)
+				local numitems = pr:next(3, 20)
 				for i=1,numitems do
-					ii = pr:next(1, #items)
-					prob = items[ii]:get_count() % 2 ^ 8
-					stacksz = math.floor(items[ii]:get_count() / 2 ^ 8)
+					local ii = pr:next(1, #items)
+					local prob = items[ii]:get_count() % 2 ^ 8
+					local stacksz = math.floor(items[ii]:get_count() / 2 ^ 8)
 					if pr:next(0, prob) == 0 and stacksz>0 then
 						stk = ItemStack({name=items[ii]:get_name(), count=pr:next(1, stacksz), wear=items[ii]:get_count(), metadata=items[ii]:get_metadata()})
 						local ind = pr:next(1, inv:get_size("main"))

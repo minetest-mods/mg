@@ -30,8 +30,9 @@ end
 
 local function choose_building(l, pr)
 	--::choose::
+	local btype
 	while true do
-		p = pr:next(1, 3000)
+		local p = pr:next(1, 3000)
 		for b, i in ipairs(buildings) do
 			if i.max_weight > p then
 				btype = b
@@ -69,8 +70,8 @@ local function choose_building_rot(l, pr, orient)
 		end
 		rotation = (orient+buildings[btype].orients[pr:next(1, #buildings[btype].orients)])%4
 	end
-	bsizex = buildings[btype].sizex
-	bsizez = buildings[btype].sizez
+	local bsizex = buildings[btype].sizex
+	local bsizez = buildings[btype].sizez
 	if rotation%2 == 1 then
 		bsizex, bsizez = bsizez, bsizex
 	end
