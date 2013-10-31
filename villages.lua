@@ -8,7 +8,7 @@ function village_at_point(minp, noise1)
 			local s = pi:next(1, 400)
 			local x = pi:next(mp.x, mp.x+79)
 			local z = pi:next(mp.z, mp.z+79)
-			if s<=28 and noise1:get2d({x=x, z=z})>=-0.3 then return 0,0,0,0 end
+			if s<=28 and noise1:get2d({x=x, y=z})>=-0.3 then return 0,0,0,0 end
 		end
 	end
 	end
