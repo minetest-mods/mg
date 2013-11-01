@@ -70,6 +70,7 @@ minetest.register_abm({
 		add_savannatree(data, a, pos.x, pos.y, pos.z, minp, maxp, PseudoRandom(math.random(1,100000)))
 		vm:set_data(data)
 		vm:write_to_map(data)
+		vm:update_map()
 	end
 })
 
@@ -156,6 +157,7 @@ minetest.register_abm({
 		add_pinetree(data, a, pos.x, pos.y, pos.z, minp, maxp, PseudoRandom(math.random(1,100000)), c_air)
 		vm:set_data(data)
 		vm:write_to_map(data)
+		vm:update_map()
 	end
 })
 

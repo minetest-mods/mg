@@ -1,5 +1,4 @@
 function village_at_point(minp, noise1)
-	local bseed
 	for xi = -2, 2 do
 	for zi = -2, 0 do
 		if xi~=0 or zi~=0 then

@@ -332,10 +332,11 @@ dofile(minetest.get_modpath(minetest.get_current_modname()).."/buildings.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/villages.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/ores.lua")
 
-local function get_biome_table(minp, humidity, temperature)
+function get_biome_table(minp, humidity, temperature, range)
+	if range == nil then range = 1 end
 	local l = {}
-	for xi = -1, 1 do
-	for zi = -1, 1 do
+	for xi = -range, range do
+	for zi = -range, range do
 		local mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+80,z=minp.z+zi*80+80}
 		local pr = PseudoRandom(get_bseed(mnp))
 		local bxp, bzp = pr:next(mnp.x, mxp.x), pr:next(mnp.z, mxp.z)
@@ -350,7 +351,7 @@ local function get_distance(x1, x2, z1, z2)
 	return (x1-x2)*(x1-x2)+(z1-z2)*(z1-z2)
 end
 
-local function get_nearest_biome(biome_table, x, z)
+function get_nearest_biome(biome_table, x, z)
 	local m = math.huge
 	local k = 0
 	for key, bdef in ipairs(biome_table) do
@@ -703,3 +704,5 @@ end
 
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/oredesc.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/trees.lua")
+
+dofile(minetest.get_modpath(minetest.get_current_modname()).."/snow.lua")
