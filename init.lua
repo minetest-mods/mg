@@ -381,8 +381,7 @@ local function copytable(t)
 	return t2
 end
 
-minetest.register_on_generated(function(minp, maxp, seed)
-	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
+local function mg_generate(minp, maxp, emin, emax, vm)
 	local a = VoxelArea:new{
 		MinEdge={x=emin.x, y=emin.y, z=emin.z},
 		MaxEdge={x=emax.x, y=emax.y, z=emax.z},
@@ -647,7 +646,54 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			end
 		end
 	end
+end
+
+minetest.register_on_generated(function(minp, maxp, seed)
+	print(dump(minp))
+	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
+	mg_generate(minp, maxp, emin, emax, vm)
 end)
+
+local function mg_regenerate(pos, name)
+	local minp = {x = 80*math.floor((pos.x+32)/80)-32,
+			y = 80*math.floor((pos.y+32)/80)-32,
+			z = 80*math.floor((pos.z+32)/80)-32}
+	local maxp = {x = minp.x+79, y = minp.y+79, z = minp.z+79}
+	local vm = minetest.get_voxel_manip()
+	local emin, emax = vm:read_from_map(minp, maxp)
+	local data = {}
+	for i = 1, (maxp.x-minp.x+1)*(maxp.y-minp.y+1)*(maxp.z-minp.z)+1 do
+		data[i] = c_air
+	end
+	vm:set_data(data)
+	vm:write_to_map()
+	mg_generate(minp, maxp, emin, emax, vm)
+	
+	minetest.chat_send_player(name, "Regenerating done, fixing lighting. This may take a while...")
+	-- Fix lighting
+	local nodes = minetest.find_nodes_in_area(minp, maxp, "air")
+	local nnodes = #nodes
+	local p = math.floor(nnodes/5)
+        local dig_node = minetest.dig_node
+        for _, pos in ipairs(nodes) do
+                dig_node(pos)
+                if _%p == 0 then
+                	minetest.chat_send_player(name, math.floor(_/nnodes*100).."%")
+                end
+        end
+        minetest.chat_send_player(name, "Done")
+end
+
+minetest.register_chatcommand("mg_regenerate", {
+	privs = {server = true},
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if player then
+			local pos = player:getpos()
+			mg_regenerate(pos, name)
+		end
+	end,
+})
 
 mg.registered_ores = {}
 function mg.register_ore(oredef)
