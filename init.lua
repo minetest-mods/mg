@@ -1,5 +1,7 @@
 mg = {}
 
+local ENABLE_SNOW = false
+
 local DMAX = 20
 local AREA_SIZE = 80
 
@@ -751,4 +753,6 @@ end
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/oredesc.lua")
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/trees.lua")
 
-dofile(minetest.get_modpath(minetest.get_current_modname()).."/snow.lua")
+if ENABLE_SNOW then
+	dofile(minetest.get_modpath(minetest.get_current_modname()).."/snow.lua")
+end
