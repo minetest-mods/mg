@@ -651,7 +651,6 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 end
 
 minetest.register_on_generated(function(minp, maxp, seed)
-	print(dump(minp))
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	mg_generate(minp, maxp, emin, emax, vm)
 end)
