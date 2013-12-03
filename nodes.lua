@@ -12,6 +12,7 @@ minetest.register_node("mg:savannaleaves", {
 	tiles = {"mg_dry_leaves.png"},
 	paramtype = "light",
 	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
+	waving = 1,
 	drop = {
 		max_items = 1,
 		items = {
@@ -99,6 +100,7 @@ minetest.register_node("mg:pineleaves", {
 	tiles = {"mg_pine_leaves.png"},
 	paramtype = "light",
 	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
+	waving = 1,
 	drop = {
 		max_items = 1,
 		items = {
@@ -165,5 +167,5 @@ minetest.register_node("mg:ignore", {
 	description = "MG Ignore",
 	drawtype = "airlike",
 	sunlight_propagates = true,
-	groups = {snappy=2},
+	groups = {snappy=2,not_in_creative_inventory=1},
 })
