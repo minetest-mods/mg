@@ -404,10 +404,11 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	--local noise3 = minetest.get_perlin(42, 3, 0.5, 32)
 	--local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
 	
+	local vcr = VILLAGE_CHECK_RADIUS
 	local vx,vz,vs,vh
 	local exitloop = false
-	for xi = -1, 1 do
-	for zi = -1, 1 do
+	for xi = -vcr, vcr do
+	for zi = -vcr, vcr do
 		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80}, noise1raw)
 		if vs ~= 0 then
 			--goto out
@@ -663,7 +664,7 @@ local function mg_regenerate(pos, name)
 	local vm = minetest.get_voxel_manip()
 	local emin, emax = vm:read_from_map(minp, maxp)
 	local data = {}
-	for i = 1, (maxp.x-minp.x+1)*(maxp.y-minp.y+1)*(maxp.z-minp.z)+1 do
+	for i = 1, (maxp.x-minp.x+1)*(maxp.y-minp.y+1)*(maxp.z-minp.z+1) do
 		data[i] = c_air
 	end
 	vm:set_data(data)

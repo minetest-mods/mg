@@ -17,19 +17,19 @@ buildings = {
 
 local gravel = minetest.get_content_id("default:gravel")
 local rgravel = {}
-for i = 1, 200 do
+for i = 1, 2000 do
 	rgravel[i] = gravel
 end
 local rgravel2 = {}
-for i = 1, 200 do
+for i = 1, 2000 do
 	rgravel2[i] = rgravel
 end
 local rair = {}
-for i = 1, 200 do
+for i = 1, 2000 do
 	rair[i] = c_air
 end
 local rair2 = {}
-for i = 1, 200 do
+for i = 1, 2000 do
 	rair2[i] = rair
 end
 local road_scm = {rgravel2, rair2}
