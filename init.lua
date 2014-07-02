@@ -638,7 +638,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 					local prob = items[ii]:get_count() % 2 ^ 8
 					local stacksz = math.floor(items[ii]:get_count() / 2 ^ 8)
 					if pr:next(0, prob) == 0 and stacksz>0 then
-						stk = ItemStack({name=items[ii]:get_name(), count=pr:next(1, stacksz), wear=items[ii]:get_count(), metadata=items[ii]:get_metadata()})
+						stk = ItemStack({name=items[ii]:get_name(), count=pr:next(1, stacksz), wear=items[ii]:get_wear(), metadata=items[ii]:get_metadata()})
 						local ind = pr:next(1, inv:get_size("main"))
 						while not inv:get_stack("main",ind):is_empty() do
 							ind = pr:next(1, inv:get_size("main"))

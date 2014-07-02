@@ -3,7 +3,7 @@ local function numk(tbl)
 	for a, b in pairs(tbl) do
 		i = i + 1
 	end
-	return o
+	return i
 end
 
 function import_scm(scm)
