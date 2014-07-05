@@ -697,6 +697,34 @@ minetest.register_chatcommand("mg_regenerate", {
 	end,
 })
 
+local function spawnplayer(player)
+	local noise1 = minetest.get_perlin(12345, 6, 0.5, 256)
+	local min_dist = math.huge
+	local min_pos = {x = 0, y = 3, z = 0}
+	for bx = -20, 20 do
+	for bz = -20, 20 do
+		local minp = {x = -32 + 80 * bx, y = -32, z = -32 + 80 * bz}
+		local vx, vz, vs, vh = village_at_point(minp, noise1)
+		if vs ~= 0 then
+			if math.abs(vx) + math.abs(vz) < min_dist then
+				min_pos = {x = vx, y = vh + 2, z = vz}
+				min_dist = math.abs(vx) + math.abs(vz)
+			end
+		end
+	end
+	end
+	player:setpos(min_pos)
+end
+
+minetest.register_on_newplayer(function(player)
+	spawnplayer(player)
+end)
+
+minetest.register_on_respawnplayer(function(player)
+	spawnplayer(player)
+	return true
+end)
+
 mg.registered_ores = {}
 function mg.register_ore(oredef)
 	if oredef.wherein == nil then

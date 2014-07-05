@@ -22,29 +22,29 @@ local function is_village_block(minp)
 end
 
 function village_at_point(minp, noise1)
-	if not is_village_block(minp) then return 0,0,0,0 end
+	if not is_village_block(minp) then return 0, 0, 0, 0 end
 	local vcr, vcc = VILLAGE_CHECK_RADIUS, VILLAGE_CHECK_COUNT
 	for xi = -vcr, vcr, vcc do
 	for zi = -vcr, 0, vcc do
-		if xi~=0 or zi~=0 then
-			local mp = {x=minp.x+80*xi, z=minp.z+80*zi}
+		if xi ~= 0 or zi ~= 0 then
+			local mp = {x = minp.x + 80*xi, z = minp.z + 80*zi}
 			local pi = PseudoRandom(get_bseed(mp))
 			local s = pi:next(1, 400)
-			local x = pi:next(mp.x, mp.x+79)
-			local z = pi:next(mp.z, mp.z+79)
-			if s<=VILLAGE_CHANCE and noise1:get2d({x=x, y=z})>=-0.3 then return 0,0,0,0 end
+			local x = pi:next(mp.x, mp.x + 79)
+			local z = pi:next(mp.z, mp.z + 79)
+			if s <= VILLAGE_CHANCE and noise1:get2d({x = x, y = z}) >= -0.3 then return 0, 0, 0, 0 end
 		end
 	end
 	end
 	local pr = PseudoRandom(get_bseed(minp))
-	if pr:next(1,400)>VILLAGE_CHANCE then return 0,0,0,0 end
-	local x = pr:next(minp.x, minp.x+79)
-	local z = pr:next(minp.z, minp.z+79)
-	if noise1:get2d({x=x, y=z})<-0.3 then return 0,0,0,0 end
+	if pr:next(1, 400) > VILLAGE_CHANCE then return 0, 0, 0, 0 end
+	local x = pr:next(minp.x, minp.x + 79)
+	local z = pr:next(minp.z, minp.z + 79)
+	if noise1:get2d({x = x, y = z}) < -0.3 then return 0, 0, 0, 0 end
 	local size = pr:next(VILLAGE_MIN_SIZE, VILLAGE_MAX_SIZE)
 	local height = pr:next(5, 20)
-	print("A village spawned at: x="..x..", z="..z)
-	return x,z,size,height
+	--print("A village spawned at: x = "..x..", z = "..z)
+	return x, z, size, height
 end
 
 --local function dist_center2(ax, bsizex, az, bsizez)
