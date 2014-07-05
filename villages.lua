@@ -275,7 +275,7 @@ local function generate_bpos(village, pr, vnoise)
 	return l
 end
 
-local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
+local function generate_building(pos, minp, maxp, data, param2_data, a, pr, extranodes)
 	local binfo = buildings[pos.btype]
 	local scm
 	if type(binfo.scm) == "string" then
@@ -286,15 +286,19 @@ local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
 	scm = rotate(scm, pos.brotate)
 	local c_ignore = minetest.get_content_id("ignore")
 	local c_air = minetest.get_content_id("air")
-	local t
 	for x = 0, pos.bsizex-1 do
 	for y = 0, binfo.ysize-1 do
 	for z = 0, pos.bsizez-1 do
 		ax, ay, az = pos.x+x, pos.y+y+binfo.yoff, pos.z+z
 		if (ax >= minp.x and ax <= maxp.x) and (ay >= minp.y and ay <= maxp.y) and (az >= minp.z and az <= maxp.z) then
-			t = scm[y+1][x+1][z+1]
+			local t = scm[y+1][x+1][z+1]
 			if type(t) == "table" then
-				table.insert(extranodes, {node=t.node, meta=t.meta, pos={x=ax, y=ay, z=az},})
+				if t.extranode then
+					table.insert(extranodes, {node = t.node, meta = t.meta, pos = {x = ax, y = ay, z = az}})
+				else
+					data[a:index(ax, ay, az)] = t.node.content
+					param2_data[a:index(ax, ay, az)] = t.node.param2
+				end
 			elseif t ~= c_ignore then
 				data[a:index(ax, ay, az)] = t
 			end
@@ -316,7 +320,7 @@ local function pos_far_buildings(x, z, l)
 	return true
 end
 
-function generate_village(village, minp, maxp, data, a, vnoise)
+function generate_village(village, minp, maxp, data, param2_data, a, vnoise)
 	local vx, vz, vs, vh = village.vx, village.vz, village.vs, village.vh
 	local seed = get_bseed({x=vx, z=vz})
 	local pr_village = PseudoRandom(seed)
@@ -331,7 +335,7 @@ function generate_village(village, minp, maxp, data, a, vnoise)
 
 	local extranodes = {}
 	for _, pos in ipairs(bpos) do
-		generate_building(pos, minp, maxp, data, a, pr_village, extranodes)
+		generate_building(pos, minp, maxp, data, param2_data, a, pr_village, extranodes)
 	end
 	return extranodes
 end

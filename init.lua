@@ -437,6 +437,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	local biome_table = get_biome_table(minp, noise_humidity_raw, noise_temperature_raw)
 	
 	local data = vm:get_data()
+	local param2_data = vm:get_param2_data()
 
 	local ni = 1
 	local above_top
@@ -613,10 +614,11 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	end
 	
 	for _, village in ipairs(villages) do
-		village.to_add = generate_village(village, minp, maxp, data, a, village_noise)
+		village.to_add = generate_village(village, minp, maxp, data, param2_data, a, village_noise)
 	end
 
 	vm:set_data(data)
+	vm:set_param2_data(param2_data)
 
 	vm:calc_lighting(
 		{x=minp.x-16, y=minp.y, z=minp.z-16},

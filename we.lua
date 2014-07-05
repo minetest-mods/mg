@@ -59,13 +59,26 @@ function import_scm(scm)
 		local paramtype2 = minetest.registered_nodes[ent.name] and minetest.registered_nodes[ent.name].paramtype2
 		if ent.name == "mg:ignore" or not paramtype2 then
 				scm[ent.y][ent.x][ent.z] = c_ignore
-		elseif paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" and numk(ent.meta.fields) == 0 and numk(ent.meta.inventory) == 0 then
-			scm[ent.y][ent.x][ent.z] = minetest.get_content_id(ent.name)
+		elseif numk(ent.meta.fields) == 0 and numk(ent.meta.inventory) == 0 then
+			if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" then
+				scm[ent.y][ent.x][ent.z] = minetest.get_content_id(ent.name)
+			else
+				scm[ent.y][ent.x][ent.z] = {
+					node = {
+						content = minetest.get_content_id(ent.name),
+						param2 = ent.param2},
+					rotation = paramtype2}
+			end
 		else
 			if paramtype2 ~= "facedir" and paramtype2 ~= "wallmounted" then
-				scm[ent.y][ent.x][ent.z] = {node={name=ent.name, param2=ent.param2}, meta=ent.meta}
+				scm[ent.y][ent.x][ent.z] = {extranode = true,
+					node = {name = ent.name, param2 = ent.param2},
+					meta = ent.meta}
 			else
-				scm[ent.y][ent.x][ent.z] = {node={name=ent.name, param2=ent.param2}, meta=ent.meta, rotation = paramtype2}
+				scm[ent.y][ent.x][ent.z] = {extranode = true,
+					node = {name = ent.name, param2 = ent.param2},
+					meta = ent.meta,
+					rotation = paramtype2}
 			end
 		end
 	end
