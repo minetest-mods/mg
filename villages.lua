@@ -51,8 +51,8 @@ end
 --	return math.max((ax+bsizex)*(ax+bsizex),ax*ax)+math.max((az+bsizez)*(az+bsizez),az*az)
 --end
 
-local function inside_village2(bx, sx, bz, sz, vx, vz, vs, vnoise)
-	return inside_village(bx, bz, vx, vz, vs, vnoise) and inside_village(bx+sx, bz, vx, vz, vs, vnoise) and inside_village(bx, bz+sz, vx, vz, vs, vnoise) and inside_village(bx+sx, bz+sz, vx, vz, vs, vnoise)
+local function inside_village2(bx, sx, bz, sz, village, vnoise)
+	return inside_village(bx, bz, village, vnoise) and inside_village(bx+sx, bz, village, vnoise) and inside_village(bx, bz+sz, village, vnoise) and inside_village(bx+sx, bz+sz, village, vnoise)
 end
 
 local function choose_building(l, pr)
@@ -124,7 +124,8 @@ local function when(a, b, c)
 	if a then return b else return c end
 end
 
-local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, vnoise)
+local function generate_road(village, l, pr, roadsize, rx, rz, rdx, rdz, vnoise)
+	local vx, vz, vh, vs = village.vx, village.vz, village.vh, village.vs
 	local calls_to_do = {}
 	local rxx = rx
 	local rzz = rz
@@ -138,7 +139,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 		orient1 = 3
 		orient2 = 1
 	end
-	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
+	while inside_village(rx, rz, village, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
 		if roadsize > 1 and pr:next(1, 4) == 1 then
 			--generate_road(vx, vz, vs, vh, l, pr, roadsize-1, rx, rz, math.abs(rdz), math.abs(rdx))
 			calls_to_do[#calls_to_do+1] = {rx=rx+(roadsize - 1)*rdx, rz=rz+(roadsize - 1)*rdz, rdx=math.abs(rdz), rdz=math.abs(rdx)}
@@ -154,14 +155,14 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			local bz
 			local tries = 0
 			while true do
-				if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
+				if not inside_village(rx, rz, village, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
 					exitloop = true
 					break
 				end
 				btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient1)
 				bx = rx + math.abs(rdz)*(roadsize+1) - when(rdx==-1, bsizex-1, 0)
 				bz = rz + math.abs(rdx)*(roadsize+1) - when(rdz==-1, bsizez-1, 0)
-				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then
+				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, village, vnoise) then
 					break
 				end
 				if tries > 5 then
@@ -183,7 +184,7 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 	end
 	rx = rxx
 	rz = rzz
-	while inside_village(rx, rz, vx, vz, vs, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
+	while inside_village(rx, rz, village, vnoise) and not road_in_building(rx, rz, rdx, rdz, roadsize, l) do
 		if roadsize > 1 and pr:next(1, 4) == 1 then
 			--generate_road(vx, vz, vs, vh, l, pr, roadsize-1, rx, rz, -math.abs(rdz), -math.abs(rdx))
 			calls_to_do[#calls_to_do+1] = {rx=rx+(roadsize - 1)*rdx, rz=rz+(roadsize - 1)*rdz, rdx=-math.abs(rdz), rdz=-math.abs(rdx)}
@@ -199,14 +200,14 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 			local bz
 			local tries = 0
 			while true do
-				if not inside_village(rx, rz, vx, vz, vs, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
+				if not inside_village(rx, rz, village, vnoise) or road_in_building(rx, rz, rdx, rdz, roadsize, l) then
 					exitloop = true
 					break
 				end
 				btype, rotation, bsizex, bsizez = choose_building_rot(l, pr, orient2)
 				bx = rx - math.abs(rdz)*(bsizex+roadsize) - when(rdx==-1, bsizex-1, 0)
 				bz = rz - math.abs(rdx)*(bsizez+roadsize) - when(rdz==-1, bsizez-1, 0)
-				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, vx, vz, vs, vnoise) then
+				if placeable(bx, bz, bsizex, bsizez, l) and inside_village2(bx, bsizex, bz, bsizez, village, vnoise) then
 					break
 				end
 				if tries > 5 then
@@ -243,133 +244,35 @@ local function generate_road(vx, vz, vs, vh, l, pr, roadsize, rx, rz, rdx, rdz, 
 		rxmin = math.min(rxx, mx)
 		rxmax = math.max(rxx, mx)
 	end
-	l[#l+1] = {x=rxmin, y=vh, z=rzmin, btype="road", bsizex=rxmax-rxmin+1, bsizez=rzmax-rzmin+1, brotate = 0}
-	for _,i in ipairs(calls_to_do) do
-		local new_roadsize = roadsize-1
+	l[#l+1] = {x = rxmin, y = vh, z = rzmin, btype = "road",
+		bsizex = rxmax - rxmin + 1, bsizez = rzmax - rzmin + 1, brotate = 0}
+	for _, i in ipairs(calls_to_do) do
+		local new_roadsize = roadsize - 1
 		if pr:next(1, 100) <= BIG_ROAD_CHANCE then
 			new_roadsize = roadsize
 		end
-		--generate_road(vx, vz, vs, vh, l, pr, new_roadsize, i.rx, i.rz, i.rdx, i.rdz, vnoise)
-		calls[calls.index] = {vx, vz, vs, vh, l, pr, new_roadsize, i.rx, i.rz, i.rdx, i.rdz, vnoise}
+		calls[calls.index] = {village, l, pr, new_roadsize, i.rx, i.rz, i.rdx, i.rdz, vnoise}
 		calls.index = calls.index+1
 	end
 end
 
-local function generate_bpos(vx, vz, vs, vh, pr, vnoise)
-	--[=[local l={}
-	local total_weight = 0
-	for _, i in ipairs(buildings) do
-		if i.weight == nil then i.weight = 1 end
-		total_weight = total_weight+i.weight
-		i.max_weight = total_weight
-	end
-	local multiplier = 3000/total_weight
-	for _,i in ipairs(buildings) do
-		i.max_weight = i.max_weight*multiplier
-	end
-	for i=1, 2000 do
-		bx = pr:next(vx-vs, vx+vs)
-		bz = pr:next(vz-vs, vz+vs)
-		::choose::
-		--[[btype = pr:next(1, #buildings)
-		if buildings[btype].chance ~= nil then
-			if pr:next(1, buildings[btype].chance) ~= 1 then
-				goto choose
-			end
-		end]]
-		p = pr:next(1, 3000)
-		for b, i in ipairs(buildings) do
-			if i.max_weight > p then
-				btype = b
-				break
-			end
-		end
-		if buildings[btype].pervillage ~= nil then
-			local n = 0
-			for j=1, #l do
-				if l[j].btype == btype then
-					n = n + 1
-				end
-			end
-			if n >= buildings[btype].pervillage then
-				goto choose
-			end
-		end
-		local rotation
-		if buildings[btype].no_rotate then
-			rotation = 0
-		else
-			rotation = pr:next(0, 3)
-		end
-		bsizex = buildings[btype].sizex
-		bsizez = buildings[btype].sizez
-		if rotation%2 == 1 then
-			bsizex, bsizez = bsizez, bsizex
-		end
-		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
-		for _, a in ipairs(l) do
-			if math.abs(bx-a.x)<=(bsizex+a.bsizex)/2+2 and math.abs(bz-a.z)<=(bsizez+a.bsizez)/2+2 then goto out end
-		end
-		l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
-		::out::
-	end
-	return l]=]--
-	local l={}
-	local rx = vx-vs
+local function generate_bpos(village, pr, vnoise)
+	local vx, vz, vh, vs = village.vx, village.vz, village.vh, village.vs
+	local l = {}
+	local rx = vx - vs
 	local rz = vz
-	while inside_village(rx, rz, vx, vz, vs, vnoise) do
+	while inside_village(rx, rz, village, vnoise) do
 		rx = rx - 1
 	end
 	rx = rx + 5
 	calls = {index = 1}
-	generate_road(vx, vz, vs, vh, l, pr, FIRST_ROADSIZE, rx, rz, 1, 0, vnoise)
+	generate_road(village, l, pr, FIRST_ROADSIZE, rx, rz, 1, 0, vnoise)
 	i = 1
 	while i < calls.index do
 		generate_road(unpack(calls[i]))
 		i = i+1
 	end
 	return l
-	--[=[while rx1 < vx+vs do
-		local building = choose_building(l, pr)
-		local rotation
-		if buildings[btype].no_rotate then
-			rotation = 0
-		else
-			rotation = pr:next(0, 3)
-		end
-		bsizex = buildings[btype].sizex
-		bsizez = buildings[btype].sizez
-		if rotation%2 == 1 then
-			bsizex, bsizez = bsizez, bsizex
-		end
-		local bx = rx1
-		rx1 = rx1+bsizex+1
-		local bz = rz - bsizez - 3
-		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
-		l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
-		::out::
-	end
-	while rx2 < vx+vs do
-		local building = choose_building(l, pr)
-		local rotation
-		if buildings[btype].no_rotate then
-			rotation = 0
-		else
-			rotation = pr:next(0, 3)
-		end
-		bsizex = buildings[btype].sizex
-		bsizez = buildings[btype].sizez
-		if rotation%2 == 1 then
-			bsizex, bsizez = bsizez, bsizex
-		end
-		local bx = rx2
-		rx2 = rx2+bsizex+1
-		local bz = rz + 3
-		if dist_center2(bx-vx, bsizex, bz-vz, bsizez)>vs*vs then goto out end
-		l[#l+1] = {x=bx, y=vh, z=bz, btype=btype, bsizex=bsizex, bsizez=bsizez, brotate = rotation}
-		::out::
-	end
-	return l]=]
 end
 
 local function generate_building(pos, minp, maxp, data, a, pr, extranodes)
@@ -404,36 +307,28 @@ end
 local MIN_DIST = 1
 
 local function pos_far_buildings(x, z, l)
-	for _,a in ipairs(l) do
-		if a.x-MIN_DIST<=x and x<=a.x+a.bsizex+MIN_DIST and a.z-MIN_DIST<=z and z<=a.z+a.bsizez+MIN_DIST then
+	for _, a in ipairs(l) do
+		if a.x - MIN_DIST <= x and x <= a.x + a.bsizex + MIN_DIST and
+		   a.z - MIN_DIST <= z and z <= a.z + a.bsizez + MIN_DIST then
 			return false
 		end
 	end
 	return true
 end
 
-local function generate_walls(bpos, data, a, minp, maxp, vh, vx, vz, vs, vnoise)
-	for x = minp.x, maxp.x do
-	for z = minp.z, maxp.z do
-		local xx = (vnoise:get2d({x=x, y=z})-2)*20+(40/(vs*vs))*((x-vx)*(x-vx)+(z-vz)*(z-vz))
-		if xx>=40 and xx <= 44 then
-			bpos[#bpos+1] = {x=x, z=z, y=vh, btype="wall", bsizex=1, bsizez=1, brotate=0}
-		end
-	end
-	end
-end
-
-function generate_village(vx, vz, vs, vh, minp, maxp, data, a, vnoise, to_grow)
+function generate_village(village, minp, maxp, data, a, vnoise)
+	local vx, vz, vs, vh = village.vx, village.vz, village.vs, village.vh
 	local seed = get_bseed({x=vx, z=vz})
 	local pr_village = PseudoRandom(seed)
-	local bpos = generate_bpos(vx, vz, vs, vh, pr_village, vnoise)
-	--generate_walls(bpos, data, a, minp, maxp, vh, vx, vz, vs, vnoise)
+	local bpos = generate_bpos(village, pr_village, vnoise)
+
 	local pr = PseudoRandom(seed)
-	for _, g in ipairs(to_grow) do
+	for _, g in ipairs(village.to_grow) do
 		if pos_far_buildings(g.x, g.z, bpos) then
 			mg.registered_trees[g.id].grow(data, a, g.x, g.y, g.z, minp, maxp, pr)
 		end
 	end
+
 	local extranodes = {}
 	for _, pos in ipairs(bpos) do
 		generate_building(pos, minp, maxp, data, a, pr_village, extranodes)

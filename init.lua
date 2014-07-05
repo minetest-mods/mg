@@ -53,17 +53,34 @@ local function cliff(x, n)
 	return 0.2*x*x - x + n*x - n*n*x*x - 0.01 * math.abs(x*x*x) + math.abs(x)*100*n*n*n*n
 end
 
-local function get_base_surface_at_point(x, z, vn, vh, ni, noise1, noise2, noise3, noise4)
+local function get_vn(x, z, noise, village)
+	local vx, vz, vs = village.vx, village.vz, village.vs
+	return (noise - 2) * 20 +
+		(40 / (vs * vs)) * ((x - vx) * (x - vx) + (z - vz) * (z - vz))
+end
+
+local function get_base_surface_at_point(x, z, vnoise, villages, ni, noise1, noise2, noise3, noise4)
 	local index = 65536*x+z
 	if cache[index] ~= nil then return cache[index] end
 	cache[index] = 25*noise1[ni]+noise2[ni]*noise3[ni]/3
 	if noise4[ni] > 0.8 then
 		cache[index] = cliff(cache[index], noise4[ni]-0.8)
 	end
-	if vn<40 then
-		cache[index] = vh
-	elseif vn<200 then
-		cache[index] = (vh*(200-vn) + cache[index]*(vn-40))/160
+	local s = 0
+	local t = 0
+	local noise = vnoise[ni]
+	for _, village in ipairs(villages) do
+		local vn = get_vn(x, z, noise, village)
+		if vn < 40 then
+			cache[index] = village.vh
+			return village.vh
+		elseif vn < 200 then
+			s = s + ((cache[index] * (vn - 40) + village.vh * (200 - vn)) / 160) / (vn - 40)
+			t = t + 1 / (vn - 40)
+		end
+	end
+	if t > 0 then
+		cache[index] = s / t
 	end
 	return cache[index]
 end
@@ -93,18 +110,8 @@ local function smooth(x, z, ...)
 	return s/w
 end
 
-local function smooth_surface(x, z, vnoise, vx, vz, vs, vh, ...)
-	local vn
-	if vs ~= 0 then
-		vn = (vnoise:get2d({x=x, y=z})-2)*20+(40/(vs*vs))*((x-vx)*(x-vx)+(z-vz)*(z-vz))
-	else
-		vn = 1000
-	end
-	return surface_at_point(x, z, vn, vh, unpack({...}))
-end
-
-function inside_village(x, z, vx, vz, vs, vnoise)
-	return ((vnoise:get2d({x=x, y=z})-2)*20+(40/(vs*vs))*((x-vx)*(x-vx)+(z-vz)*(z-vz)))<=40
+function inside_village(x, z, village, vnoise)
+	return get_vn(x, z, vnoise:get2d({x = x, y = z}), village) <= 40
 end
 
 minetest.register_on_mapgen_init(function(mgparams)
@@ -400,39 +407,29 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	local noise4 = get_perlin_map(8954, 8, 0.5, 1024, minp, maxp)
 	
 	local noise1raw = minetest.get_perlin(12345, 6, 0.5, 256)
-	--local noise2 = minetest.get_perlin(56789, 6, 0.5, 256)
-	--local noise3 = minetest.get_perlin(42, 3, 0.5, 32)
-	--local noise4 = minetest.get_perlin(8954, 8, 0.5, 1024)
 	
 	local vcr = VILLAGE_CHECK_RADIUS
-	local vx,vz,vs,vh
-	local exitloop = false
+	local villages = {}
 	for xi = -vcr, vcr do
 	for zi = -vcr, vcr do
-		vx,vz,vs,vh = village_at_point({x=minp.x+xi*80,z=minp.z+zi*80}, noise1raw)
+		local vx, vz, vs, vh = village_at_point({x = minp.x + xi * 80, z = minp.z + zi * 80}, noise1raw)
 		if vs ~= 0 then
-			--goto out
-			exitloop = true
-			break
+			villages[#villages+1] = {vx = vx, vz = vz, vs = vs, vh = vh, to_grow = {}}
 		end
 	end
-	if exitloop then break end
 	end
-	--::out::
 	
 	
 	local pr = PseudoRandom(get_bseed(minp))
 	
 	local village_noise = minetest.get_perlin(7635, 3, 0.5, 16)
+	local village_noise_map = get_perlin_map(7635, 3, 0.5, 16, minp, maxp)
 	
-	--local noise_top_layer = minetest.get_perlin(654, 6, 0.5, 256)
-	--local noise_second_layer = minetest.get_perlin(123, 6, 0.5, 256)
 	local noise_top_layer = get_perlin_map(654, 6, 0.5, 256, minp, maxp)
 	local noise_second_layer = get_perlin_map(123, 6, 0.5, 256, minp, maxp)
 	
 	local noise_temperature_raw = minetest.get_perlin(763, 7, 0.5, 512)
 	local noise_humidity_raw = minetest.get_perlin(834, 7, 0.5, 512)
-	--local noise_beach = minetest.get_perlin(452, 6, 0.5, 256)
 	local noise_temperature = get_perlin_map(763, 7, 0.5, 512, minp, maxp)
 	local noise_humidity = get_perlin_map(834, 7, 0.5, 512, minp, maxp)
 	local noise_beach = get_perlin_map(452, 6, 0.5, 256, minp, maxp)
@@ -454,7 +451,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	for z = minp.z, maxp.z do
 	for x = minp.x, maxp.x do
 		ni = ni + 1
-		local y=math.floor(smooth_surface(x, z, village_noise, vx, vz, vs, vh, ni, noise1, noise2, noise3, noise4))
+		local y = math.floor(surface_at_point(x, z, village_noise_map, villages, ni, noise1, noise2, noise3, noise4))
 		humidity = noise_humidity[ni]
 		temperature = noise_temperature[ni] - math.max(y, 0)/50
 		biome = get_nearest_biome(biome_table, x, z)
@@ -527,9 +524,15 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 				and tree.min_height <= y+1 and y+1 <= tree.max_height
 				and ((not tree.grows_on) or tree.grows_on == top)
 				and pr:next(1, tree.chance) == 1 then
-					if inside_village(x, z, vx, vz, vs, village_noise) and not tree.can_be_in_village then
-						villages_to_grow[#villages_to_grow+1] = {x=x, y=y+1, z=z, id=id}
-					else
+					local in_village = false
+					for _, village in ipairs(villages) do
+						if inside_village(x, z, village, village_noise) and not tree.can_be_in_village then
+							village.to_grow[#village.to_grow+1] = {x = x, y = y + 1, z = z, id = id}
+							in_village = true
+							break
+						end
+					end
+					if not in_village then
 						tree.grow(data, a, x, y+1, z, minp, maxp, pr)
 					end
 					add_above_top = false
@@ -609,7 +612,9 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 		generate_vein(minetest.get_content_id(ore.name), minetest.get_content_id(ore.wherein), minp, maxp, ore.seeddiff, ore, data, a, va)
 	end
 	
-	local to_add = generate_village(vx, vz, vs, vh, minp, maxp, data, a, village_noise, villages_to_grow)
+	for _, village in ipairs(villages) do
+		village.to_add = generate_village(village, minp, maxp, data, a, village_noise)
+	end
 
 	vm:set_data(data)
 
@@ -621,7 +626,8 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	vm:write_to_map(data)
 
 	local meta
-	for _, n in pairs(to_add) do
+	for _, village in ipairs(villages) do
+	for _, n in pairs(village.to_add) do
 		minetest.set_node(n.pos, n.node)
 		if n.meta ~= nil then
 			meta = minetest.get_meta(n.pos)
@@ -648,6 +654,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 				end
 			end
 		end
+	end
 	end
 end
 
