@@ -44,7 +44,7 @@ c_dry_shrub  = minetest.get_content_id("default:dry_shrub")
 c_papyrus  = minetest.get_content_id("default:papyrus")
 
 minetest.register_on_mapgen_init(function(mgparams)
-		minetest.set_mapgen_params({mgname="singlenode", flags="nolight", flagmask="nolight"})
+		minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight"})
 end)
 
 local cache = {}
