@@ -713,11 +713,10 @@ local function spawnplayer(player)
 	for bx = -20, 20 do
 	for bz = -20, 20 do
 		local minp = {x = -32 + 80 * bx, y = -32, z = -32 + 80 * bz}
-		local vx, vz, vs, vh = village_at_point(minp, noise1)
-		if vs ~= 0 then
-			if math.abs(vx) + math.abs(vz) < min_dist then
-				min_pos = {x = vx, y = vh + 2, z = vz}
-				min_dist = math.abs(vx) + math.abs(vz)
+		for _, village in ipairs(villages_at_point(minp, noise1)) do
+			if math.abs(village.vx) + math.abs(village.vz) < min_dist then
+				min_pos = {x = village.vx, y = village.vh + 2, z = village.vz}
+				min_dist = math.abs(village.vx) + math.abs(village.vz)
 			end
 		end
 	end
