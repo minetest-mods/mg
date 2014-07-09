@@ -21,7 +21,7 @@ local function is_village_block(minp)
 	return (x%vcc == 0) and (z%vcc == 0)
 end
 
-local function villages_at_point(minp, noise1)
+function villages_at_point(minp, noise1)
 	if not is_village_block(minp) then return {} end
 	local vcr, vcc = VILLAGE_CHECK_RADIUS, VILLAGE_CHECK_COUNT
 	-- Check if there's another village nearby
