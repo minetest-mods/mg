@@ -412,9 +412,9 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	local villages = {}
 	for xi = -vcr, vcr do
 	for zi = -vcr, vcr do
-		local vx, vz, vs, vh = village_at_point({x = minp.x + xi * 80, z = minp.z + zi * 80}, noise1raw)
-		if vs ~= 0 then
-			villages[#villages+1] = {vx = vx, vz = vz, vs = vs, vh = vh, to_grow = {}}
+		for _, village in ipairs(villages_at_point({x = minp.x + xi * 80, z = minp.z + zi * 80}, noise1raw)) do
+			village.to_grow = {}
+			villages[#villages+1] = village
 		end
 	end
 	end
