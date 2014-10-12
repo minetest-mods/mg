@@ -692,7 +692,8 @@ local function mg_regenerate(pos, name)
                 	minetest.chat_send_player(name, math.floor(_/nnodes*100).."%")
                 end
         end
-        minetest.chat_send_player(name, "Done")
+	minetest.chat_send_player(name, "Done")
+	return minp, maxp	
 end
 
 minetest.register_chatcommand("mg_regenerate", {
@@ -701,7 +702,11 @@ minetest.register_chatcommand("mg_regenerate", {
 		local player = minetest.get_player_by_name(name)
 		if player then
 			local pos = player:getpos()
-			mg_regenerate(pos, name)
+			local minp, maxp = mg_regenerate(pos, name)
+			if minetest.get_modpath("plants_lib") and minp and maxp then
+				plantslib.blocklist_aircheck[#plantslib.blocklist_aircheck + 1] = { minp, maxp }
+				plantslib.blocklist_no_aircheck[#plantslib.blocklist_no_aircheck + 1] = { minp, maxp }
+			end
 		end
 	end,
 })
