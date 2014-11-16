@@ -12,6 +12,7 @@ minetest.register_node("mg:savannaleaves", {
 	tiles = {"mg_dry_leaves.png"},
 	paramtype = "light",
 	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
+	trunk = "mg:savannatree", -- Support for BASE and Voxelgarden
 	waving = 1,
 	drop = {
 		max_items = 1,
@@ -100,6 +101,7 @@ minetest.register_node("mg:pineleaves", {
 	tiles = {"mg_pine_leaves.png"},
 	paramtype = "light",
 	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
+	trunk = "mg:pinetree", -- Support for BASE and Voxelgarden
 	waving = 1,
 	drop = {
 		max_items = 1,
