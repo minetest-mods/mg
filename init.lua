@@ -1,12 +1,15 @@
 mg = {}
 
 local ENABLE_SNOW = false
+local DEBUG = false
 
 local DMAX = 20
 local AREA_SIZE = 80
 
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/nodes.lua")
-c_air  = minetest.get_content_id("air")
+c_air = minetest.get_content_id("air")
+c_ignore = minetest.get_content_id("ignore")
+c_water = minetest.get_content_id("default:water_source")
 c_grass  = minetest.get_content_id("default:dirt_with_grass")
 c_dry_grass  = minetest.get_content_id("mg:dirt_with_dry_grass")
 c_dirt_snow  = minetest.get_content_id("default:dirt_with_snow")
@@ -114,6 +117,7 @@ function inside_village(x, z, village, vnoise)
 	return get_vn(x, z, vnoise:get2d({x = x, y = z}), village) <= 40
 end
 
+local wseed
 minetest.register_on_mapgen_init(function(mgparams)
 	wseed = math.floor(mgparams.seed/10000000000)
 end)
@@ -124,10 +128,6 @@ end
 function get_bseed2(minp)
 	return wseed + math.floor(87*minp.x/47) + math.floor(73*minp.z/91) + math.floor(31*minp.y/12)
 end
-
-c_air = minetest.get_content_id("air")
-c_ignore = minetest.get_content_id("ignore")
-c_water = minetest.get_content_id("default:water_source")
 
 local function add_leaves(data, vi, c_leaves, c_snow)
 	if data[vi]==c_air or data[vi]==c_ignore or data[vi] == c_snow then
@@ -439,48 +439,42 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	local data = vm:get_data()
 	local param2_data = vm:get_param2_data()
 
-	local ni = 1
-	local above_top
-	local liquid_top
-	local top
-	local top_layer
-	local second_layer
-	local humidity
-	local temperature
 	local villages_to_grow = {}
 	local ni = 0
 	for z = minp.z, maxp.z do
 	for x = minp.x, maxp.x do
 		ni = ni + 1
 		local y = math.floor(surface_at_point(x, z, village_noise_map, villages, ni, noise1, noise2, noise3, noise4))
-		humidity = noise_humidity[ni]
-		temperature = noise_temperature[ni] - math.max(y, 0)/50
-		biome = get_nearest_biome(biome_table, x, z)
-		biome_humidity = biome.h
-		biome_temperature = biome.t
-		if biome_temperature<-0.4 then
+		local humidity = noise_humidity[ni]
+		local temperature = noise_temperature[ni] - math.max(y, 0) / 50
+		local biome = get_nearest_biome(biome_table, x, z)
+		local biome_humidity = biome.h
+		local biome_temperature = biome.t
+		local liquid_top
+		if biome_temperature < -0.4 then
 			liquid_top = c_ice
 		else
 			liquid_top = c_water
 		end
+		local above_top, top, top_layer, second_layer
 		if y < -1 then
 			above_top = c_air
 			top = c_dirt
 			top_layer = c_dirt
 			second_layer = c_stone
-		elseif y < 3 and noise_beach[ni]<0.2 then
+		elseif y < 3 and noise_beach[ni] < 0.2 then
 			above_top = c_air
 			top = c_sand
 			top_layer = c_sand
 			second_layer = c_sandstone
 		else
 			above_top = c_air
-			if biome_temperature>0.4 then
-				if biome_humidity<-0.4 then
+			if biome_temperature > 0.4 then
+				if biome_humidity < -0.4 then
 					top = c_desert_sand
 					top_layer = c_desert_sand
 					second_layer = c_desert_stone
-				elseif biome_humidity<0.4 then
+				elseif biome_humidity < 0.4 then
 					top = c_dry_grass
 					top_layer = c_dirt
 					second_layer = c_stone
@@ -489,7 +483,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 					top_layer = c_dirt
 					second_layer = c_stone
 				end
-			elseif biome_temperature<-0.4 then
+			elseif biome_temperature < -0.4 then
 				above_top = c_snow
 				top = c_dirt_snow
 				top_layer = c_dirt
@@ -500,15 +494,15 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 				second_layer = c_stone
 			end
 		end
-		if y>=100 then
+		if y >= 100 then
 			above_top = c_air
 			top = c_snow
 			top_layer = c_snowblock
 		end
-		if y<0 then
+		if y < 0 then
 			above_top = c_air
 		end
-		if y<=maxp.y and y>=minp.y then
+		if y <= maxp.y and y >= minp.y then
 				local vi = a:index(x, y, z)
 				if y >= 0 then
 					data[vi] = top
@@ -522,7 +516,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 				and tree.min_temperature <= temperature and temperature <= tree.max_temperature
 				and tree.min_biome_humidity <= biome_humidity and biome_humidity <= tree.max_biome_humidity
 				and tree.min_biome_temperature <= biome_temperature and biome_temperature <= tree.max_biome_temperature
-				and tree.min_height <= y+1 and y+1 <= tree.max_height
+				and tree.min_height <= y + 1 and y + 1 <= tree.max_height
 				and ((not tree.grows_on) or tree.grows_on == top)
 				and pr:next(1, tree.chance) == 1 then
 					local in_village = false
@@ -534,41 +528,41 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 						end
 					end
 					if not in_village then
-						tree.grow(data, a, x, y+1, z, minp, maxp, pr)
+						tree.grow(data, a, x, y + 1, z, minp, maxp, pr)
 					end
 					add_above_top = false
 					break
 			end
 		end
-		if add_above_top and y+1<=maxp.y and y+1>=minp.y then
-			local vi = a:index(x, y+1, z)
+		if add_above_top and y + 1 <= maxp.y and y + 1 >= minp.y then
+			local vi = a:index(x, y + 1, z)
 			data[vi] = above_top
 		end
-		if y<0 and minp.y<=0 and maxp.y>y then
-			for yy = math.max(y+1, minp.y), math.min(0, maxp.y) do
+		if y < 0 and minp.y <= 0 and maxp.y > y then
+			for yy = math.max(y + 1, minp.y), math.min(0, maxp.y) do
 				local vi = a:index(x, yy, z)
 				data[vi] = c_water
 			end
-			if maxp.y>=0 then
+			if maxp.y >= 0 then
 				data[a:index(x, 0, z)] = liquid_top
 			end
 		end
-		local tl = math.floor((noise_top_layer[ni]+2.5)*2)
-		if y-tl-1<=maxp.y and y-1>=minp.y then
-			for yy = math.max(y-tl-1, minp.y), math.min(y-1, maxp.y) do
+		local tl = math.floor((noise_top_layer[ni] + 2.5) * 2)
+		if y - tl - 1 <= maxp.y and y - 1 >= minp.y then
+			for yy = math.max(y - tl - 1, minp.y), math.min(y - 1, maxp.y) do
 				local vi = a:index(x, yy, z)
 				data[vi] = top_layer
 			end
 		end
-		local sl = math.floor((noise_second_layer[ni]+5)*3)
-		if y-sl-1<=maxp.y and y-tl-2>=minp.y then
-			for yy = math.max(y-sl-1, minp.y), math.min(y-tl-2, maxp.y) do
+		local sl = math.floor((noise_second_layer[ni] + 5) * 3)
+		if y - sl - 1 <= maxp.y and y - tl - 2 >= minp.y then
+			for yy = math.max(y - sl - 1, minp.y), math.min(y - tl - 2, maxp.y) do
 				local vi = a:index(x, yy, z)
 				data[vi] = second_layer
 			end
 		end
-		if y-sl-2>=minp.y then
-			for yy = minp.y, math.min(y-sl-2, maxp.y) do
+		if y - sl - 2 >= minp.y then
+			for yy = minp.y, math.min(y - sl - 2, maxp.y) do
 				local vi = a:index(x, yy, z)
 				data[vi] = c_stone
 			end
@@ -582,7 +576,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 		local sidelen = maxp.x - minp.x + 1
 		local np = copytable(ore_sheet.noise_params)
 		np.seed = np.seed + minp.y
-		local pm = minetest.get_perlin_map(np, {x=sidelen, y=sidelen, z=1})
+		local pm = minetest.get_perlin_map(np, {x = sidelen, y = sidelen, z = 1})
 		local map = pm:get2dMap_flat({x = minp.x, y = minp.z})
 		local ni = 0
 		local trh = ore_sheet.threshhold
@@ -594,12 +588,12 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 		local tmax = ore_sheet.tmax
 		for z = minp.z, maxp.z do
 		for x = minp.x, maxp.x do
-			ni = ni+1
+			ni = ni + 1
 			local noise = map[ni]
 			if noise > trh then
 				local thickness = pr:next(tmin, tmax)
-				local y0 = math.floor(minp.y + (noise-trh)*4)
-				for y = math.max(y0, hmin), math.min(y0+thickness-1, hmax) do
+				local y0 = math.floor(minp.y + (noise - trh) * 4)
+				for y = math.max(y0, hmin), math.min(y0 + thickness - 1, hmax) do
 					local vi = a:index(x, y, z)
 					if data[vi] == wherein or wherein == c_ignore then
 						data[vi] = ore
@@ -621,8 +615,8 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	vm:set_param2_data(param2_data)
 
 	vm:calc_lighting(
-		{x=minp.x-16, y=minp.y, z=minp.z-16},
-		{x=maxp.x+16, y=maxp.y, z=maxp.z+16}
+		{x = minp.x - 16, y = minp.y, z = minp.z - 16},
+		{x = maxp.x + 16, y = maxp.y, z = maxp.z + 16}
 	)
 
 	vm:write_to_map(data)
@@ -637,18 +631,23 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 			if n.node.name == "default:chest" then
 				local inv = meta:get_inventory()
 				local items = inv:get_list("main")
-				for i=1, inv:get_size("main") do
+				for i = 1, inv:get_size("main") do
 					inv:set_stack("main", i, ItemStack(""))
 				end
 				local numitems = pr:next(3, 20)
-				for i=1,numitems do
+				for i = 1, numitems do
 					local ii = pr:next(1, #items)
 					local prob = items[ii]:get_count() % 2 ^ 8
 					local stacksz = math.floor(items[ii]:get_count() / 2 ^ 8)
 					if pr:next(0, prob) == 0 and stacksz>0 then
-						stk = ItemStack({name=items[ii]:get_name(), count=pr:next(1, stacksz), wear=items[ii]:get_wear(), metadata=items[ii]:get_metadata()})
+						local stk = ItemStack({
+							name = items[ii]:get_name(),
+							count = pr:next(1, stacksz),
+							wear = items[ii]:get_wear(),
+							metadata = items[ii]:get_metadata()
+						})
 						local ind = pr:next(1, inv:get_size("main"))
-						while not inv:get_stack("main",ind):is_empty() do
+						while not inv:get_stack("main", ind):is_empty() do
 							ind = pr:next(1, inv:get_size("main"))
 						end
 						inv:set_stack("main", ind, stk)
@@ -666,14 +665,14 @@ minetest.register_on_generated(function(minp, maxp, seed)
 end)
 
 local function mg_regenerate(pos, name)
-	local minp = {x = 80*math.floor((pos.x+32)/80)-32,
-			y = 80*math.floor((pos.y+32)/80)-32,
-			z = 80*math.floor((pos.z+32)/80)-32}
-	local maxp = {x = minp.x+79, y = minp.y+79, z = minp.z+79}
+	local minp = {x = 80 * math.floor((pos.x + 32) / 80) - 32,
+			y = 80 * math.floor((pos.y + 32) / 80) - 32,
+			z = 80 * math.floor((pos.z + 32) / 80) - 32}
+	local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
 	local vm = minetest.get_voxel_manip()
 	local emin, emax = vm:read_from_map(minp, maxp)
 	local data = {}
-	for i = 1, (maxp.x-minp.x+1)*(maxp.y-minp.y+1)*(maxp.z-minp.z+1) do
+	for i = 1, (maxp.x - minp.x + 1) * (maxp.y - minp.y + 1) * (maxp.z - minp.z + 1) do
 		data[i] = c_air
 	end
 	vm:set_data(data)
@@ -684,12 +683,12 @@ local function mg_regenerate(pos, name)
 	-- Fix lighting
 	local nodes = minetest.find_nodes_in_area(minp, maxp, "air")
 	local nnodes = #nodes
-	local p = math.floor(nnodes/5)
+	local p = math.floor(nnodes / 5)
         local dig_node = minetest.dig_node
-        for _, pos in ipairs(nodes) do
+        for i, pos in ipairs(nodes) do
                 dig_node(pos)
-                if _%p == 0 then
-                	minetest.chat_send_player(name, math.floor(_/nnodes*100).."%")
+                if i % p == 0 then
+                	minetest.chat_send_player(name, math.floor(i / nnodes * 100).."%")
                 end
         end
 	minetest.chat_send_player(name, "Done")
@@ -704,8 +703,8 @@ minetest.register_chatcommand("mg_regenerate", {
 			local pos = player:getpos()
 			local minp, maxp = mg_regenerate(pos, name)
 			if minetest.get_modpath("plants_lib") and minp and maxp then
-				plantslib.blocklist_aircheck[#plantslib.blocklist_aircheck + 1] = { minp, maxp }
-				plantslib.blocklist_no_aircheck[#plantslib.blocklist_no_aircheck + 1] = { minp, maxp }
+				plantslib.blocklist_aircheck[#plantslib.blocklist_aircheck + 1] = {minp, maxp}
+				plantslib.blocklist_no_aircheck[#plantslib.blocklist_no_aircheck + 1] = {minp, maxp}
 			end
 		end
 	end,
@@ -760,7 +759,7 @@ function mg.register_ore_sheet(oredef)
 		oredef.wherein = "ignore"
 		oredef.height_max = 31000
 	end
-	mg.registered_ore_sheets[#mg.registered_ore_sheets+1] = oredef
+	mg.registered_ore_sheets[#mg.registered_ore_sheets + 1] = oredef
 end
 
 mg.registered_trees = {}
@@ -789,7 +788,7 @@ function mg.register_tree(treedef)
 	if treedef.max_biome_temperature == nil then
 		treedef.max_biome_temperature = 2
 	end
-	mg.registered_trees[#mg.registered_trees+1] = treedef
+	mg.registered_trees[#mg.registered_trees + 1] = treedef
 end
 
 dofile(minetest.get_modpath(minetest.get_current_modname()).."/oredesc.lua")

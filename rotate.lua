@@ -19,7 +19,7 @@ function rotate_scm(scm)
 	local ysize = #scm
 	local xsize = #scm[1]
 	local zsize = #scm[1][1]
-	new_scm = {}
+	local new_scm = {}
 	for i=1, ysize do
 		new_scm[i] = {}
 		for j=1, zsize do
@@ -36,11 +36,11 @@ function rotate_scm(scm)
 		if type(old) ~= "table" or old.rotation == nil then
 			new_scm[y][newx][newz] = old
 		elseif old.rotation == "wallmounted" then
-			new = deepcopy(old)
+			local new = deepcopy(old)
 			new.node.param2 = rotate_wallmounted(new.node.param2)
 			new_scm[y][newx][newz] = new
 		elseif old.rotation == "facedir" then
-			new = deepcopy(old)
+			local new = deepcopy(old)
 			new.node.param2 = rotate_facedir(new.node.param2)
 			new_scm[y][newx][newz] = new
 		end
@@ -51,7 +51,7 @@ function rotate_scm(scm)
 end
 
 function rotate(scm, times)
-	for i=1, times do
+	for i = 1, times do
 		scm = rotate_scm(scm)
 	end
 	return scm
