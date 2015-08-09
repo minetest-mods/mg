@@ -702,9 +702,9 @@ minetest.register_chatcommand("mg_regenerate", {
 		if player then
 			local pos = player:getpos()
 			local minp, maxp = mg_regenerate(pos, name)
-			if minetest.get_modpath("plants_lib") and minp and maxp then
-				plantslib.blocklist_aircheck[#plantslib.blocklist_aircheck + 1] = {minp, maxp}
-				plantslib.blocklist_no_aircheck[#plantslib.blocklist_no_aircheck + 1] = {minp, maxp}
+			if minetest.get_modpath("biome_lib") and minp and maxp then
+				biome_lib.blocklist_aircheck[#biome_lib.blocklist_aircheck + 1] = {minp, maxp}
+				biome_lib.blocklist_no_aircheck[#biome_lib.blocklist_no_aircheck + 1] = {minp, maxp}
 			end
 		end
 	end,
