@@ -619,7 +619,7 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 		{x = maxp.x + 16, y = maxp.y, z = maxp.z + 16}
 	)
 
-	vm:write_to_map(data)
+	vm:write_to_map()
 
 	local meta
 	for _, village in ipairs(villages) do
