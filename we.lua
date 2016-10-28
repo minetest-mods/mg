@@ -14,6 +14,9 @@ function import_scm(scm)
 	end
 	local value = f:read("*a")
 	f:close()
+	if value:sub(1, 2) == "5:" then
+		value = value:sub(3)
+	end
 	value = value:gsub("return%s*{", "", 1):gsub("}%s*$", "", 1)
 	local escaped = value:gsub("\\\\", "@@"):gsub("\\\"", "@@"):gsub("(\"[^\"]*\")", function(s) return string.rep("@", #s) end)
 	local startpos, startpos1, endpos = 1, 1
