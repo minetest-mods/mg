@@ -4,7 +4,7 @@ buildings = {
 	{sizex= 9,	sizez= 9,	yoff= 0,	ysize= 2,	scm="cotton_field"},
 	{sizex= 3,	sizez= 3,	yoff= 1,	ysize= 4,	scm="lamp", weight=1/5, no_rotate=true},
 	{sizex= 4,	sizez= 4,	yoff=-5,	ysize=11,	scm="well", no_rotate=true, pervillage=1},
-	{sizex= 7,	sizez= 7,	yoff= 0,	ysize=11,	scm="fountain", weight=1/4, pervillage=3},
+	{sizex= 7,	sizez= 7,	yoff= 0,	ysize= 6,	scm="fountain", weight=1/4, pervillage=3},
 	{sizex= 5,	sizez= 5,	yoff= 0,	ysize= 6,	scm="small_house", orients={3}},
 	{sizex= 6,	sizez=12,	yoff= 0,	ysize= 7,	scm="house_with_garden", orients={1}},
 	{sizex=16,	sizez=17,	yoff= 0,	ysize=12,	scm="church", orients={3}, pervillage=1},
