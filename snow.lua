@@ -51,7 +51,7 @@ minetest.register_globalstep(function(dtime)
 				end
 			end
 			--vm:set_data(data)
-			--vm:write_to_map(data)
+			--vm:write_to_map()
 			--for _, pos in ipairs(to_update) do
 			--	nodeupdate(pos)
 			--end
