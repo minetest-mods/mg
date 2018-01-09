@@ -84,6 +84,13 @@ minetest.register_abm({
 -- Pine tree
 -------------------------
 
+if minetest.registered_nodes["default:pine_tree"] ~= nil then
+	minetest.register_alias("mg:pinetree", "default:pine_tree")
+	minetest.register_alias("mg:pineleaves", "default:pine_needles")
+	minetest.register_alias("mg:pinewood", "default:pine_wood")
+	minetest.register_alias("mg:pinesapling", "default:pine_sapling")
+else
+
 minetest.register_node("mg:pinetree", {
 	description = "Pine Tree",
 	tiles = {"mg_pine_tree_top.png", "mg_pine_tree_top.png", "mg_pine_tree.png"},
@@ -162,9 +169,15 @@ minetest.register_abm({
 	end
 })
 
+end
+
 -------------------------
 -- Other
 -------------------------
+
+if minetest.registered_nodes["default:dirt_with_dry_grass"] ~= nil then
+	minetest.register_alias("mg:dirt_with_dry_grass", "default:dirt_with_dry_grass")
+else
 
 minetest.register_node("mg:dirt_with_dry_grass", {
 	description = "Dry Grass",
@@ -176,6 +189,8 @@ minetest.register_node("mg:dirt_with_dry_grass", {
 		footstep = {name="default_grass_footstep", gain=0.25},
 	}),
 })
+
+end
 
 minetest.register_node("mg:ignore", {
 	description = "MG Ignore",
