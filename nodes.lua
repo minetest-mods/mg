@@ -1,3 +1,7 @@
+-------------------------
+-- Savanna tree
+-------------------------
+
 minetest.register_node("mg:savannatree", {
 	description = "Savannawood Tree",
 	tiles = {"mg_dry_tree_top.png", "mg_dry_tree_top.png", "mg_dry_tree.png"},
@@ -76,16 +80,9 @@ minetest.register_abm({
 	end
 })
 
-minetest.register_node("mg:dirt_with_dry_grass", {
-	description = "Dry Grass",
-	tiles = {"mg_dry_grass.png", "default_dirt.png", "default_dirt.png^mg_dry_grass_side.png"},
-	is_ground_content = true,
-	groups = {crumbly=3,soil=1},
-	drop = 'default:dirt',
-	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.25},
-	}),
-})
+-------------------------
+-- Pine tree
+-------------------------
 
 minetest.register_node("mg:pinetree", {
 	description = "Pine Tree",
@@ -163,6 +160,21 @@ minetest.register_abm({
 		vm:write_to_map()
 		vm:update_map()
 	end
+})
+
+-------------------------
+-- Other
+-------------------------
+
+minetest.register_node("mg:dirt_with_dry_grass", {
+	description = "Dry Grass",
+	tiles = {"mg_dry_grass.png", "default_dirt.png", "default_dirt.png^mg_dry_grass_side.png"},
+	is_ground_content = true,
+	groups = {crumbly=3,soil=1},
+	drop = 'default:dirt',
+	sounds = default.node_sound_dirt_defaults({
+		footstep = {name="default_grass_footstep", gain=0.25},
+	}),
 })
 
 minetest.register_node("mg:ignore", {
