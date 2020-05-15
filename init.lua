@@ -120,7 +120,7 @@ local function smooth(x, z, ...)
 end
 
 function inside_village(x, z, village, vnoise)
-	return get_vn(x, z, vnoise:get2d({x = x, y = z}), village) <= 40
+	return get_vn(x, z, vnoise:get_2d({x = x, y = z}), village) <= 40
 end
 
 local wseed
@@ -355,7 +355,7 @@ function get_biome_table(minp, humidity, temperature, range)
 		local mnp, mxp = {x=minp.x+xi*80,z=minp.z+zi*80}, {x=minp.x+xi*80+80,z=minp.z+zi*80+80}
 		local pr = PseudoRandom(get_bseed(mnp))
 		local bxp, bzp = pr:next(mnp.x, mxp.x), pr:next(mnp.z, mxp.z)
-		local h, t = humidity:get2d({x=bxp, y=bzp}), temperature:get2d({x=bxp, y=bzp})
+		local h, t = humidity:get_2d({x=bxp, y=bzp}), temperature:get_2d({x=bxp, y=bzp})
 		l[#l+1] = {x=bxp, z=bzp, h=h, t=t}
 	end
 	end
@@ -385,15 +385,7 @@ local function get_perlin_map(seed, octaves, persistance, scale, minp, maxp)
                 {offset=0, scale=1, spread={x=scale, y=scale, z=scale}, seed=seed, octaves=octaves, persist=persistance},
                 {x=sidelen, y=sidelen, z=sidelen}
         )
-        return pm:get2dMap_flat({x = minp.x, y = minp.z, z = 0})
-end
-
-local function copytable(t)
-	local t2 = {}
-	for key, val in pairs(t) do
-		t2[key] = val
-	end
-	return t2
+        return pm:get_2d_map_flat({x = minp.x, y = minp.z, z = 0})
 end
 
 local function mg_generate(minp, maxp, emin, emax, vm)
@@ -580,10 +572,10 @@ local function mg_generate(minp, maxp, emin, emax, vm)
 	
 	for _, ore_sheet in ipairs(mg.registered_ore_sheets) do
 		local sidelen = maxp.x - minp.x + 1
-		local np = copytable(ore_sheet.noise_params)
+		local np = table.copy(ore_sheet.noise_params)
 		np.seed = np.seed + minp.y
 		local pm = minetest.get_perlin_map(np, {x = sidelen, y = sidelen, z = 1})
-		local map = pm:get2dMap_flat({x = minp.x, y = minp.z})
+		local map = pm:get_2d_map_flat({x = minp.x, y = minp.z})
 		local ni = 0
 		local trh = ore_sheet.threshhold
 		local wherein = minetest.get_content_id(ore_sheet.wherein)

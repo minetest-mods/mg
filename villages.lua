@@ -33,7 +33,7 @@ function villages_at_point(minp, noise1)
 			local s = pi:next(1, 400)
 			local x = pi:next(mp.x, mp.x + 79)
 			local z = pi:next(mp.z, mp.z + 79)
-			if s <= VILLAGE_CHANCE and noise1:get2d({x = x, y = z}) >= -0.3 then return {} end
+			if s <= VILLAGE_CHANCE and noise1:get_2d({x = x, y = z}) >= -0.3 then return {} end
 		end
 	end
 	end
@@ -41,7 +41,7 @@ function villages_at_point(minp, noise1)
 	if pr:next(1, 400) > VILLAGE_CHANCE then return {} end -- No village here
 	local x = pr:next(minp.x, minp.x + 79)
 	local z = pr:next(minp.z, minp.z + 79)
-	if noise1:get2d({x = x, y = z}) < -0.3 then return {} end -- Deep in the ocean
+	if noise1:get_2d({x = x, y = z}) < -0.3 then return {} end -- Deep in the ocean
 	local type = pr:next(1, 1) -- TODO: actually make them
 	local size = pr:next(VILLAGE_MIN_SIZE, VILLAGE_MAX_SIZE) -- TODO: change to type-dependant sizes
 	local height = pr:next(5, 20)
